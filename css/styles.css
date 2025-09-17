@@ -1,0 +1,170 @@
+/* Custom Properties */
+:root {
+    --font-montserrat: 'Montserrat', sans-serif;
+    --font-poppins: 'Poppins', sans-serif;
+    --color-green: #006400;
+    --color-red: #FF0000;
+}
+
+/* Base Styles */
+body {
+    font-family: var(--font-poppins);
+    background-color: transparent; /* Allow fixed background to be visible */
+}
+
+.font-montserrat {
+    font-family: var(--font-montserrat);
+}
+
+/* Navbar */
+#navbar.scrolled {
+    background-color: rgba(10, 10, 10, 0.7);
+    backdrop-filter: blur(10px);
+    padding: 1rem 1.5rem;
+}
+
+.logo {
+    transition: transform 0.3s ease;
+}
+
+#navbar.scrolled .logo {
+    transform: scale(0.8);
+}
+
+.nav-link-container {
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    border-radius: 9999px;
+    padding: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.nav-button {
+    position: relative;
+    padding: 0.5rem 1.5rem;
+    font-weight: 700;
+    color: white;
+    transition: all 0.3s ease;
+    border-radius: 9999px;
+}
+
+.nav-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.login-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(90deg, var(--color-green), var(--color-red), var(--color-green));
+    background-size: 200% 100%;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 700;
+    transition: transform 0.3s, box-shadow 0.3s, background-position 0.5s ease;
+}
+
+.login-button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    background-position: 100% 0;
+}
+
+/* Hero Title */
+.indet-title {
+    background: linear-gradient(90deg, var(--color-green), var(--color-red), white, var(--color-green));
+    background-size: 400% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-flow 8s linear infinite;
+}
+
+@keyframes gradient-flow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+/* Booking Form */
+.booking-input {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+}
+
+.booking-input:focus {
+    outline: none;
+    border-color: var(--color-green);
+    box-shadow: 0 0 0 3px rgba(0, 100, 0, 0.2);
+}
+
+.action-button {
+    background: linear-gradient(90deg, var(--color-red), #c00);
+    color: white;
+    font-weight: 700;
+    padding: 0.75rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.action-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(255, 0, 0, 0.3);
+}
+
+/* Gallery */
+.gallery-card {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    transition: transform 0.5s;
+    background-color: rgba(255, 255, 255, 0.1); /* Slight background to make them pop */
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.gallery-card:hover {
+    transform: perspective(1000px) rotateY(5deg) rotateX(5deg) scale3d(1.05, 1.05, 1.05);
+}
+
+.gallery-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+}
+
+.gallery-card:hover img {
+    transform: scale(1.1);
+}
+
+.gallery-card h3 {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Footer */
+.footer-bg {
+    background: #111;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-green), var(--color-red));
+}
