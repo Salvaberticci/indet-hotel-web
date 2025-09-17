@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
 <head>
@@ -24,6 +25,15 @@
 </head>
 <body class="bg-gray-900 text-white">
 
+    <?php
+    if (isset($_GET['status']) && isset($_GET['message'])) {
+        $status = $_GET['status'] === 'success' ? 'success' : 'error';
+        $message = htmlspecialchars($_GET['message']);
+        $icon = $status === 'success' ? 'fa-check-circle' : 'fa-times-circle';
+        echo "<div class='notification $status'><i class='fas $icon'></i> $message</div>";
+    }
+    ?>
+
     <!-- Background Elements -->
     <div class="fixed top-0 left-0 w-full h-full bg-cover bg-center z-0" style="background-image: url('images/hero-bg.jpg');"></div>
     <div class="fixed top-0 left-0 w-full h-full bg-black/60 z-10"></div>
@@ -41,10 +51,18 @@
                     <a href="#footer" class="nav-button">Contactos</a>
                 </div>
                  <div class="flex items-center space-x-4">
-                    <a href="login.php" class="login-button">
-                        <span>Login</span>
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <span class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                        <a href="php/logout.php" class="login-button">
+                            <span>Logout</span>
+                            <i class="fas fa-sign-out-alt"></i>
+                        </a>
+                    <?php else: ?>
+                        <a href="login.php" class="login-button">
+                            <span>Login</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
         </nav>
@@ -64,15 +82,15 @@
                 <form action="php/book.php" method="POST" class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end px-6">
                     <div class="form-group text-left">
                         <label for="checkin" class="font-bold text-sm mb-2 block text-gray-500">FECHA DE LLEGADA*</label>
-                        <input type="text" placeholder="SELECCIONA" onfocus="(this.type='date')" onblur="(this.type='text')" required class="booking-input">
+                        <input type="text" name="checkin" placeholder="SELECCIONA" onfocus="(this.type='date')" onblur="(this.type='text')" required class="booking-input">
                     </div>
                     <div class="form-group text-left">
                         <label for="checkout" class="font-bold text-sm mb-2 block text-gray-500">FECHA DE SALIDA*</label>
-                        <input type="text" placeholder="SELECCIONA" onfocus="(this.type='date')" onblur="(this.type='text')" required class="booking-input">
+                        <input type="text" name="checkout" placeholder="SELECCIONA" onfocus="(this.type='date')" onblur="(this.type='text')" required class="booking-input">
                     </div>
                     <div class="form-group text-left">
                         <label for="room_type" class="font-bold text-sm mb-2 block text-gray-500">HABITACIÓN*</label>
-                        <select required class="booking-input">
+                        <select name="room_type" required class="booking-input">
                             <option value="">SELECCIONA</option>
                             <option value="individual">Individual</option>
                             <option value="doble">Doble</option>

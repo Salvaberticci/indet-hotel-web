@@ -1,4 +1,5 @@
 <?php
+session_start();
 include 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -15,8 +16,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->bind_param("sss", $name, $email, $hashed_password);
 
     if ($stmt->execute()) {
-        // Redirect to login page after successful registration
-        header("Location: ../login.php?registration=success");
+        // Get the ID of the new user
+        $user_id = $stmt->insert_id;
+
+        // Start a session for the new user
+        $_SESSION['user_id'] = $user_id;
+        $_SESSION['user_name'] = $name;
+        $_SESSION['user_role'] = 'client';
+
+        // Redirect to the main page after successful registration
+        header("Location: ../index.php");
         exit();
     } else {
         // Handle errors, e.g., duplicate email

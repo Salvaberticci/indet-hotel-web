@@ -1,13 +1,20 @@
 <?php
+session_start();
 include 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (!isset($_POST['checkin']) || empty($_POST['checkin']) || !isset($_POST['checkout']) || empty($_POST['checkout']) || !isset($_POST['room_type']) || empty($_POST['room_type'])) {
+        die("Error: Por favor, complete todos los campos del formulario.");
+    }
     $checkin = $_POST['checkin'];
     $checkout = $_POST['checkout'];
     $room_type = $_POST['room_type'];
 
-    // For now, we'll use a static user_id. This will be replaced with the logged-in user's ID.
-    $user_id = 1; 
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: ../login.php?status=error&message=" . urlencode('Debes iniciar sesión para realizar una reserva.'));
+        exit();
+    }
+    $user_id = $_SESSION['user_id'];
 
     // Get room_id based on room_type. This is a simplified approach.
     // In a real application, you would have a more robust way to get the room_id.
@@ -26,9 +33,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_param("iiss", $user_id, $room_id, $checkin, $checkout);
 
         if ($stmt->execute()) {
-            echo "Reserva realizada con éxito. Nos pondremos en contacto contigo para confirmar.";
+            header("Location: ../index.php?status=success&message=" . urlencode('Reserva realizada con éxito.'));
         } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
+            header("Location: ../index.php?status=error&message=" . urlencode('Error al realizar la reserva.'));
         }
     } else {
         // If room type does not exist, we need to add it first.
@@ -61,12 +68,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_insert->bind_param("iiss", $user_id, $room_id, $checkin, $checkout);
 
             if ($stmt_insert->execute()) {
-                echo "Reserva realizada con éxito. Nos pondremos en contacto contigo para confirmar.";
+                header("Location: ../index.php?status=success&message=" . urlencode('Reserva realizada con éxito.'));
             } else {
-                echo "Error: " . $sql . "<br>" . $conn->error;
+                header("Location: ../index.php?status=error&message=" . urlencode('Error al realizar la reserva.'));
             }
         } else {
-            echo "Error: No se pudo encontrar el tipo de habitación.";
+            header("Location: ../index.php?status=error&message=" . urlencode('No se pudo encontrar el tipo de habitación.'));
         }
     }
 

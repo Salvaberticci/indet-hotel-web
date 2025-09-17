@@ -9,6 +9,15 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body class="bg-gray-900 text-white font-poppins">
+
+    <?php
+    if (isset($_GET['status']) && isset($_GET['message'])) {
+        $status = $_GET['status'] === 'success' ? 'success' : 'error';
+        $message = htmlspecialchars($_GET['message']);
+        $icon = $status === 'success' ? 'fa-check-circle' : 'fa-times-circle';
+        echo "<div class='notification $status'><i class='fas $icon'></i> $message</div>";
+    }
+    ?>
     <div class="container mx-auto flex items-center justify-center min-h-screen">
         <div class="bg-white text-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-md">
             <h2 class="text-3xl font-bold mb-6 text-center">Iniciar Sesión</h2>
