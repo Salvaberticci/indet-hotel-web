@@ -14,14 +14,28 @@ if (isset($_POST['add_room'])) {
     $capacity = $_POST['capacity'];
     $description = $_POST['description'];
     $price = $_POST['price'];
-    // For simplicity, photos will be handled as a JSON string of filenames.
-    // A real implementation would involve file uploads.
-    $photos = json_encode(['default_room.jpg']);
+
+    $photos = [];
+    if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
+        $upload_dir = '../images/';
+        $file_name = basename($_FILES['image']['name']);
+        $target_file = $upload_dir . $file_name;
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+            $photos[] = $file_name;
+        } else {
+            $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al subir la imagen.'];
+            header("Location: ../admin.php#rooms-section");
+            exit();
+        }
+    } else {
+        $photos[] = 'default_room.jpg';
+    }
+    $photos_json = json_encode($photos);
 
     $sql = "INSERT INTO rooms (type, capacity, description, price, photos) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sisds", $type, $capacity, $description, $price, $photos);
-    
+    $stmt->bind_param("sisds", $type, $capacity, $description, $price, $photos_json);
+
     if ($stmt->execute()) {
         $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Habitación agregada exitosamente.'];
     } else {
@@ -39,9 +53,32 @@ if (isset($_POST['update_room'])) {
     $description = $_POST['description'];
     $price = $_POST['price'];
 
-    $sql = "UPDATE rooms SET type = ?, capacity = ?, description = ?, price = ? WHERE id = ?";
+    // Fetch current photos
+    $current_sql = "SELECT photos FROM rooms WHERE id = ?";
+    $current_stmt = $conn->prepare($current_sql);
+    $current_stmt->bind_param("i", $id);
+    $current_stmt->execute();
+    $current_result = $current_stmt->get_result();
+    $current_room = $current_result->fetch_assoc();
+    $photos = json_decode($current_room['photos'], true) ?? ['default_room.jpg'];
+
+    if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
+        $upload_dir = '../images/';
+        $file_name = basename($_FILES['image']['name']);
+        $target_file = $upload_dir . $file_name;
+        if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
+            $photos = [$file_name]; // Replace with new image
+        } else {
+            $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al subir la imagen.'];
+            header("Location: ../admin.php#rooms-section");
+            exit();
+        }
+    }
+    $photos_json = json_encode($photos);
+
+    $sql = "UPDATE rooms SET type = ?, capacity = ?, description = ?, price = ?, photos = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sisdi", $type, $capacity, $description, $price, $id);
+    $stmt->bind_param("sisdsi", $type, $capacity, $description, $price, $photos_json, $id);
 
     if ($stmt->execute()) {
         $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Habitación actualizada exitosamente.'];

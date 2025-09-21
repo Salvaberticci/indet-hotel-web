@@ -6,6 +6,35 @@ namespace Composer\Autoload;
 
 class ComposerStaticInitdb315e4f88970947ef7f984e2e3cb1d6
 {
+    public static $prefixLengthsPsr4 = array (
+        'P' => 
+        array (
+            'PhpOffice\\PhpWord\\' => 18,
+            'PhpOffice\\Math\\' => 15,
+        ),
+    );
+
+    public static $prefixDirsPsr4 = array (
+        'PhpOffice\\PhpWord\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpoffice/phpword/src/PhpWord',
+        ),
+        'PhpOffice\\Math\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpoffice/math/src/Math',
+        ),
+    );
+
+    public static $prefixesPsr0 = array (
+        'P' => 
+        array (
+            'Parsedown' => 
+            array (
+                0 => __DIR__ . '/..' . '/erusev/parsedown',
+            ),
+        ),
+    );
+
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'FPDF' => __DIR__ . '/..' . '/setasign/fpdf/fpdf.php',
@@ -14,6 +43,9 @@ class ComposerStaticInitdb315e4f88970947ef7f984e2e3cb1d6
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
+            $loader->prefixLengthsPsr4 = ComposerStaticInitdb315e4f88970947ef7f984e2e3cb1d6::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitdb315e4f88970947ef7f984e2e3cb1d6::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitdb315e4f88970947ef7f984e2e3cb1d6::$prefixesPsr0;
             $loader->classMap = ComposerStaticInitdb315e4f88970947ef7f984e2e3cb1d6::$classMap;
 
         }, null, ClassLoader::class);

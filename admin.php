@@ -18,11 +18,11 @@ $sql = "SELECT reservations.id, users.name as user_name, rooms.type as room_type
 $result = $conn->query($sql);
 
 // Fetch events
-$events_sql = "SELECT id, name, description, date FROM events ORDER BY date DESC";
+$events_sql = "SELECT id, name, description, date, image FROM events ORDER BY date DESC";
 $events_result = $conn->query($events_sql);
 
 // Fetch rooms for management
-$rooms_sql = "SELECT id, type, capacity, description, price FROM rooms ORDER BY type ASC";
+$rooms_sql = "SELECT id, type, capacity, description, price, photos FROM rooms ORDER BY type ASC";
 $rooms_result = $conn->query($rooms_sql);
 if (!$rooms_result) {
     die("Query failed: " . $conn->error);
@@ -133,10 +133,10 @@ $maintenance_result = $conn->query($maintenance_sql);
                         <select name="room_id" required class="w-full p-2 border rounded bg-gray-600 text-white">
                             <option value="">Seleccionar habitación...</option>
                             <?php
-                            $rooms_sql = "SELECT id, type FROM rooms ORDER BY type ASC";
-                            $rooms_result = $conn->query($rooms_sql);
-                            while($room = $rooms_result->fetch_assoc()): ?>
-                                <option value="<?php echo $room['id']; ?>"><?php echo ucfirst($room['type']); ?></option>
+                            $rooms_for_select_sql = "SELECT id, type FROM rooms ORDER BY type ASC";
+                            $rooms_for_select_result = $conn->query($rooms_for_select_sql);
+                            while($room_for_select = $rooms_for_select_result->fetch_assoc()): ?>
+                                <option value="<?php echo $room_for_select['id']; ?>"><?php echo ucfirst($room_for_select['type']); ?></option>
                             <?php endwhile; ?>
                         </select>
                     </div>
@@ -359,13 +359,17 @@ $maintenance_result = $conn->query($maintenance_sql);
             <h2 class="text-2xl font-bold mb-6">Gestionar Habitaciones</h2>
 
             <!-- Add Room Form -->
-            <form action="php/room_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
+            <form action="php/room_handler.php" method="POST" enctype="multipart/form-data" class="mb-8 p-4 bg-gray-700 rounded-lg">
                 <h3 class="text-xl font-semibold mb-4">Agregar Nueva Habitación</h3>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <input type="text" name="type" placeholder="Tipo (ej. Individual)" required class="p-2 border rounded bg-gray-600 text-white">
                     <input type="number" name="capacity" placeholder="Capacidad" required class="p-2 border rounded bg-gray-600 text-white">
                     <input type="text" name="description" placeholder="Descripción" required class="p-2 border rounded bg-gray-600 text-white">
                     <input type="number" step="0.01" name="price" placeholder="Precio por noche" required class="p-2 border rounded bg-gray-600 text-white">
+                </div>
+                <div class="mt-4">
+                    <label for="room_image" class="block font-semibold mb-2">Imagen de la Habitación</label>
+                    <input type="file" name="image" id="room_image" accept="image/*" class="p-2 border rounded bg-gray-600 text-white">
                 </div>
                 <button type="submit" name="add_room" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Agregar Habitación</button>
             </form>
@@ -375,7 +379,9 @@ $maintenance_result = $conn->query($maintenance_sql);
                 <table class="min-w-full bg-gray-800">
                     <thead class="bg-gray-700 text-white">
                         <tr>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Imagen</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Tipo</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Descripción</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Capacidad</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Precio</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Acciones</th>
@@ -384,8 +390,11 @@ $maintenance_result = $conn->query($maintenance_sql);
                     <tbody class="text-gray-300">
                         <?php if ($rooms_result->num_rows > 0): ?>
                             <?php while($room = $rooms_result->fetch_assoc()): ?>
+                                <?php $photos = json_decode($room['photos'], true); ?>
                                 <tr class="hover:bg-gray-700 border-b border-gray-700">
+                                    <td class="py-3 px-4 text-center"><img src="images/<?php echo htmlspecialchars($photos[0] ?? 'default_room.jpg'); ?>" alt="Room Image" class="w-16 h-16 object-cover rounded"></td>
                                     <td class="py-3 px-4 text-center capitalize"><?php echo $room['type']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo $room['description']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $room['capacity']; ?></td>
                                     <td class="py-3 px-4 text-center">$<?php echo number_format($room['price'], 2); ?></td>
                                     <td class="py-3 px-4 text-center">
@@ -395,7 +404,7 @@ $maintenance_result = $conn->query($maintenance_sql);
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <tr><td colspan="4" class="text-center py-4">No hay habitaciones para mostrar.</td></tr>
+                            <tr><td colspan="6" class="text-center py-4">No hay habitaciones para mostrar.</td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -433,7 +442,7 @@ $maintenance_result = $conn->query($maintenance_sql);
             <h2 class="text-2xl font-bold mb-6">Gestionar Eventos</h2>
             
             <!-- Add Event Form -->
-            <form action="php/event_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
+            <form action="php/event_handler.php" method="POST" enctype="multipart/form-data" class="mb-8 p-4 bg-gray-700 rounded-lg">
                 <h3 class="text-xl font-semibold mb-4">Agregar Nuevo Evento</h3>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <input type="text" name="name" placeholder="Nombre del Evento" required class="p-2 border rounded bg-gray-600 text-white">
@@ -449,6 +458,7 @@ $maintenance_result = $conn->query($maintenance_sql);
                 <table class="min-w-full bg-gray-800">
                     <thead class="bg-gray-700 text-white">
                         <tr>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Imagen</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Nombre</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Descripción</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Fecha</th>
@@ -459,6 +469,7 @@ $maintenance_result = $conn->query($maintenance_sql);
                         <?php if ($events_result->num_rows > 0): ?>
                             <?php while($event = $events_result->fetch_assoc()): ?>
                                 <tr class="hover:bg-gray-700 border-b border-gray-700">
+                                    <td class="py-3 px-4 text-center"><img src="images/<?php echo htmlspecialchars($event['image'] ?? 'default_event.jpg'); ?>" alt="Event Image" class="w-16 h-16 object-cover rounded"></td>
                                     <td class="py-3 px-4 text-center"><?php echo $event['name']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $event['description']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $event['date']; ?></td>
@@ -469,7 +480,7 @@ $maintenance_result = $conn->query($maintenance_sql);
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <tr><td colspan="4" class="text-center py-4">No hay eventos para mostrar.</td></tr>
+                            <tr><td colspan="5" class="text-center py-4">No hay eventos para mostrar.</td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -576,7 +587,7 @@ $maintenance_result = $conn->query($maintenance_sql);
     <div id="editRoomModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
         <div class="bg-gray-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-md">
             <h2 class="text-2xl font-bold mb-6">Editar Habitación</h2>
-            <form action="php/room_handler.php" method="POST">
+            <form action="php/room_handler.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" id="editRoomId" name="id">
                 <div class="mb-4">
                     <label class="block font-semibold">Tipo</label>
@@ -594,6 +605,11 @@ $maintenance_result = $conn->query($maintenance_sql);
                     <label class="block font-semibold">Precio</label>
                     <input type="number" step="0.01" id="editRoomPrice" name="price" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                 </div>
+                <div class="mb-4">
+                    <label class="block font-semibold">Imagen (opcional)</label>
+                    <input type="file" name="image" accept="image/*" class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                    <div id="currentImage" class="mt-2"></div>
+                </div>
                 <div class="flex justify-end">
                     <button type="button" onclick="closeEditRoomModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-2">Cancelar</button>
                     <button type="submit" name="update_room" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Actualizar Habitación</button>
@@ -606,7 +622,7 @@ $maintenance_result = $conn->query($maintenance_sql);
     <div id="editEventModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
         <div class="bg-gray-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-md">
             <h2 class="text-2xl font-bold mb-6">Editar Evento</h2>
-            <form action="php/event_handler.php" method="POST">
+            <form action="php/event_handler.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" id="editEventId" name="id">
                 <div class="mb-4">
                     <label for="editEventName" class="block font-semibold mb-2">Nombre</label>
@@ -623,6 +639,7 @@ $maintenance_result = $conn->query($maintenance_sql);
                 <div class="mb-4">
                     <label for="editEventImage" class="block font-semibold mb-2">Imagen</label>
                     <input type="file" id="editEventImage" name="image" accept="image/*" class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                    <div id="currentEventImage" class="mt-2"></div>
                 </div>
                 <div class="flex justify-end">
                     <button type="button" onclick="closeEditModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-2">Cancelar</button>
@@ -810,6 +827,7 @@ $maintenance_result = $conn->query($maintenance_sql);
             document.getElementById('editEventName').value = event.name;
             document.getElementById('editEventDescription').value = event.description;
             document.getElementById('editEventDate').value = event.date;
+            document.getElementById('currentEventImage').innerHTML = '<img src="images/' + (event.image || 'default_event.jpg') + '" alt="Current Image" class="w-16 h-16 object-cover rounded">';
             document.getElementById('editEventModal').classList.remove('hidden');
         }
 
@@ -823,6 +841,8 @@ $maintenance_result = $conn->query($maintenance_sql);
             document.getElementById('editRoomCapacity').value = room.capacity;
             document.getElementById('editRoomDescription').value = room.description;
             document.getElementById('editRoomPrice').value = room.price;
+            const photos = room.photos ? JSON.parse(room.photos) : ['default_room.jpg'];
+            document.getElementById('currentImage').innerHTML = '<img src="images/' + photos[0] + '" alt="Current Image" class="w-16 h-16 object-cover rounded">';
             document.getElementById('editRoomModal').classList.remove('hidden');
         }
 
