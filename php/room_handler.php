@@ -25,7 +25,7 @@ if (isset($_POST['add_room'])) {
     if ($stmt->execute()) {
         $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Habitación agregada exitosamente.'];
     } else {
-        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al agregar la habitación.'];
+        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al agregar la habitación: ' . $stmt->error];
     }
     header("Location: ../admin.php#rooms-section");
     exit();
@@ -46,7 +46,7 @@ if (isset($_POST['update_room'])) {
     if ($stmt->execute()) {
         $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Habitación actualizada exitosamente.'];
     } else {
-        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al actualizar la habitación.'];
+        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al actualizar la habitación: ' . $stmt->error];
     }
     header("Location: ../admin.php#rooms-section");
     exit();
@@ -73,7 +73,7 @@ if (isset($_GET['delete_room'])) {
         if ($stmt->execute()) {
             $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Habitación eliminada exitosamente.'];
         } else {
-            $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al eliminar la habitación.'];
+            $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al eliminar la habitación: ' . $stmt->error];
         }
     }
     header("Location: ../admin.php#rooms-section");
