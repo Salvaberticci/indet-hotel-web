@@ -25,6 +25,17 @@
 </head>
 <body class="bg-gray-900 text-white font-poppins">
 
+    <?php
+    if (isset($_SESSION['flash_message'])) {
+        $message = $_SESSION['flash_message'];
+        unset($_SESSION['flash_message']);
+        $status = $message['status'];
+        $text = $message['text'];
+        $icon = $status === 'success' ? 'fa-check-circle' : 'fa-times-circle';
+        echo "<div class='notification $status'><i class='fas $icon'></i> $text</div>";
+    }
+    ?>
+
     <!-- Background Elements -->
     <div class="fixed top-0 left-0 w-full h-full bg-cover bg-center z-0" style="background-image: url('images/hero-bg.jpg');"></div>
     <div class="fixed top-0 left-0 w-full h-full bg-black/60 z-10"></div>

@@ -20,6 +20,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['user_name'] = $user['name'];
             $_SESSION['user_role'] = $user['role'];
 
+            $_SESSION['flash_message'] = [
+                'status' => 'success',
+                'text' => '¡Inicio de sesión exitoso!'
+            ];
             if ($user['role'] == 'admin') {
                 header("Location: ../admin.php");
             } else {
@@ -28,12 +32,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit();
         } else {
             // Incorrect password
-            header("Location: ../login.php?error=invalid_credentials");
+            $_SESSION['flash_message'] = [
+                'status' => 'error',
+                'text' => 'Credenciales inválidas. Por favor, inténtalo de nuevo.'
+            ];
+            header("Location: ../login.php");
             exit();
         }
     } else {
         // User not found
-        header("Location: ../login.php?error=invalid_credentials");
+        $_SESSION['flash_message'] = [
+            'status' => 'error',
+            'text' => 'Credenciales inválidas. Por favor, inténtalo de nuevo.'
+        ];
+        header("Location: ../login.php");
         exit();
     }
 

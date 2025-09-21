@@ -26,11 +26,13 @@
 <body class="bg-gray-900 text-white">
 
     <?php
-    if (isset($_GET['status']) && isset($_GET['message'])) {
-        $status = $_GET['status'] === 'success' ? 'success' : 'error';
-        $message = htmlspecialchars($_GET['message']);
+    if (isset($_SESSION['flash_message'])) {
+        $message = $_SESSION['flash_message'];
+        unset($_SESSION['flash_message']);
+        $status = $message['status'];
+        $text = $message['text'];
         $icon = $status === 'success' ? 'fa-check-circle' : 'fa-times-circle';
-        echo "<div class='notification $status'><i class='fas $icon'></i> $message</div>";
+        echo "<div class='notification $status'><i class='fas $icon'></i> $text</div>";
     }
     ?>
 
@@ -43,14 +45,16 @@
     <header id="header" class="relative h-screen overflow-hidden">
         <!-- Navigation -->
         <nav id="navbar" class="fixed top-0 left-0 w-full p-6 z-40 transition-all duration-300">
-            <div class="container mx-auto flex justify-between items-center">
-                <img src="images/logo.png" alt="INDET Logo" class="w-24 logo">
-                <div class="hidden md:flex items-center space-x-4 nav-link-container">
+            <div class="container mx-auto grid grid-cols-3 items-center">
+                <div class="justify-self-start">
+                    <img src="images/logo.png" alt="INDET Logo" class="w-24 logo">
+                </div>
+                <div class="hidden md:flex items-center space-x-4 nav-link-container justify-self-center">
                     <a href="#about" class="nav-button">Sobre La Institución</a>
-                    <a href="#gallery" class="nav-button">Instalaciones</a>
+                    <a href="#booking" class="nav-button">Disponibilidad</a>
                     <a href="#footer" class="nav-button">Contactos</a>
                 </div>
-                 <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-4 justify-self-end">
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <span class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
                         <a href="php/logout.php" class="login-button">

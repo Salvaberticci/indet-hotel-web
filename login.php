@@ -26,11 +26,13 @@
 <body class="bg-gray-900 text-white font-poppins">
 
     <?php
-    if (isset($_GET['status']) && isset($_GET['message'])) {
-        $status = $_GET['status'] === 'success' ? 'success' : 'error';
-        $message = htmlspecialchars($_GET['message']);
+    if (isset($_SESSION['flash_message'])) {
+        $message = $_SESSION['flash_message'];
+        unset($_SESSION['flash_message']);
+        $status = $message['status'];
+        $text = $message['text'];
         $icon = $status === 'success' ? 'fa-check-circle' : 'fa-times-circle';
-        echo "<div class='notification $status'><i class='fas $icon'></i> $message</div>";
+        echo "<div class='notification $status'><i class='fas $icon'></i> $text</div>";
     }
     ?>
 

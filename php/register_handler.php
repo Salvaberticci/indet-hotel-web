@@ -24,12 +24,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['user_name'] = $name;
         $_SESSION['user_role'] = 'client';
 
+        $_SESSION['flash_message'] = [
+            'status' => 'success',
+            'text' => '¡Registro exitoso! Bienvenido.'
+        ];
+
         // Redirect to the main page after successful registration
         header("Location: ../index.php");
         exit();
     } else {
         // Handle errors, e.g., duplicate email
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        $_SESSION['flash_message'] = [
+            'status' => 'error',
+            'text' => 'Error en el registro. Es posible que el correo electrónico ya esté en uso.'
+        ];
+        header("Location: ../register.php");
+        exit();
     }
 
     $stmt->close();
