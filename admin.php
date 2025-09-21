@@ -24,6 +24,14 @@ $events_result = $conn->query($events_sql);
 // Fetch rooms for management
 $rooms_sql = "SELECT id, type, capacity, description, price FROM rooms ORDER BY type ASC";
 $rooms_result = $conn->query($rooms_sql);
+
+// Fetch maintenance tasks
+$maintenance_sql = "SELECT mt.id, r.type as room_type, u.name as staff_name, mt.status, mt.created_at 
+                    FROM maintenance_tasks mt
+                    JOIN rooms r ON mt.room_id = r.id
+                    JOIN users u ON mt.assigned_to_user_id = u.id
+                    ORDER BY mt.created_at DESC";
+$maintenance_result = $conn->query($maintenance_sql);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -31,26 +39,51 @@ $rooms_result = $conn->query($rooms_sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - INDET</title>
+
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- AOS (Animate on Scroll) -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
-<body class="bg-gray-100 text-gray-800 font-poppins">
+<body class="bg-gray-900 text-white font-poppins">
     <div class="container mx-auto p-8">
+        <?php
+        if (isset($_SESSION['flash_message'])) {
+            $message = $_SESSION['flash_message'];
+            $status_class = $message['status'] == 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700';
+            echo '<div class="border px-4 py-3 rounded relative mb-4 ' . $status_class . '" role="alert">';
+            echo '<span class="block sm:inline">' . $message['text'] . '</span>';
+            echo '</div>';
+            unset($_SESSION['flash_message']);
+        }
+        ?>
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold">Panel de Administración</h1>
             <a href="php/logout.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-transform hover:scale-105">Cerrar Sesión</a>
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-2xl mb-8">
+        <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mb-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold">Reservas</h2>
             </div>
             <div class="overflow-x-auto">
-                <table class="min-w-full bg-white">
-                    <thead class="bg-gray-800 text-white">
+                <table class="min-w-full bg-gray-800">
+                    <thead class="bg-gray-700 text-white">
                         <tr>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">ID</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Cliente</th>
@@ -61,10 +94,10 @@ $rooms_result = $conn->query($rooms_sql);
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody class="text-gray-700">
+                    <tbody class="text-gray-300">
                         <?php if ($result->num_rows > 0): ?>
                             <?php while($row = $result->fetch_assoc()): ?>
-                                <tr class="hover:bg-gray-100">
+                                <tr class="hover:bg-gray-700 border-b border-gray-700">
                                     <td class="py-3 px-4"><?php echo $row['id']; ?></td>
                                     <td class="py-3 px-4"><?php echo $row['user_name']; ?></td>
                                     <td class="py-3 px-4"><?php echo $row['room_type']; ?></td>
@@ -78,9 +111,15 @@ $rooms_result = $conn->query($rooms_sql);
                                                 'cancelled' => 'text-red-700 bg-red-100'
                                             ];
                                             $status_class = $status_classes[$row['status']] ?? 'text-gray-700 bg-gray-100';
+                                            $status_translations = [
+                                                'pending' => 'Pendiente',
+                                                'confirmed' => 'Confirmada',
+                                                'cancelled' => 'Cancelada'
+                                            ];
+                                            $translated_status = $status_translations[$row['status']] ?? ucfirst($row['status']);
                                         ?>
                                         <span class="px-2 py-1 font-semibold leading-tight rounded-full <?php echo $status_class; ?>">
-                                            <?php echo ucfirst($row['status']); ?>
+                                            <?php echo $translated_status; ?>
                                         </span>
                                     </td>
                                     <td class="py-3 px-4">
@@ -101,7 +140,7 @@ $rooms_result = $conn->query($rooms_sql);
             </div>
         </div>
 
-        <div id="users-section" class="bg-white p-6 rounded-xl shadow-2xl">
+        <div id="users-section" class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl">
             <h2 class="text-2xl font-bold mb-6">Gestionar Usuarios</h2>
             <?php
             // Fetch users to display
@@ -109,8 +148,8 @@ $rooms_result = $conn->query($rooms_sql);
             $users_result = $conn->query($users_sql);
             ?>
             <div class="overflow-x-auto">
-                <table class="min-w-full bg-white">
-                    <thead class="bg-gray-800 text-white">
+                <table class="min-w-full bg-gray-800">
+                    <thead class="bg-gray-700 text-white">
                         <tr>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Nombre</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Email</th>
@@ -118,16 +157,16 @@ $rooms_result = $conn->query($rooms_sql);
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody class="text-gray-700">
+                    <tbody class="text-gray-300">
                         <?php if ($users_result->num_rows > 0): ?>
                             <?php while($user_row = $users_result->fetch_assoc()): ?>
-                                <tr class="hover:bg-gray-100">
+                                <tr class="hover:bg-gray-700 border-b border-gray-700">
                                     <td class="py-3 px-4"><?php echo $user_row['name']; ?></td>
                                     <td class="py-3 px-4"><?php echo $user_row['email']; ?></td>
                                     <td class="py-3 px-4">
                                         <form action="php/user_handler.php" method="POST" class="flex items-center">
                                             <input type="hidden" name="user_id" value="<?php echo $user_row['id']; ?>">
-                                            <select name="role" class="p-1 border rounded-lg text-sm">
+                                            <select name="role" class="p-1 border rounded-lg text-sm bg-gray-700 text-white">
                                                 <option value="user" <?php if($user_row['role'] == 'user') echo 'selected'; ?>>Usuario</option>
                                                 <option value="admin" <?php if($user_row['role'] == 'admin') echo 'selected'; ?>>Admin</option>
                                                 <option value="maintenance" <?php if($user_row['role'] == 'maintenance') echo 'selected'; ?>>Mantenimiento</option>
@@ -152,25 +191,25 @@ $rooms_result = $conn->query($rooms_sql);
             </div>
         </div>
 
-        <div id="rooms-section" class="bg-white p-6 rounded-xl shadow-2xl mt-8">
+        <div id="rooms-section" class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
             <h2 class="text-2xl font-bold mb-6">Gestionar Habitaciones</h2>
 
             <!-- Add Room Form -->
-            <form action="php/room_handler.php" method="POST" class="mb-8 p-4 bg-gray-50 rounded-lg">
+            <form action="php/room_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
                 <h3 class="text-xl font-semibold mb-4">Agregar Nueva Habitación</h3>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <input type="text" name="type" placeholder="Tipo (ej. Individual)" required class="p-2 border rounded">
-                    <input type="number" name="capacity" placeholder="Capacidad" required class="p-2 border rounded">
-                    <input type="text" name="description" placeholder="Descripción" required class="p-2 border rounded">
-                    <input type="number" step="0.01" name="price" placeholder="Precio por noche" required class="p-2 border rounded">
+                    <input type="text" name="type" placeholder="Tipo (ej. Individual)" required class="p-2 border rounded bg-gray-600 text-white">
+                    <input type="number" name="capacity" placeholder="Capacidad" required class="p-2 border rounded bg-gray-600 text-white">
+                    <input type="text" name="description" placeholder="Descripción" required class="p-2 border rounded bg-gray-600 text-white">
+                    <input type="number" step="0.01" name="price" placeholder="Precio por noche" required class="p-2 border rounded bg-gray-600 text-white">
                 </div>
                 <button type="submit" name="add_room" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Agregar Habitación</button>
             </form>
 
             <!-- Rooms Table -->
             <div class="overflow-x-auto">
-                <table class="min-w-full bg-white">
-                    <thead class="bg-gray-800 text-white">
+                <table class="min-w-full bg-gray-800">
+                    <thead class="bg-gray-700 text-white">
                         <tr>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Tipo</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Capacidad</th>
@@ -178,10 +217,10 @@ $rooms_result = $conn->query($rooms_sql);
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody class="text-gray-700">
+                    <tbody class="text-gray-300">
                         <?php if ($rooms_result->num_rows > 0): ?>
                             <?php while($room = $rooms_result->fetch_assoc()): ?>
-                                <tr>
+                                <tr class="hover:bg-gray-700 border-b border-gray-700">
                                     <td class="py-3 px-4 capitalize"><?php echo $room['type']; ?></td>
                                     <td class="py-3 px-4"><?php echo $room['capacity']; ?></td>
                                     <td class="py-3 px-4">$<?php echo number_format($room['price'], 2); ?></td>
@@ -199,7 +238,7 @@ $rooms_result = $conn->query($rooms_sql);
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-2xl mt-8">
+        <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold">Reportes de Desempeño</h2>
                 <a href="reports.php" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg">Ver Reportes Avanzados</a>
@@ -226,24 +265,24 @@ $rooms_result = $conn->query($rooms_sql);
             </div>
         </div>
 
-        <div id="events-section" class="bg-white p-6 rounded-xl shadow-2xl mt-8">
+        <div id="events-section" class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
             <h2 class="text-2xl font-bold mb-6">Gestionar Eventos</h2>
             
             <!-- Add Event Form -->
-            <form action="php/event_handler.php" method="POST" class="mb-8 p-4 bg-gray-50 rounded-lg">
+            <form action="php/event_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
                 <h3 class="text-xl font-semibold mb-4">Agregar Nuevo Evento</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <input type="text" name="name" placeholder="Nombre del Evento" required class="p-2 border rounded">
-                    <input type="text" name="description" placeholder="Descripción" required class="p-2 border rounded">
-                    <input type="date" name="date" required class="p-2 border rounded">
+                    <input type="text" name="name" placeholder="Nombre del Evento" required class="p-2 border rounded bg-gray-600 text-white">
+                    <input type="text" name="description" placeholder="Descripción" required class="p-2 border rounded bg-gray-600 text-white">
+                    <input type="date" name="date" required class="p-2 border rounded bg-gray-600 text-white">
                 </div>
                 <button type="submit" name="add_event" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Agregar Evento</button>
             </form>
 
             <!-- Events Table -->
             <div class="overflow-x-auto">
-                <table class="min-w-full bg-white">
-                    <thead class="bg-gray-800 text-white">
+                <table class="min-w-full bg-gray-800">
+                    <thead class="bg-gray-700 text-white">
                         <tr>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Nombre</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Descripción</th>
@@ -251,10 +290,10 @@ $rooms_result = $conn->query($rooms_sql);
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody class="text-gray-700">
+                    <tbody class="text-gray-300">
                         <?php if ($events_result->num_rows > 0): ?>
                             <?php while($event = $events_result->fetch_assoc()): ?>
-                                <tr>
+                                <tr class="hover:bg-gray-700 border-b border-gray-700">
                                     <td class="py-3 px-4"><?php echo $event['name']; ?></td>
                                     <td class="py-3 px-4"><?php echo $event['description']; ?></td>
                                     <td class="py-3 px-4"><?php echo $event['date']; ?></td>
@@ -272,7 +311,7 @@ $rooms_result = $conn->query($rooms_sql);
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-2xl mt-8">
+        <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
             <h2 class="text-2xl font-bold mb-6">Asignar Tarea de Mantenimiento</h2>
             <?php
             // Fetch rooms that are not already pending cleaning
@@ -289,7 +328,7 @@ $rooms_result = $conn->query($rooms_sql);
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                         <label for="room_id" class="block font-semibold mb-2">Habitación</label>
-                        <select name="room_id" required class="w-full p-3 border rounded-lg">
+                        <select name="room_id" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                             <option value="">Seleccionar habitación...</option>
                             <?php while($room = $rooms_to_clean_result->fetch_assoc()): ?>
                                 <option value="<?php echo $room['id']; ?>"><?php echo ucfirst($room['type']); ?></option>
@@ -298,7 +337,7 @@ $rooms_result = $conn->query($rooms_sql);
                     </div>
                     <div>
                         <label for="user_id" class="block font-semibold mb-2">Asignar a</label>
-                        <select name="user_id" required class="w-full p-3 border rounded-lg">
+                        <select name="user_id" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                             <option value="">Seleccionar personal...</option>
                             <?php while($staff = $maintenance_staff_result->fetch_assoc()): ?>
                                 <option value="<?php echo $staff['id']; ?>"><?php echo $staff['name']; ?></option>
@@ -311,29 +350,83 @@ $rooms_result = $conn->query($rooms_sql);
                 </div>
             </form>
         </div>
+
+        <div id="maintenance-tasks-section" class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
+            <h2 class="text-2xl font-bold mb-6">Tareas de Mantenimiento</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-gray-800">
+                    <thead class="bg-gray-700 text-white">
+                        <tr>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Habitación</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Asignado a</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Estado</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Fecha de Creación</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-300">
+                        <?php if ($maintenance_result->num_rows > 0): ?>
+                            <?php while($task = $maintenance_result->fetch_assoc()): ?>
+                                <tr class="hover:bg-gray-700 border-b border-gray-700">
+                                    <td class="py-3 px-4"><?php echo $task['room_type']; ?></td>
+                                    <td class="py-3 px-4"><?php echo $task['staff_name']; ?></td>
+                                    <td class="py-3 px-4">
+                                        <?php
+                                            $status_classes = [
+                                                'pending' => 'text-yellow-700 bg-yellow-100',
+                                                'completed' => 'text-green-700 bg-green-100'
+                                            ];
+                                            $status_class = $status_classes[$task['status']] ?? 'text-gray-700 bg-gray-100';
+                                            $status_translations = [
+                                                'pending' => 'Pendiente',
+                                                'completed' => 'Completada'
+                                            ];
+                                            $translated_status = $status_translations[$task['status']] ?? ucfirst($task['status']);
+                                        ?>
+                                        <span class="px-2 py-1 font-semibold leading-tight rounded-full <?php echo $status_class; ?>">
+                                            <?php echo $translated_status; ?>
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-4"><?php echo $task['created_at']; ?></td>
+                                    <td class="py-3 px-4">
+                                        <?php if ($task['status'] == 'pending'): ?>
+                                            <a href="php/maintenance_handler.php?action=complete&id=<?php echo $task['id']; ?>" class="text-green-500 hover:text-green-700">Marcar como Completada</a>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5" class="text-center py-4">No hay tareas de mantenimiento pendientes.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <!-- Edit Room Modal -->
     <div id="editRoomModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-        <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
+        <div class="bg-gray-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-md">
             <h2 class="text-2xl font-bold mb-6">Editar Habitación</h2>
             <form action="php/room_handler.php" method="POST">
                 <input type="hidden" id="editRoomId" name="id">
                 <div class="mb-4">
                     <label class="block font-semibold">Tipo</label>
-                    <input type="text" id="editRoomType" name="type" required class="w-full p-3 border rounded-lg">
+                    <input type="text" id="editRoomType" name="type" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                 </div>
                 <div class="mb-4">
                     <label class="block font-semibold">Capacidad</label>
-                    <input type="number" id="editRoomCapacity" name="capacity" required class="w-full p-3 border rounded-lg">
+                    <input type="number" id="editRoomCapacity" name="capacity" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                 </div>
                 <div class="mb-4">
                     <label class="block font-semibold">Descripción</label>
-                    <textarea id="editRoomDescription" name="description" rows="3" required class="w-full p-3 border rounded-lg"></textarea>
+                    <textarea id="editRoomDescription" name="description" rows="3" required class="w-full p-3 border rounded-lg bg-gray-700 text-white"></textarea>
                 </div>
                 <div class="mb-4">
                     <label class="block font-semibold">Precio</label>
-                    <input type="number" step="0.01" id="editRoomPrice" name="price" required class="w-full p-3 border rounded-lg">
+                    <input type="number" step="0.01" id="editRoomPrice" name="price" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                 </div>
                 <div class="flex justify-end">
                     <button type="button" onclick="closeEditRoomModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-2">Cancelar</button>
@@ -345,21 +438,21 @@ $rooms_result = $conn->query($rooms_sql);
 
     <!-- Edit Event Modal -->
     <div id="editEventModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-        <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
+        <div class="bg-gray-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-md">
             <h2 class="text-2xl font-bold mb-6">Editar Evento</h2>
             <form action="php/event_handler.php" method="POST">
                 <input type="hidden" id="editEventId" name="id">
                 <div class="mb-4">
                     <label for="editEventName" class="block font-semibold mb-2">Nombre</label>
-                    <input type="text" id="editEventName" name="name" required class="w-full p-3 border rounded-lg">
+                    <input type="text" id="editEventName" name="name" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                 </div>
                 <div class="mb-4">
                     <label for="editEventDescription" class="block font-semibold mb-2">Descripción</label>
-                    <textarea id="editEventDescription" name="description" rows="3" required class="w-full p-3 border rounded-lg"></textarea>
+                    <textarea id="editEventDescription" name="description" rows="3" required class="w-full p-3 border rounded-lg bg-gray-700 text-white"></textarea>
                 </div>
                 <div class="mb-4">
                     <label for="editEventDate" class="block font-semibold mb-2">Fecha</label>
-                    <input type="date" id="editEventDate" name="date" required class="w-full p-3 border rounded-lg">
+                    <input type="date" id="editEventDate" name="date" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                 </div>
                 <div class="flex justify-end">
                     <button type="button" onclick="closeEditModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-2">Cancelar</button>
