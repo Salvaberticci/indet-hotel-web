@@ -23,6 +23,8 @@ $result = $conn->query($sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - INDET</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -197,7 +199,65 @@ $result = $conn->query($sql);
                 </table>
             </div>
         </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-2xl mt-8">
+            <h2 class="text-2xl font-bold mb-6">Reportes de Desempeño</h2>
+            <?php
+            // Fetch data for chart: Reservations per room type
+            $chart_sql = "SELECT r.type, COUNT(res.id) as reservation_count 
+                          FROM rooms r 
+                          LEFT JOIN reservations res ON r.id = res.room_id 
+                          GROUP BY r.type";
+            $chart_result = $conn->query($chart_sql);
+            
+            $room_types = [];
+            $reservation_counts = [];
+            if ($chart_result->num_rows > 0) {
+                while($row = $chart_result->fetch_assoc()) {
+                    $room_types[] = ucfirst($row['type']);
+                    $reservation_counts[] = $row['reservation_count'];
+                }
+            }
+            ?>
+            <div>
+                <canvas id="reservationsChart"></canvas>
+            </div>
+        </div>
     </div>
+
+    <script>
+        const ctx = document.getElementById('reservationsChart').getContext('2d');
+        const reservationsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: <?php echo json_encode($room_types); ?>,
+                datasets: [{
+                    label: '# de Reservas por Tipo de Habitación',
+                    data: <?php echo json_encode($reservation_counts); ?>,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
 <?php
