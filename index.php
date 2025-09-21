@@ -97,27 +97,14 @@ $rooms_result = $conn->query($rooms_sql);
     <main class="relative z-30 bg-transparent">
         <!-- Booking Section -->
         <section id="booking" class="bg-white text-gray-800 py-12 -mt-24 relative z-30 mx-4 md:mx-auto max-w-5xl rounded-2xl shadow-2xl" data-aos="fade-up">
-            <div class="container mx-auto">
-                <form action="php/book.php" method="POST" class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end px-6">
-                    <div class="form-group text-left">
-                        <label for="checkin" class="font-bold text-sm mb-2 block text-gray-500">FECHA DE LLEGADA*</label>
-                        <input type="text" name="checkin" placeholder="SELECCIONA" onfocus="(this.type='date')" onblur="(this.type='text')" required class="booking-input">
-                    </div>
-                    <div class="form-group text-left">
-                        <label for="checkout" class="font-bold text-sm mb-2 block text-gray-500">FECHA DE SALIDA*</label>
-                        <input type="text" name="checkout" placeholder="SELECCIONA" onfocus="(this.type='date')" onblur="(this.type='text')" required class="booking-input">
-                    </div>
-                    <div class="form-group text-left">
-                        <label for="room_type" class="font-bold text-sm mb-2 block text-gray-500">HABITACIÓN*</label>
-                        <select name="room_type" required class="booking-input">
-                            <option value="">SELECCIONA</option>
-                            <option value="individual">Individual</option>
-                            <option value="doble">Doble</option>
-                            <option value="suite">Suite</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="action-button">Ver Disponibilidad <i class="fas fa-arrow-right"></i></button>
-                </form>
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl font-bold mb-6">Reserva tu Estancia</h2>
+                <p class="text-lg mb-6">Verifica la disponibilidad y reserva tu habitación perfecta.</p>
+                <?php if (!isset($_SESSION['user_id'])): ?>
+                    <a href="login.php" class="action-button inline-block">Iniciar Sesión para Reservar <i class="fas fa-arrow-right ml-2"></i></a>
+                <?php else: ?>
+                    <a href="reservar.php" class="action-button inline-block">Ver Disponibilidad <i class="fas fa-arrow-right ml-2"></i></a>
+                <?php endif; ?>
             </div>
         </section>
 
