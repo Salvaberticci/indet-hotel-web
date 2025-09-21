@@ -27,7 +27,7 @@ if (isset($_POST['add_room'])) {
     } else {
         $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al agregar la habitación.'];
     }
-    header("Location: ../admin.php");
+    header("Location: ../admin.php#rooms-section");
     exit();
 }
 
@@ -48,7 +48,7 @@ if (isset($_POST['update_room'])) {
     } else {
         $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al actualizar la habitación.'];
     }
-    header("Location: ../admin.php");
+    header("Location: ../admin.php#rooms-section");
     exit();
 }
 
@@ -76,7 +76,7 @@ if (isset($_GET['delete_room'])) {
             $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al eliminar la habitación.'];
         }
     }
-    header("Location: ../admin.php");
+    header("Location: ../admin.php#rooms-section");
     exit();
 }
 ?>
