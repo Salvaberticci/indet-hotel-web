@@ -33,39 +33,152 @@ $result = $conn->query($sql);
             <a href="php/logout.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-transform hover:scale-105">Cerrar Sesión</a>
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-2xl">
-            <h2 class="text-2xl font-bold mb-6">Reservas</h2>
+        <div class="bg-white p-6 rounded-xl shadow-2xl mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Reservas</h2>
+            </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-white">
                     <thead class="bg-gray-800 text-white">
                         <tr>
-                            <th class="w-1/6 py-3 px-4 uppercase font-semibold text-sm">ID</th>
-                            <th class="w-1/6 py-3 px-4 uppercase font-semibold text-sm">Cliente</th>
-                            <th class="w-1/6 py-3 px-4 uppercase font-semibold text-sm">Habitación</th>
-                            <th class="w-1/6 py-3 px-4 uppercase font-semibold text-sm">Llegada</th>
-                            <th class="w-1/6 py-3 px-4 uppercase font-semibold text-sm">Salida</th>
-                            <th class="w-1/6 py-3 px-4 uppercase font-semibold text-sm">Estado</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">ID</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Cliente</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Habitación</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Llegada</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Salida</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Estado</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-700">
                         <?php if ($result->num_rows > 0): ?>
                             <?php while($row = $result->fetch_assoc()): ?>
-                                <tr>
-                                    <td class="w-1/6 py-3 px-4"><?php echo $row['id']; ?></td>
-                                    <td class="w-1/6 py-3 px-4"><?php echo $row['user_name']; ?></td>
-                                    <td class="w-1/6 py-3 px-4"><?php echo $row['room_type']; ?></td>
-                                    <td class="w-1/6 py-3 px-4"><?php echo $row['checkin_date']; ?></td>
-                                    <td class="w-1/6 py-3 px-4"><?php echo $row['checkout_date']; ?></td>
-                                    <td class="w-1/6 py-3 px-4">
-                                        <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full">
-                                            <?php echo $row['status']; ?>
+                                <tr class="hover:bg-gray-100">
+                                    <td class="py-3 px-4"><?php echo $row['id']; ?></td>
+                                    <td class="py-3 px-4"><?php echo $row['user_name']; ?></td>
+                                    <td class="py-3 px-4"><?php echo $row['room_type']; ?></td>
+                                    <td class="py-3 px-4"><?php echo $row['checkin_date']; ?></td>
+                                    <td class="py-3 px-4"><?php echo $row['checkout_date']; ?></td>
+                                    <td class="py-3 px-4">
+                                        <?php
+                                            $status_classes = [
+                                                'pending' => 'text-yellow-700 bg-yellow-100',
+                                                'confirmed' => 'text-green-700 bg-green-100',
+                                                'cancelled' => 'text-red-700 bg-red-100'
+                                            ];
+                                            $status_class = $status_classes[$row['status']] ?? 'text-gray-700 bg-gray-100';
+                                        ?>
+                                        <span class="px-2 py-1 font-semibold leading-tight rounded-full <?php echo $status_class; ?>">
+                                            <?php echo ucfirst($row['status']); ?>
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <?php if ($row['status'] == 'pending'): ?>
+                                            <a href="php/update_reservation_status.php?id=<?php echo $row['id']; ?>&status=confirmed" class="text-green-500 hover:text-green-700 mr-2">Confirmar</a>
+                                            <a href="php/update_reservation_status.php?id=<?php echo $row['id']; ?>&status=cancelled" class="text-red-500 hover:text-red-700">Cancelar</a>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="7" class="text-center py-4">No hay reservas encontradas.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-2xl">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Usuarios</h2>
+                <a href="php/user_management.php" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-transform hover:scale-105">Gestionar Usuarios</a>
+            </div>
+            <?php
+            // Fetch users to display
+            $users_sql = "SELECT id, name, email, role FROM users ORDER BY name ASC";
+            $users_result = $conn->query($users_sql);
+            ?>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-800 text-white">
+                        <tr>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">ID</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Nombre</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Email</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Rol</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                        <?php if ($users_result->num_rows > 0): ?>
+                            <?php while($user_row = $users_result->fetch_assoc()): ?>
+                                <tr class="hover:bg-gray-100">
+                                    <td class="py-3 px-4"><?php echo $user_row['id']; ?></td>
+                                    <td class="py-3 px-4"><?php echo $user_row['name']; ?></td>
+                                    <td class="py-3 px-4"><?php echo $user_row['email']; ?></td>
+                                    <td class="py-3 px-4">
+                                        <span class="px-2 py-1 font-semibold leading-tight rounded-full <?php echo $user_row['role'] == 'admin' ? 'text-purple-700 bg-purple-100' : 'text-gray-700 bg-gray-100'; ?>">
+                                            <?php echo ucfirst($user_row['role']); ?>
                                         </span>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="6" class="text-center py-4">No hay reservas encontradas.</td>
+                                <td colspan="4" class="text-center py-4">No hay usuarios encontrados.</td>
+                            </tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-2xl mt-8">
+            <h2 class="text-2xl font-bold mb-6">Estado de las Habitaciones</h2>
+            <?php
+            // Fetch room statuses
+            $room_status_sql = "SELECT r.type, r.capacity, rs.status, rs.date 
+                                FROM rooms r 
+                                JOIN room_status rs ON r.id = rs.room_id 
+                                ORDER BY r.type ASC";
+            $room_status_result = $conn->query($room_status_sql);
+            ?>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-800 text-white">
+                        <tr>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Habitación</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Capacidad</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Estado</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Fecha de Actualización</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                        <?php if ($room_status_result->num_rows > 0): ?>
+                            <?php while($status_row = $room_status_result->fetch_assoc()): ?>
+                                <tr class="hover:bg-gray-100">
+                                    <td class="py-3 px-4 capitalize"><?php echo $status_row['type']; ?></td>
+                                    <td class="py-3 px-4"><?php echo $status_row['capacity']; ?></td>
+                                    <td class="py-3 px-4">
+                                        <?php
+                                            $room_status_classes = [
+                                                'available' => 'text-green-700 bg-green-100',
+                                                'occupied' => 'text-red-700 bg-red-100',
+                                                'cleaning' => 'text-blue-700 bg-blue-100'
+                                            ];
+                                            $status_class = $room_status_classes[$status_row['status']] ?? 'text-gray-700 bg-gray-100';
+                                        ?>
+                                        <span class="px-2 py-1 font-semibold leading-tight rounded-full <?php echo $status_class; ?>">
+                                            <?php echo ucfirst($status_row['status']); ?>
+                                        </span>
+                                    </td>
+                                    <td class="py-3 px-4"><?php echo $status_row['date']; ?></td>
+                                </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="4" class="text-center py-4">No se encontró información sobre el estado de las habitaciones.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>

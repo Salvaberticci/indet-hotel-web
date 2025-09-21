@@ -1,4 +1,11 @@
-<?php session_start(); ?>
+<?php
+session_start();
+include 'php/db.php';
+
+// Fetch rooms for the new section
+$rooms_sql = "SELECT `type`, `capacity`, `description`, `price`, `photos` FROM `rooms`";
+$rooms_result = $conn->query($rooms_sql);
+?>
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
 <head>
@@ -51,6 +58,7 @@
                 </div>
                 <div class="hidden md:flex items-center space-x-4 nav-link-container justify-self-center">
                     <a href="#about" class="nav-button">Sobre La Institución</a>
+                    <a href="#rooms" class="nav-button">Habitaciones</a>
                     <a href="#booking" class="nav-button">Disponibilidad</a>
                     <a href="#footer" class="nav-button">Contactos</a>
                 </div>
@@ -119,6 +127,39 @@
             </div>
         </section>
 
+        <!-- Room Types Section -->
+        <section id="rooms" class="py-24 bg-white text-gray-800">
+            <div class="container mx-auto px-6">
+                <h2 class="text-5xl md:text-6xl font-montserrat font-black text-center" data-aos="fade-up">Nuestras Habitaciones</h2>
+                <p class="max-w-3xl mx-auto mt-6 text-lg text-gray-600 text-center" data-aos="fade-up" data-aos-delay="100">
+                    Ofrecemos una variedad de habitaciones para adaptarnos a las necesidades de nuestros atletas y visitantes. Cada una diseñada para el máximo confort y recuperación.
+                </p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mt-12">
+                    <?php if ($rooms_result && $rooms_result->num_rows > 0): ?>
+                        <?php while($room = $rooms_result->fetch_assoc()): ?>
+                            <div class="room-card bg-gray-50 rounded-lg overflow-hidden shadow-lg transform hover:scale-105 transition-transform duration-300" data-aos="fade-up">
+                                <?php 
+                                    $photos = json_decode($room['photos'], true);
+                                    $image = (!empty($photos) && isset($photos[0])) ? "images/{$photos[0]}" : 'images/hero-bg.jpg';
+                                ?>
+                                <img src="<?php echo htmlspecialchars($image); ?>" alt="<?php echo htmlspecialchars($room['type']); ?>" class="w-full h-64 object-cover">
+                                <div class="p-6">
+                                    <h3 class="text-2xl font-bold mb-2 capitalize"><?php echo htmlspecialchars($room['type']); ?></h3>
+                                    <p class="text-gray-600 mb-4"><?php echo htmlspecialchars($room['description']); ?></p>
+                                    <ul class="text-left mb-4 space-y-2">
+                                        <li><i class="fas fa-users mr-2 text-green-600"></i> Capacidad: <?php echo htmlspecialchars($room['capacity']); ?> personas</li>
+                                        <li><i class="fas fa-dollar-sign mr-2 text-green-600"></i> Precio: $<?php echo htmlspecialchars(number_format($room['price'], 2)); ?> / noche</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <p class="text-center col-span-full">No hay información de habitaciones para mostrar en este momento.</p>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </section>
+
         <!-- Gallery Section -->
         <section id="gallery" class="py-24 bg-transparent">
             <div class="container mx-auto">
@@ -141,11 +182,23 @@
     </main>
 
     <!-- Footer -->
-    <footer id="footer" class="footer-bg text-white py-12 relative z-30">
-        <div class="container mx-auto text-center relative z-10">
-            <p class="text-lg"><i class="fab fa-instagram mr-2"></i> @indetrujillo</p>
-            <p class="text-lg my-2"><i class="fas fa-phone-alt mr-2"></i> 0412-897643</p>
-            <p class="text-lg">Valera Edo Trujillo, Loremp Ipsum</p>
+    <footer id="footer" class="footer-bg text-white py-20 relative z-30">
+        <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center px-6">
+            <div class="text-center md:text-left">
+                <h3 class="text-3xl font-bold mb-4">Contacto</h3>
+                <p class="text-lg mb-2"><i class="fab fa-instagram mr-2"></i> @indetrujillo</p>
+                <p class="text-lg mb-2"><i class="fas fa-phone-alt mr-2"></i> 0412-897643</p>
+                <p class="text-lg">Valera Edo Trujillo, Loremp Ipsum</p>
+            </div>
+            <div>
+                <h3 class="text-3xl font-bold mb-4 text-center md:text-left">Envíanos un Mensaje</h3>
+                <form action="php/contact_handler.php" method="POST" class="space-y-4">
+                    <input type="text" name="name" placeholder="Tu Nombre" required class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500">
+                    <input type="email" name="email" placeholder="Tu Correo Electrónico" required class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500">
+                    <textarea name="message" placeholder="Tu Mensaje" rows="4" required class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500"></textarea>
+                    <button type="submit" class="w-full action-button bg-green-600 hover:bg-green-700">Enviar Mensaje <i class="fas fa-paper-plane ml-2"></i></button>
+                </form>
+            </div>
         </div>
     </footer>
 
