@@ -59,25 +59,55 @@ $maintenance_result = $conn->query($maintenance_sql);
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
+
+    <style>
+    body {
+      background: #111;
+      overflow-x: hidden;
+    }
+
+    #networkCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+    </style>
 </head>
 <body class="bg-gray-900 text-white font-poppins">
-    <div class="container mx-auto p-8">
-        <?php
-        if (isset($_SESSION['flash_message'])) {
-            $message = $_SESSION['flash_message'];
-            $status_class = $message['status'] == 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700';
-            echo '<div class="border px-4 py-3 rounded relative mb-4 ' . $status_class . '" role="alert">';
-            echo '<span class="block sm:inline">' . $message['text'] . '</span>';
-            echo '</div>';
-            unset($_SESSION['flash_message']);
-        }
-        ?>
-        <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold">Panel de Administración</h1>
-            <a href="php/logout.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-transform hover:scale-105">Cerrar Sesión</a>
-        </div>
+    <canvas id="networkCanvas"></canvas>
+    <div class="flex min-h-screen">
+        <aside class="w-64 bg-gray-800 p-6 overflow-y-auto sticky top-0 h-screen">
+            <img src="images/logo.png" alt="Logo" class="w-16 h-16 mb-4 mx-auto">
+            <h2 class="text-xl font-bold mb-6">Menú de Administración</h2>
+            <ul class="space-y-4">
+                <li><a href="#reservations-section" class="block py-3 px-4 rounded-full hover:bg-gray-700 transition text-center">Reservas</a></li>
+                <li><a href="#availability-section" class="block py-3 px-4 rounded-full hover:bg-gray-700 transition text-center">Disponibilidad</a></li>
+                <li><a href="#users-section" class="block py-3 px-4 rounded-full hover:bg-gray-700 transition text-center">Usuarios</a></li>
+                <li><a href="#rooms-section" class="block py-3 px-4 rounded-full hover:bg-gray-700 transition text-center">Habitaciones</a></li>
+                <li><a href="#reports-section" class="block py-3 px-4 rounded-full hover:bg-gray-700 transition text-center">Reportes</a></li>
+                <li><a href="#events-section" class="block py-3 px-4 rounded-full hover:bg-gray-700 transition text-center">Eventos</a></li>
+                <li><a href="#assign-maintenance-section" class="block py-3 px-4 rounded-full hover:bg-gray-700 transition text-center">Asignar Mantenimiento</a></li>
+                <li><a href="#maintenance-tasks-section" class="block py-3 px-4 rounded-full hover:bg-gray-700 transition text-center">Tareas de Mantenimiento</a></li>
+            </ul>
+        </aside>
+        <main class="flex-1 p-8 overflow-y-auto">
+            <?php
+            if (isset($_SESSION['flash_message'])) {
+                $message = $_SESSION['flash_message'];
+                $status_class = $message['status'] == 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700';
+                echo '<div class="border px-4 py-3 rounded relative mb-4 ' . $status_class . '" role="alert">';
+                echo '<span class="block sm:inline">' . $message['text'] . '</span>';
+                echo '</div>';
+                unset($_SESSION['flash_message']);
+            }
+            ?>
+            <div class="flex justify-between items-center mb-8">
+                <h1 class="text-3xl font-bold">Panel de Administración</h1>
+                <a href="php/logout.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-transform hover:scale-105">Cerrar Sesión</a>
+            </div>
 
-        <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mb-8">
+        <div id="reservations-section" class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mb-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold">Reservas</h2>
             </div>
@@ -138,6 +168,71 @@ $maintenance_result = $conn->query($maintenance_sql);
                     </tbody>
                 </table>
             </div>
+        </div>
+
+        <div id="availability-section" class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mb-8">
+            <h2 class="text-2xl font-bold mb-6">Ver Disponibilidad</h2>
+            <form method="GET" class="mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="checkin" class="block font-semibold mb-2">Fecha de Llegada</label>
+                        <input type="date" id="checkin" name="checkin" required class="w-full p-2 border rounded bg-gray-700 text-white">
+                    </div>
+                    <div>
+                        <label for="checkout" class="block font-semibold mb-2">Fecha de Salida</label>
+                        <input type="date" id="checkout" name="checkout" required class="w-full p-2 border rounded bg-gray-700 text-white">
+                    </div>
+                </div>
+                <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Ver Disponibilidad</button>
+            </form>
+            <?php
+            if (isset($_GET['checkin']) && isset($_GET['checkout'])) {
+                $checkin_date = $_GET['checkin'];
+                $checkout_date = $_GET['checkout'];
+
+                // Find rooms that are NOT booked during the selected dates
+                $sql = "SELECT r.id, r.type, r.capacity, r.description, r.price, r.photos
+                        FROM rooms r
+                        WHERE r.id NOT IN (
+                            SELECT res.room_id
+                            FROM reservations res
+                            WHERE (res.checkin_date < ? AND res.checkout_date > ?)
+                            OR (res.checkin_date >= ? AND res.checkin_date < ?)
+                        )
+                        ORDER BY r.type";
+
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ssss", $checkout_date, $checkin_date, $checkin_date, $checkout_date);
+                $stmt->execute();
+                $result = $stmt->get_result();
+
+                if ($result->num_rows > 0) {
+                    echo '<h3 class="text-xl font-bold mb-4">Habitaciones Disponibles</h3>';
+                    echo '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">';
+                    while ($room = $result->fetch_assoc()) {
+                        $photos = json_decode($room['photos'], true);
+                        $image = (!empty($photos) && isset($photos[0])) ? "images/{$photos[0]}" : 'images/hero-bg.jpg';
+
+                        echo '<div class="bg-gray-700 rounded-lg overflow-hidden shadow-lg">';
+                        echo '<img src="' . htmlspecialchars($image) . '" alt="' . htmlspecialchars($room['type']) . '" class="w-full h-32 object-cover">';
+                        echo '<div class="p-4">';
+                        echo '<h4 class="text-lg font-bold capitalize">' . htmlspecialchars($room['type']) . '</h4>';
+                        echo '<p class="text-gray-300 text-sm mb-2">' . htmlspecialchars($room['description']) . '</p>';
+                        echo '<ul class="text-sm space-y-1">';
+                        echo '<li><i class="fas fa-users mr-2 text-green-400"></i>Capacidad: ' . htmlspecialchars($room['capacity']) . '</li>';
+                        echo '<li><i class="fas fa-dollar-sign mr-2 text-green-400"></i>Precio: $' . htmlspecialchars(number_format($room['price'], 2)) . ' / noche</li>';
+                        echo '</ul>';
+                        echo '</div>';
+                        echo '</div>';
+                    }
+                    echo '</div>';
+                } else {
+                    echo '<p class="text-center text-red-400">No hay habitaciones disponibles para las fechas seleccionadas.</p>';
+                }
+
+                $stmt->close();
+            }
+            ?>
         </div>
 
         <div id="users-section" class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl">
@@ -238,7 +333,7 @@ $maintenance_result = $conn->query($maintenance_sql);
             </div>
         </div>
 
-        <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
+        <div id="reports-section" class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold">Reportes de Desempeño</h2>
                 <a href="reports.php" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg">Ver Reportes Avanzados</a>
@@ -311,7 +406,7 @@ $maintenance_result = $conn->query($maintenance_sql);
             </div>
         </div>
 
-        <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
+        <div id="assign-maintenance-section" class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
             <h2 class="text-2xl font-bold mb-6">Asignar Tarea de Mantenimiento</h2>
             <?php
             // Fetch rooms that are not already pending cleaning
@@ -404,6 +499,7 @@ $maintenance_result = $conn->query($maintenance_sql);
                 </table>
             </div>
         </div>
+        </main>
     </div>
 
     <!-- Edit Room Modal -->
@@ -463,7 +559,51 @@ $maintenance_result = $conn->query($maintenance_sql);
     </div>
 
     <script>
-        const ctx = document.getElementById('reservationsChart').getContext('2d');
+        const canvas = document.getElementById('networkCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let nodes = [];
+        for (let i = 0; i < 50; i++) {
+            nodes.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 1,
+                vy: (Math.random() - 0.5) * 1
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            nodes.forEach(node => {
+                node.x += node.vx;
+                node.y += node.vy;
+                if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
+                if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 2, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255,255,255,0.7)';
+                ctx.fill();
+            });
+
+            nodes.forEach((node, i) => {
+                nodes.slice(i + 1).forEach(other => {
+                    let dist = Math.hypot(node.x - other.x, node.y - other.y);
+                    if (dist < 120) {
+                        ctx.beginPath();
+                        ctx.moveTo(node.x, node.y);
+                        ctx.lineTo(other.x, other.y);
+                        ctx.strokeStyle = `rgba(255,255,255,${(1 - dist / 120) * 0.3})`;
+                        ctx.stroke();
+                    }
+                });
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        const chartCtx = document.getElementById('reservationsChart').getContext('2d');
         const reservationsChart = new Chart(ctx, {
             type: 'bar',
             data: {
