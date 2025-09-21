@@ -435,10 +435,11 @@ $maintenance_result = $conn->query($maintenance_sql);
             <!-- Add Event Form -->
             <form action="php/event_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
                 <h3 class="text-xl font-semibold mb-4">Agregar Nuevo Evento</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <input type="text" name="name" placeholder="Nombre del Evento" required class="p-2 border rounded bg-gray-600 text-white">
                     <input type="text" name="description" placeholder="Descripción" required class="p-2 border rounded bg-gray-600 text-white">
                     <input type="date" name="date" required class="p-2 border rounded bg-gray-600 text-white">
+                    <input type="file" name="image" accept="image/*" class="p-2 border rounded bg-gray-600 text-white">
                 </div>
                 <button type="submit" name="add_event" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Agregar Evento</button>
             </form>
@@ -618,6 +619,10 @@ $maintenance_result = $conn->query($maintenance_sql);
                 <div class="mb-4">
                     <label for="editEventDate" class="block font-semibold mb-2">Fecha</label>
                     <input type="date" id="editEventDate" name="date" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                </div>
+                <div class="mb-4">
+                    <label for="editEventImage" class="block font-semibold mb-2">Imagen</label>
+                    <input type="file" id="editEventImage" name="image" accept="image/*" class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                 </div>
                 <div class="flex justify-end">
                     <button type="button" onclick="closeEditModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-2">Cancelar</button>
