@@ -103,6 +103,7 @@ if ($action === 'edit' && $user_id) {
                         <select name="role" required class="w-full p-3 border rounded-lg">
                             <option value="client" <?php echo (isset($edit_user['role']) && $edit_user['role'] == 'client') ? 'selected' : ''; ?>>Cliente</option>
                             <option value="admin" <?php echo (isset($edit_user['role']) && $edit_user['role'] == 'admin') ? 'selected' : ''; ?>>Admin</option>
+                            <option value="maintenance" <?php echo (isset($edit_user['role']) && $edit_user['role'] == 'maintenance') ? 'selected' : ''; ?>>Mantenimiento</option>
                         </select>
                     </div>
                 </div>

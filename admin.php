@@ -223,6 +223,46 @@ $result = $conn->query($sql);
                 <canvas id="reservationsChart"></canvas>
             </div>
         </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-2xl mt-8">
+            <h2 class="text-2xl font-bold mb-6">Asignar Tarea de Mantenimiento</h2>
+            <?php
+            // Fetch rooms that are not already pending cleaning
+            $rooms_to_clean_sql = "SELECT r.id, r.type FROM rooms r 
+                                   LEFT JOIN maintenance_tasks mt ON r.id = mt.room_id AND mt.status = 'pending'
+                                   WHERE mt.id IS NULL";
+            $rooms_to_clean_result = $conn->query($rooms_to_clean_sql);
+
+            // Fetch maintenance staff
+            $maintenance_staff_sql = "SELECT id, name FROM users WHERE role = 'maintenance'";
+            $maintenance_staff_result = $conn->query($maintenance_staff_sql);
+            ?>
+            <form action="php/assign_task.php" method="POST">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="room_id" class="block font-semibold mb-2">Habitación</label>
+                        <select name="room_id" required class="w-full p-3 border rounded-lg">
+                            <option value="">Seleccionar habitación...</option>
+                            <?php while($room = $rooms_to_clean_result->fetch_assoc()): ?>
+                                <option value="<?php echo $room['id']; ?>"><?php echo ucfirst($room['type']); ?></option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="user_id" class="block font-semibold mb-2">Asignar a</label>
+                        <select name="user_id" required class="w-full p-3 border rounded-lg">
+                            <option value="">Seleccionar personal...</option>
+                            <?php while($staff = $maintenance_staff_result->fetch_assoc()): ?>
+                                <option value="<?php echo $staff['id']; ?>"><?php echo $staff['name']; ?></option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+                    <div class="self-end">
+                        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg">Asignar Tarea</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
