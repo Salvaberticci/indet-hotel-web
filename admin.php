@@ -201,7 +201,10 @@ $result = $conn->query($sql);
         </div>
 
         <div class="bg-white p-6 rounded-xl shadow-2xl mt-8">
-            <h2 class="text-2xl font-bold mb-6">Reportes de Desempeño</h2>
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Reportes de Desempeño</h2>
+                <a href="reports.php" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg">Ver Reportes Avanzados</a>
+            </div>
             <?php
             // Fetch data for chart: Reservations per room type
             $chart_sql = "SELECT r.type, COUNT(res.id) as reservation_count 
