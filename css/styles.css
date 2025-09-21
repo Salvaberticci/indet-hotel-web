@@ -12,9 +12,9 @@ body {
     background-color: transparent; /* Allow fixed background to be visible */
 }
 
-main {
+/* main {
     padding-top: 144px;
-}
+} */
 
 .font-montserrat {
     font-family: var(--font-montserrat);

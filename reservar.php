@@ -157,7 +157,7 @@ if (!isset($_SESSION['user_id'])) {
                 <h3 class="text-3xl font-bold mb-4">Contacto</h3>
                 <p class="text-lg mb-2"><i class="fab fa-instagram mr-2"></i> @indetrujillo</p>
                 <p class="text-lg mb-2"><i class="fas fa-phone-alt mr-2"></i> 0412-897643</p>
-                <p class="text-lg">Valera Edo Trujillo, Loremp Ipsum</p>
+                <p class="text-lg">Valera Edo Trujillo</p>
             </div>
             <div>
                 <h3 class="text-3xl font-bold mb-4 text-center md:text-left">Envíanos un Mensaje</h3>

@@ -94,7 +94,7 @@ session_start();
         <div class="container mx-auto text-center relative z-10">
             <p class="text-lg"><i class="fab fa-instagram mr-2"></i> @indetrujillo</p>
             <p class="text-lg my-2"><i class="fas fa-phone-alt mr-2"></i> 0412-897643</p>
-            <p class="text-lg">Valera Edo Trujillo, Loremp Ipsum</p>
+            <p class="text-lg">Valera Edo Trujillo</p>
         </div>
     </footer>
 
