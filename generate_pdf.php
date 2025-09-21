@@ -32,42 +32,44 @@ $pdf->AddPage();
 // Set margins
 $pdf->SetMargins(20, 20, 20);
 
-// Header
-$pdf->Image('images/logo.png', 20, 10, 30); // Logo
-$pdf->SetFont('Arial', 'B', 20);
-$pdf->Cell(0, 10, 'INDET - Confirmacion de Reserva', 0, 1, 'C');
+// Logo at top
+$pdf->Image('images/logo.png', 85, 10, 40); // Centered logo
+$pdf->Ln(50);
+
+// Title
+$pdf->SetFont('Arial', 'B', 24);
+$pdf->SetTextColor(0, 128, 0); // Green
+$pdf->Cell(0, 15, utf8_decode('¡Reserva Realizada con Éxito!'), 0, 1, 'C');
 $pdf->Ln(10);
 
-// Reservation ID
-$pdf->SetFont('Arial', 'B', 14);
-$pdf->Cell(0, 10, 'Numero de Confirmacion: INDET-' . $reservation['id'], 0, 1, 'C');
-$pdf->Ln(5);
-
-// Details table
-$pdf->SetFont('Arial', 'B', 12);
-$pdf->SetFillColor(0, 100, 0); // Green header
-$pdf->SetTextColor(255, 255, 255);
-$pdf->Cell(60, 10, 'Campo', 1, 0, 'C', true);
-$pdf->Cell(120, 10, 'Detalle', 1, 1, 'C', true);
-
+// Message
 $pdf->SetFont('Arial', '', 12);
 $pdf->SetTextColor(0, 0, 0);
-$pdf->SetFillColor(240, 240, 240); // Light gray rows
+$pdf->MultiCell(0, 8, utf8_decode('Gracias por tu reserva. Hemos recibido tu solicitud y está pendiente de confirmación por parte de nuestro equipo.'), 0, 'C');
+$pdf->Ln(10);
 
-$fields = [
-    'Nombre del Huesped' => $reservation['name'],
-    'Email' => $reservation['email'],
-    'Tipo de Habitacion' => $reservation['room_type'],
-    'Fecha de Llegada' => $reservation['checkin_date'],
-    'Fecha de Salida' => $reservation['checkout_date'],
-    'Estado' => $reservation['status']
+// Details box
+$pdf->SetFillColor(245, 245, 245); // Light gray background
+$pdf->Rect(20, $pdf->GetY(), 170, 80, 'F'); // Background rectangle
+$pdf->SetFont('Arial', 'B', 14);
+$pdf->SetTextColor(0, 0, 0);
+$pdf->Cell(0, 12, utf8_decode('Detalles de tu Reserva'), 0, 1, 'L');
+$pdf->Ln(5);
+
+$pdf->SetFont('Arial', '', 12);
+$details = [
+    'Número de Confirmación:' => 'INDET-' . $reservation['id'],
+    'Tipo de Habitación:' => htmlspecialchars($reservation['room_type']),
+    'Fecha de Llegada:' => htmlspecialchars($reservation['checkin_date']),
+    'Fecha de Salida:' => htmlspecialchars($reservation['checkout_date'])
 ];
 
-$fill = false;
-foreach ($fields as $field => $value) {
-    $pdf->Cell(60, 10, $field, 1, 0, 'L', $fill);
-    $pdf->Cell(120, 10, htmlspecialchars($value), 1, 1, 'L', $fill);
-    $fill = !$fill;
+foreach ($details as $label => $value) {
+    $pdf->SetFont('Arial', 'B', 12);
+    $pdf->Cell(50, 8, utf8_decode($label), 0, 0);
+    $pdf->SetFont('Arial', '', 12);
+    $pdf->Cell(0, 8, utf8_decode($value), 0, 1);
+    $pdf->Ln(2);
 }
 
 $pdf->Ln(10);
@@ -75,8 +77,9 @@ $pdf->Ln(10);
 // Footer
 $pdf->SetY(-30);
 $pdf->SetFont('Arial', 'I', 10);
+$pdf->SetTextColor(128, 128, 128);
 $pdf->Cell(0, 10, 'Generado el ' . date('d/m/Y H:i'), 0, 0, 'L');
-$pdf->Cell(0, 10, 'Pagina ' . $pdf->PageNo(), 0, 0, 'R');
+$pdf->Cell(0, 10, 'INDET - Experiencia Deportiva Inmersiva', 0, 0, 'R');
 
 $pdf->Output('D', 'reserva_INDET_' . $reservation['id'] . '.pdf');
 ?>
