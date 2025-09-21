@@ -356,7 +356,7 @@ $maintenance_result = $conn->query($maintenance_sql);
             }
             ?>
             <div>
-                <canvas id="reservationsChart"></canvas>
+                <canvas id="reservationsChart" width="400" height="200"></canvas>
             </div>
         </div>
 
@@ -604,7 +604,8 @@ $maintenance_result = $conn->query($maintenance_sql);
         animate();
 
         const chartCtx = document.getElementById('reservationsChart').getContext('2d');
-        const reservationsChart = new Chart(ctx, {
+        console.log(<?php echo json_encode($room_types); ?>, <?php echo json_encode($reservation_counts); ?>);
+        const reservationsChart = new Chart(chartCtx, {
             type: 'bar',
             data: {
                 labels: <?php echo json_encode($room_types); ?>,
