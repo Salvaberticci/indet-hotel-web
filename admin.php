@@ -155,27 +155,27 @@ $maintenance_result = $conn->query($maintenance_sql);
                 <table class="min-w-full bg-gray-800">
                     <thead class="bg-gray-700 text-white">
                         <tr>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">ID</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Cliente</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Habitación</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Llegada</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Salida</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Estado</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Editar</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Eliminar</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">ID</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Cliente</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Habitación</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Llegada</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Salida</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Estado</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Acciones</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Editar</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Eliminar</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-300">
                         <?php if ($result->num_rows > 0): ?>
                             <?php while($row = $result->fetch_assoc()): ?>
                                 <tr class="hover:bg-gray-700 border-b border-gray-700">
-                                    <td class="py-3 px-4"><?php echo $row['id']; ?></td>
-                                    <td class="py-3 px-4"><?php echo $row['user_name']; ?></td>
-                                    <td class="py-3 px-4"><?php echo $row['room_type']; ?></td>
-                                    <td class="py-3 px-4"><?php echo $row['checkin_date']; ?></td>
-                                    <td class="py-3 px-4"><?php echo $row['checkout_date']; ?></td>
-                                    <td class="py-3 px-4">
+                                    <td class="py-3 px-4 text-center"><?php echo $row['id']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo $row['user_name']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo $row['room_type']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo $row['checkin_date']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo $row['checkout_date']; ?></td>
+                                    <td class="py-3 px-4 text-center">
                                         <?php
                                             $status_classes = [
                                                 'pending' => 'text-yellow-700 bg-yellow-100',
@@ -194,16 +194,16 @@ $maintenance_result = $conn->query($maintenance_sql);
                                             <?php echo $translated_status; ?>
                                         </span>
                                     </td>
-                                    <td class="py-3 px-4">
+                                    <td class="py-3 px-4 text-center">
                                         <?php if ($row['status'] == 'pending'): ?>
                                             <a href="php/update_reservation_status.php?id=<?php echo $row['id']; ?>&status=confirmed" class="text-green-500 hover:text-green-700 mr-2">Confirmar</a>
                                             <a href="php/update_reservation_status.php?id=<?php echo $row['id']; ?>&status=cancelled" class="text-red-500 hover:text-red-700">Cancelar</a>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="py-3 px-4">
+                                    <td class="py-3 px-4 text-center">
                                         <button onclick="openEditReservationModal(<?php echo htmlspecialchars(json_encode($row)); ?>)" class="text-blue-500 hover:text-blue-700">Editar</button>
                                     </td>
-                                    <td class="py-3 px-4">
+                                    <td class="py-3 px-4 text-center">
                                         <a href="php/reservation_handler.php?delete_reservation=<?php echo $row['id']; ?>" onclick="return confirm('¿Estás seguro de eliminar esta reserva?')" class="text-red-500 hover:text-red-700">Eliminar</a>
                                     </td>
                                 </tr>
@@ -311,21 +311,21 @@ $maintenance_result = $conn->query($maintenance_sql);
                 <table class="min-w-full bg-gray-800">
                     <thead class="bg-gray-700 text-white">
                         <tr>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Nombre</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Email</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Rol</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Editar</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Eliminar</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Nombre</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Email</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Rol</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Editar</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Eliminar</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-300">
                         <?php if ($users_result->num_rows > 0): ?>
                             <?php while($user_row = $users_result->fetch_assoc()): ?>
                                 <tr class="hover:bg-gray-700 border-b border-gray-700">
-                                    <td class="py-3 px-4"><?php echo $user_row['name']; ?></td>
-                                    <td class="py-3 px-4"><?php echo $user_row['email']; ?></td>
-                                    <td class="py-3 px-4">
-                                        <form action="php/user_handler.php" method="POST" class="flex items-center">
+                                    <td class="py-3 px-4 text-center"><?php echo $user_row['name']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo $user_row['email']; ?></td>
+                                    <td class="py-3 px-4 text-center">
+                                        <form action="php/user_handler.php" method="POST" class="flex items-center justify-center">
                                             <input type="hidden" name="user_id" value="<?php echo $user_row['id']; ?>">
                                             <select name="role" class="p-1 border rounded-lg text-sm bg-gray-700 text-white">
                                                 <option value="user" <?php if($user_row['role'] == 'user') echo 'selected'; ?>>Usuario</option>
@@ -335,10 +335,10 @@ $maintenance_result = $conn->query($maintenance_sql);
                                             <button type="submit" name="update_user_role" class="ml-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1 px-3 rounded-lg text-sm">Guardar</button>
                                         </form>
                                     </td>
-                                    <td class="py-3 px-4">
+                                    <td class="py-3 px-4 text-center">
                                         <button onclick="openEditUserModal(<?php echo htmlspecialchars(json_encode($user_row)); ?>)" class="text-blue-500 hover:text-blue-700">Editar</button>
                                     </td>
-                                    <td class="py-3 px-4">
+                                    <td class="py-3 px-4 text-center">
                                         <?php if ($_SESSION['user_id'] != $user_row['id']): ?>
                                             <a href="php/user_handler.php?delete_user=<?php echo $user_row['id']; ?>" onclick="return confirm('¿Estás seguro? Esta acción no se puede deshacer.')" class="text-red-500 hover:text-red-700">Eliminar</a>
                                         <?php endif; ?>
@@ -375,20 +375,20 @@ $maintenance_result = $conn->query($maintenance_sql);
                 <table class="min-w-full bg-gray-800">
                     <thead class="bg-gray-700 text-white">
                         <tr>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Tipo</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Capacidad</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Precio</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Tipo</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Capacidad</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Precio</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-300">
                         <?php if ($rooms_result->num_rows > 0): ?>
                             <?php while($room = $rooms_result->fetch_assoc()): ?>
                                 <tr class="hover:bg-gray-700 border-b border-gray-700">
-                                    <td class="py-3 px-4 capitalize"><?php echo $room['type']; ?></td>
-                                    <td class="py-3 px-4"><?php echo $room['capacity']; ?></td>
-                                    <td class="py-3 px-4">$<?php echo number_format($room['price'], 2); ?></td>
-                                    <td class="py-3 px-4">
+                                    <td class="py-3 px-4 text-center capitalize"><?php echo $room['type']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo $room['capacity']; ?></td>
+                                    <td class="py-3 px-4 text-center">$<?php echo number_format($room['price'], 2); ?></td>
+                                    <td class="py-3 px-4 text-center">
                                         <button onclick="openEditRoomModal(<?php echo htmlspecialchars(json_encode($room)); ?>)" class="text-blue-500 hover:text-blue-700 mr-2">Editar</button>
                                         <a href="php/room_handler.php?delete_room=<?php echo $room['id']; ?>" onclick="return confirm('¿Estás seguro? Esto no se puede hacer si la habitación tiene reservas.')" class="text-red-500 hover:text-red-700">Eliminar</a>
                                     </td>
@@ -448,20 +448,20 @@ $maintenance_result = $conn->query($maintenance_sql);
                 <table class="min-w-full bg-gray-800">
                     <thead class="bg-gray-700 text-white">
                         <tr>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Nombre</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Descripción</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Fecha</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Nombre</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Descripción</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Fecha</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-300">
                         <?php if ($events_result->num_rows > 0): ?>
                             <?php while($event = $events_result->fetch_assoc()): ?>
                                 <tr class="hover:bg-gray-700 border-b border-gray-700">
-                                    <td class="py-3 px-4"><?php echo $event['name']; ?></td>
-                                    <td class="py-3 px-4"><?php echo $event['description']; ?></td>
-                                    <td class="py-3 px-4"><?php echo $event['date']; ?></td>
-                                    <td class="py-3 px-4">
+                                    <td class="py-3 px-4 text-center"><?php echo $event['name']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo $event['description']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo $event['date']; ?></td>
+                                    <td class="py-3 px-4 text-center">
                                         <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($event)); ?>)" class="text-blue-500 hover:text-blue-700 mr-2">Editar</button>
                                         <a href="php/event_handler.php?delete_event=<?php echo $event['id']; ?>" onclick="return confirm('¿Estás seguro de que quieres eliminar este evento?');" class="text-red-500 hover:text-red-700">Eliminar</a>
                                     </td>
@@ -521,20 +521,20 @@ $maintenance_result = $conn->query($maintenance_sql);
                 <table class="min-w-full bg-gray-800">
                     <thead class="bg-gray-700 text-white">
                         <tr>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Habitación</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Asignado a</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Estado</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Fecha de Creación</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Habitación</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Asignado a</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Estado</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Fecha de Creación</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-300">
                         <?php if ($maintenance_result->num_rows > 0): ?>
                             <?php while($task = $maintenance_result->fetch_assoc()): ?>
                                 <tr class="hover:bg-gray-700 border-b border-gray-700">
-                                    <td class="py-3 px-4"><?php echo $task['room_type']; ?></td>
-                                    <td class="py-3 px-4"><?php echo $task['staff_name']; ?></td>
-                                    <td class="py-3 px-4">
+                                    <td class="py-3 px-4 text-center"><?php echo $task['room_type']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo $task['staff_name']; ?></td>
+                                    <td class="py-3 px-4 text-center">
                                         <?php
                                             $status_classes = [
                                                 'pending' => 'text-yellow-700 bg-yellow-100',
@@ -551,8 +551,8 @@ $maintenance_result = $conn->query($maintenance_sql);
                                             <?php echo $translated_status; ?>
                                         </span>
                                     </td>
-                                    <td class="py-3 px-4"><?php echo $task['created_at']; ?></td>
-                                    <td class="py-3 px-4">
+                                    <td class="py-3 px-4 text-center"><?php echo $task['created_at']; ?></td>
+                                    <td class="py-3 px-4 text-center">
                                         <?php if ($task['status'] == 'pending'): ?>
                                             <a href="php/maintenance_handler.php?action=complete&id=<?php echo $task['id']; ?>" class="text-green-500 hover:text-green-700">Marcar como Completada</a>
                                         <?php endif; ?>
