@@ -12,15 +12,19 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 
 // 1. Daily Room Status Report (for today)
 $today = date('Y-m-d');
-$daily_status_sql = "SELECT r.type, rs.status, rs.date 
+$daily_status_sql = "SELECT rs.status, COUNT(rs.id) as count
                      FROM room_status rs
-                     JOIN rooms r ON rs.room_id = r.id
                      WHERE rs.date = ?
-                     ORDER BY r.type ASC";
+                     GROUP BY rs.status";
 $stmt_daily = $conn->prepare($daily_status_sql);
 $stmt_daily->bind_param("s", $today);
 $stmt_daily->execute();
 $daily_status_result = $stmt_daily->get_result();
+
+$status_counts = ['available' => 0, 'occupied' => 0, 'cleaning' => 0];
+while ($row = $daily_status_result->fetch_assoc()) {
+    $status_counts[$row['status']] = $row['count'];
+}
 
 // 2. Client Profile Analysis (reservations per user)
 $client_analysis_sql = "SELECT u.name, u.email, COUNT(res.id) as reservation_count
@@ -30,6 +34,20 @@ $client_analysis_sql = "SELECT u.name, u.email, COUNT(res.id) as reservation_cou
                         ORDER BY reservation_count DESC";
 $client_analysis_result = $conn->query($client_analysis_sql);
 
+// 3. Reservation Trends (last 30 days)
+$reservation_trend_sql = "SELECT DATE(created_at) as date, COUNT(id) as count
+                          FROM reservations
+                          WHERE created_at >= CURDATE() - INTERVAL 30 DAY
+                          GROUP BY DATE(created_at)
+                          ORDER BY date ASC";
+$reservation_trend_result = $conn->query($reservation_trend_sql);
+
+$trend_dates = [];
+$trend_counts = [];
+while ($row = $reservation_trend_result->fetch_assoc()) {
+    $trend_dates[] = $row['date'];
+    $trend_counts[] = $row['count'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -51,37 +69,9 @@ $client_analysis_result = $conn->query($client_analysis_sql);
 
         <!-- Daily Room Status Report -->
         <div class="bg-white p-6 rounded-xl shadow-2xl mb-8">
-            <h2 class="text-2xl font-bold mb-6">Reporte Diario de Estado de Habitaciones (<?php echo $today; ?>)</h2>
-            <div class="overflow-x-auto">
-                <table class="min-w-full bg-white">
-                    <thead class="bg-gray-800 text-white">
-                        <tr>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Habitación</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-gray-700">
-                        <?php if ($daily_status_result->num_rows > 0): ?>
-                            <?php while($row = $daily_status_result->fetch_assoc()): ?>
-                                <tr class="hover:bg-gray-100">
-                                    <td class="py-3 px-4 capitalize"><?php echo $row['type']; ?></td>
-                                    <td class="py-3 px-4">
-                                        <span class="px-2 py-1 font-semibold leading-tight rounded-full <?php 
-                                            $status_classes = ['available' => 'text-green-700 bg-green-100', 'occupied' => 'text-red-700 bg-red-100', 'cleaning' => 'text-blue-700 bg-blue-100'];
-                                            echo $status_classes[$row['status']] ?? 'text-gray-700 bg-gray-100';
-                                        ?>">
-                                            <?php echo ucfirst($row['status']); ?>
-                                        </span>
-                                    </td>
-                                </tr>
-                            <?php endwhile; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="2" class="text-center py-4">No hay datos de estado para la fecha de hoy.</td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+            <h2 class="text-2xl font-bold mb-6">Distribución de Estado de Habitaciones (<?php echo $today; ?>)</h2>
+            <div class="max-w-md mx-auto">
+                <canvas id="roomStatusChart"></canvas>
             </div>
         </div>
 
@@ -129,12 +119,46 @@ $client_analysis_result = $conn->query($client_analysis_sql);
                 </table>
             </div>
         </div>
+
+        <!-- Reservation Trends -->
+        <div class="bg-white p-6 rounded-xl shadow-2xl mt-8">
+            <h2 class="text-2xl font-bold mb-6">Tendencia de Reservas (Últimos 30 Días)</h2>
+            <div>
+                <canvas id="reservationTrendChart"></canvas>
+            </div>
+        </div>
     </div>
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const ctx = document.getElementById('clientReservationsChart').getContext('2d');
-        const clientReservationsChart = new Chart(ctx, {
+        // Room Status Chart
+        const roomStatusCtx = document.getElementById('roomStatusChart').getContext('2d');
+        const roomStatusChart = new Chart(roomStatusCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Disponibles', 'Ocupadas', 'En Limpieza'],
+                datasets: [{
+                    data: [<?php echo $status_counts['available']; ?>, <?php echo $status_counts['occupied']; ?>, <?php echo $status_counts['cleaning']; ?>],
+                    backgroundColor: ['#10B981', '#EF4444', '#3B82F6'],
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Estado Actual de las Habitaciones'
+                    }
+                }
+            }
+        });
+
+        // Client Reservations Chart
+        const clientCtx = document.getElementById('clientReservationsChart').getContext('2d');
+        const clientReservationsChart = new Chart(clientCtx, {
             type: 'bar',
             data: {
                 labels: <?php echo json_encode($client_names); ?>,
@@ -162,6 +186,39 @@ $client_analysis_result = $conn->query($client_analysis_sql);
                     title: {
                         display: true,
                         text: 'Número de Reservas por Cliente'
+                    }
+                }
+            }
+        });
+
+        // Reservation Trend Chart
+        const trendCtx = document.getElementById('reservationTrendChart').getContext('2d');
+        const reservationTrendChart = new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: <?php echo json_encode($trend_dates); ?>,
+                datasets: [{
+                    label: 'Reservas por Día',
+                    data: <?php echo json_encode($trend_counts); ?>,
+                    backgroundColor: 'rgba(220, 38, 38, 0.2)',
+                    borderColor: 'rgba(220, 38, 38, 1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
                     }
                 }
             }

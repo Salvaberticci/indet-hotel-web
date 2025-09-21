@@ -64,6 +64,8 @@ $reviews_result = $conn->query($reviews_sql);
                     <a href="#about" class="nav-button">Sobre La Institución</a>
                     <a href="#rooms" class="nav-button">Habitaciones</a>
                     <a href="#booking" class="nav-button">Disponibilidad</a>
+                    <a href="events.php" class="nav-button">Eventos</a>
+                    <a href="faq.php" class="nav-button">FAQ</a>
                     <a href="#footer" class="nav-button">Contactos</a>
                 </div>
                 <div class="flex items-center space-x-4 justify-self-end">
@@ -160,27 +162,6 @@ $reviews_result = $conn->query($reviews_sql);
                     <?php else: ?>
                         <p class="text-center col-span-full">No hay información de habitaciones para mostrar en este momento.</p>
                     <?php endif; ?>
-                </div>
-            </div>
-        </section>
-
-        <!-- FAQ Section -->
-        <section id="faq" class="py-24 bg-gray-800 text-white">
-            <div class="container mx-auto px-6">
-                <h2 class="text-5xl md:text-6xl font-montserrat font-black text-center" data-aos="fade-up">Preguntas Frecuentes</h2>
-                <div class="max-w-4xl mx-auto mt-12 space-y-6">
-                    <div class="faq-item bg-gray-700 p-6 rounded-lg" data-aos="fade-up">
-                        <h3 class="text-xl font-bold">¿Cuáles son los horarios de check-in y check-out?</h3>
-                        <p class="mt-2 text-gray-300">Nuestro check-in es a partir de las 3:00 PM y el check-out es hasta las 12:00 PM.</p>
-                    </div>
-                    <div class="faq-item bg-gray-700 p-6 rounded-lg" data-aos="fade-up" data-aos-delay="100">
-                        <h3 class="text-xl font-bold">¿Las instalaciones están abiertas para todo público?</h3>
-                        <p class="mt-2 text-gray-300">El acceso a las villas es principalmente para atletas y delegaciones. Sin embargo, algunas áreas comunes pueden tener acceso público en horarios específicos. Recomendamos contactarnos para más detalles.</p>
-                    </div>
-                    <div class="faq-item bg-gray-700 p-6 rounded-lg" data-aos="fade-up" data-aos-delay="200">
-                        <h3 class="text-xl font-bold">¿Cómo puedo realizar una reserva para un grupo grande?</h3>
-                        <p class="mt-2 text-gray-300">Para reservas de grupos o delegaciones deportivas, por favor contáctenos directamente a través de nuestro formulario de contacto o número de teléfono para una atención personalizada.</p>
-                    </div>
                 </div>
             </div>
         </section>
