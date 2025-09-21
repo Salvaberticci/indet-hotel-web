@@ -24,6 +24,9 @@ $events_result = $conn->query($events_sql);
 // Fetch rooms for management
 $rooms_sql = "SELECT id, type, capacity, description, price FROM rooms ORDER BY type ASC";
 $rooms_result = $conn->query($rooms_sql);
+if (!$rooms_result) {
+    die("Query failed: " . $conn->error);
+}
 
 // Fetch maintenance tasks
 $maintenance_sql = "SELECT mt.id, r.type as room_type, u.name as staff_name, mt.status, mt.created_at 
