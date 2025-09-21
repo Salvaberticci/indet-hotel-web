@@ -15,6 +15,14 @@ $sql = "SELECT reservations.id, users.name as user_name, rooms.type as room_type
         JOIN rooms ON reservations.room_id = rooms.id 
         ORDER BY reservations.checkin_date ASC";
 $result = $conn->query($sql);
+
+// Fetch events
+$events_sql = "SELECT id, name, description, date FROM events ORDER BY date DESC";
+$events_result = $conn->query($events_sql);
+
+// Fetch rooms for management
+$rooms_sql = "SELECT id, type, capacity, description, price FROM rooms ORDER BY type ASC";
+$rooms_result = $conn->query($rooms_sql);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -92,11 +100,8 @@ $result = $conn->query($sql);
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-2xl">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">Usuarios</h2>
-                <a href="php/user_management.php" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition-transform hover:scale-105">Gestionar Usuarios</a>
-            </div>
+        <div id="users-section" class="bg-white p-6 rounded-xl shadow-2xl">
+            <h2 class="text-2xl font-bold mb-6">Gestionar Usuarios</h2>
             <?php
             // Fetch users to display
             $users_sql = "SELECT id, name, email, role FROM users ORDER BY name ASC";
@@ -106,23 +111,33 @@ $result = $conn->query($sql);
                 <table class="min-w-full bg-white">
                     <thead class="bg-gray-800 text-white">
                         <tr>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">ID</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Nombre</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Email</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Rol</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-700">
                         <?php if ($users_result->num_rows > 0): ?>
                             <?php while($user_row = $users_result->fetch_assoc()): ?>
                                 <tr class="hover:bg-gray-100">
-                                    <td class="py-3 px-4"><?php echo $user_row['id']; ?></td>
                                     <td class="py-3 px-4"><?php echo $user_row['name']; ?></td>
                                     <td class="py-3 px-4"><?php echo $user_row['email']; ?></td>
                                     <td class="py-3 px-4">
-                                        <span class="px-2 py-1 font-semibold leading-tight rounded-full <?php echo $user_row['role'] == 'admin' ? 'text-purple-700 bg-purple-100' : 'text-gray-700 bg-gray-100'; ?>">
-                                            <?php echo ucfirst($user_row['role']); ?>
-                                        </span>
+                                        <form action="php/user_handler.php" method="POST" class="flex items-center">
+                                            <input type="hidden" name="user_id" value="<?php echo $user_row['id']; ?>">
+                                            <select name="role" class="p-1 border rounded-lg text-sm">
+                                                <option value="user" <?php if($user_row['role'] == 'user') echo 'selected'; ?>>Usuario</option>
+                                                <option value="admin" <?php if($user_row['role'] == 'admin') echo 'selected'; ?>>Admin</option>
+                                                <option value="maintenance" <?php if($user_row['role'] == 'maintenance') echo 'selected'; ?>>Mantenimiento</option>
+                                            </select>
+                                            <button type="submit" name="update_user_role" class="ml-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1 px-3 rounded-lg text-sm">Guardar</button>
+                                        </form>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <?php if ($_SESSION['user_id'] != $user_row['id']): ?>
+                                            <a href="php/user_handler.php?delete_user=<?php echo $user_row['id']; ?>" onclick="return confirm('¿Estás seguro? Esta acción no se puede deshacer.')" class="text-red-500 hover:text-red-700">Eliminar</a>
+                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
@@ -136,64 +151,47 @@ $result = $conn->query($sql);
             </div>
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-2xl mt-8">
-            <h2 class="text-2xl font-bold mb-6">Estado de las Habitaciones</h2>
-            <?php
-            // Fetch room statuses
-            $room_status_sql = "SELECT r.id, r.type, r.capacity, rs.status, rs.date 
-                                FROM rooms r 
-                                JOIN room_status rs ON r.id = rs.room_id 
-                                ORDER BY r.type ASC";
-            $room_status_result = $conn->query($room_status_sql);
-            ?>
+        <div id="rooms-section" class="bg-white p-6 rounded-xl shadow-2xl mt-8">
+            <h2 class="text-2xl font-bold mb-6">Gestionar Habitaciones</h2>
+
+            <!-- Add Room Form -->
+            <form action="php/room_handler.php" method="POST" class="mb-8 p-4 bg-gray-50 rounded-lg">
+                <h3 class="text-xl font-semibold mb-4">Agregar Nueva Habitación</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input type="text" name="type" placeholder="Tipo (ej. Individual)" required class="p-2 border rounded">
+                    <input type="number" name="capacity" placeholder="Capacidad" required class="p-2 border rounded">
+                    <input type="text" name="description" placeholder="Descripción" required class="p-2 border rounded">
+                    <input type="number" step="0.01" name="price" placeholder="Precio por noche" required class="p-2 border rounded">
+                </div>
+                <button type="submit" name="add_room" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Agregar Habitación</button>
+            </form>
+
+            <!-- Rooms Table -->
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-white">
                     <thead class="bg-gray-800 text-white">
                         <tr>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Habitación</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Tipo</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Capacidad</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Estado</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Fecha de Actualización</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Precio</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-700">
-                        <?php if ($room_status_result->num_rows > 0): ?>
-                            <?php while($status_row = $room_status_result->fetch_assoc()): ?>
-                                <tr class="hover:bg-gray-100">
-                                    <td class="py-3 px-4 capitalize"><?php echo $status_row['type']; ?></td>
-                                    <td class="py-3 px-4"><?php echo $status_row['capacity']; ?></td>
+                        <?php if ($rooms_result->num_rows > 0): ?>
+                            <?php while($room = $rooms_result->fetch_assoc()): ?>
+                                <tr>
+                                    <td class="py-3 px-4 capitalize"><?php echo $room['type']; ?></td>
+                                    <td class="py-3 px-4"><?php echo $room['capacity']; ?></td>
+                                    <td class="py-3 px-4">$<?php echo number_format($room['price'], 2); ?></td>
                                     <td class="py-3 px-4">
-                                        <?php
-                                            $room_status_classes = [
-                                                'available' => 'text-green-700 bg-green-100',
-                                                'occupied' => 'text-red-700 bg-red-100',
-                                                'cleaning' => 'text-blue-700 bg-blue-100'
-                                            ];
-                                            $status_class = $room_status_classes[$status_row['status']] ?? 'text-gray-700 bg-gray-100';
-                                        ?>
-                                        <span class="px-2 py-1 font-semibold leading-tight rounded-full <?php echo $status_class; ?>">
-                                            <?php echo ucfirst($status_row['status']); ?>
-                                        </span>
-                                    </td>
-                                    <td class="py-3 px-4"><?php echo $status_row['date']; ?></td>
-                                    <td class="py-3 px-4">
-                                        <form action="php/update_room_status.php" method="POST" class="flex items-center">
-                                            <input type="hidden" name="room_id" value="<?php echo $status_row['id']; ?>">
-                                            <select name="status" class="p-1 border rounded-lg text-sm">
-                                                <option value="available" <?php if($status_row['status'] == 'available') echo 'selected'; ?>>Disponible</option>
-                                                <option value="occupied" <?php if($status_row['status'] == 'occupied') echo 'selected'; ?>>Ocupada</option>
-                                                <option value="cleaning" <?php if($status_row['status'] == 'cleaning') echo 'selected'; ?>>En Limpieza</option>
-                                            </select>
-                                            <button type="submit" class="ml-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1 px-3 rounded-lg text-sm">Actualizar</button>
-                                        </form>
+                                        <button onclick="openEditRoomModal(<?php echo htmlspecialchars(json_encode($room)); ?>)" class="text-blue-500 hover:text-blue-700 mr-2">Editar</button>
+                                        <a href="php/room_handler.php?delete_room=<?php echo $room['id']; ?>" onclick="return confirm('¿Estás seguro? Esto no se puede hacer si la habitación tiene reservas.')" class="text-red-500 hover:text-red-700">Eliminar</a>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <tr>
-                                <td colspan="4" class="text-center py-4">No se encontró información sobre el estado de las habitaciones.</td>
-                            </tr>
+                            <tr><td colspan="4" class="text-center py-4">No hay habitaciones para mostrar.</td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -224,6 +222,52 @@ $result = $conn->query($sql);
             ?>
             <div>
                 <canvas id="reservationsChart"></canvas>
+            </div>
+        </div>
+
+        <div id="events-section" class="bg-white p-6 rounded-xl shadow-2xl mt-8">
+            <h2 class="text-2xl font-bold mb-6">Gestionar Eventos</h2>
+            
+            <!-- Add Event Form -->
+            <form action="php/event_handler.php" method="POST" class="mb-8 p-4 bg-gray-50 rounded-lg">
+                <h3 class="text-xl font-semibold mb-4">Agregar Nuevo Evento</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input type="text" name="name" placeholder="Nombre del Evento" required class="p-2 border rounded">
+                    <input type="text" name="description" placeholder="Descripción" required class="p-2 border rounded">
+                    <input type="date" name="date" required class="p-2 border rounded">
+                </div>
+                <button type="submit" name="add_event" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Agregar Evento</button>
+            </form>
+
+            <!-- Events Table -->
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-800 text-white">
+                        <tr>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Nombre</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Descripción</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Fecha</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                        <?php if ($events_result->num_rows > 0): ?>
+                            <?php while($event = $events_result->fetch_assoc()): ?>
+                                <tr>
+                                    <td class="py-3 px-4"><?php echo $event['name']; ?></td>
+                                    <td class="py-3 px-4"><?php echo $event['description']; ?></td>
+                                    <td class="py-3 px-4"><?php echo $event['date']; ?></td>
+                                    <td class="py-3 px-4">
+                                        <button onclick="openEditModal(<?php echo htmlspecialchars(json_encode($event)); ?>)" class="text-blue-500 hover:text-blue-700 mr-2">Editar</button>
+                                        <a href="php/event_handler.php?delete_event=<?php echo $event['id']; ?>" onclick="return confirm('¿Estás seguro de que quieres eliminar este evento?');" class="text-red-500 hover:text-red-700">Eliminar</a>
+                                    </td>
+                                </tr>
+                            <?php endwhile; ?>
+                        <?php else: ?>
+                            <tr><td colspan="4" class="text-center py-4">No hay eventos para mostrar.</td></tr>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -268,6 +312,62 @@ $result = $conn->query($sql);
         </div>
     </div>
 
+    <!-- Edit Room Modal -->
+    <div id="editRoomModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-6">Editar Habitación</h2>
+            <form action="php/room_handler.php" method="POST">
+                <input type="hidden" id="editRoomId" name="id">
+                <div class="mb-4">
+                    <label class="block font-semibold">Tipo</label>
+                    <input type="text" id="editRoomType" name="type" required class="w-full p-3 border rounded-lg">
+                </div>
+                <div class="mb-4">
+                    <label class="block font-semibold">Capacidad</label>
+                    <input type="number" id="editRoomCapacity" name="capacity" required class="w-full p-3 border rounded-lg">
+                </div>
+                <div class="mb-4">
+                    <label class="block font-semibold">Descripción</label>
+                    <textarea id="editRoomDescription" name="description" rows="3" required class="w-full p-3 border rounded-lg"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block font-semibold">Precio</label>
+                    <input type="number" step="0.01" id="editRoomPrice" name="price" required class="w-full p-3 border rounded-lg">
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" onclick="closeEditRoomModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-2">Cancelar</button>
+                    <button type="submit" name="update_room" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Actualizar Habitación</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Event Modal -->
+    <div id="editEventModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-6">Editar Evento</h2>
+            <form action="php/event_handler.php" method="POST">
+                <input type="hidden" id="editEventId" name="id">
+                <div class="mb-4">
+                    <label for="editEventName" class="block font-semibold mb-2">Nombre</label>
+                    <input type="text" id="editEventName" name="name" required class="w-full p-3 border rounded-lg">
+                </div>
+                <div class="mb-4">
+                    <label for="editEventDescription" class="block font-semibold mb-2">Descripción</label>
+                    <textarea id="editEventDescription" name="description" rows="3" required class="w-full p-3 border rounded-lg"></textarea>
+                </div>
+                <div class="mb-4">
+                    <label for="editEventDate" class="block font-semibold mb-2">Fecha</label>
+                    <input type="date" id="editEventDate" name="date" required class="w-full p-3 border rounded-lg">
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" onclick="closeEditModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-2">Cancelar</button>
+                    <button type="submit" name="update_event" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Actualizar Evento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         const ctx = document.getElementById('reservationsChart').getContext('2d');
         const reservationsChart = new Chart(ctx, {
@@ -300,6 +400,31 @@ $result = $conn->query($sql);
                 }
             }
         });
+
+        function openEditModal(event) {
+            document.getElementById('editEventId').value = event.id;
+            document.getElementById('editEventName').value = event.name;
+            document.getElementById('editEventDescription').value = event.description;
+            document.getElementById('editEventDate').value = event.date;
+            document.getElementById('editEventModal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editEventModal').classList.add('hidden');
+        }
+
+        function openEditRoomModal(room) {
+            document.getElementById('editRoomId').value = room.id;
+            document.getElementById('editRoomType').value = room.type;
+            document.getElementById('editRoomCapacity').value = room.capacity;
+            document.getElementById('editRoomDescription').value = room.description;
+            document.getElementById('editRoomPrice').value = room.price;
+            document.getElementById('editRoomModal').classList.remove('hidden');
+        }
+
+        function closeEditRoomModal() {
+            document.getElementById('editRoomModal').classList.add('hidden');
+        }
     </script>
 </body>
 </html>
