@@ -58,9 +58,20 @@ indet-hotel-web/
 │   └── main.js
 ├── php/
 │   ├── book.php
-│   ├── contact.php
-│   └── db.php
+│   ├── contact_handler.php
+│   ├── db.php
+│   ├── login_handler.php
+│   ├── logout.php
+│   ├── register_handler.php
+│   ├── submit_review.php
+│   ├── update_reservation_status.php
+│   ├── update_room_status.php
+│   └── user_management.php
+├── admin.php
+├── confirmation.php
 ├── index.php
+├── login.php
+├── register.php
 ├── database.sql
 └── README.md
 ```
@@ -69,9 +80,19 @@ indet-hotel-web/
 
 The project is divided into the following modules:
 
--   **Information Module:** Displays general information about INDET.
--   **Rooms and Reservations Module:** Allows users to view and book rooms.
--   **Room Management Module:** Allows staff to manage room status.
--   **User Management Module:** Handles user authentication and roles.
+-   **Public-Facing Site (`index.php`):**
+    -   Modern, animated user interface.
+    -   Sections for "About", "Rooms", "Booking", "FAQ", and "Reviews".
+    -   Functional contact form.
+    -   Users can register, log in, and book rooms.
+    -   Authenticated users can submit reviews.
 
-This is a simplified version of the project. The full implementation of all modules will be completed in future updates.
+-   **Admin Panel (`admin.php`):**
+    -   **Reservation Management:** View all reservations. Admins can confirm or cancel pending reservations.
+    -   **User Management:** A full CRUD interface (`php/user_management.php`) to create, view, edit, and delete users and assign roles (client/admin).
+    -   **Room Status Management:** View the status of all rooms (available, occupied, cleaning) and update it in real-time.
+    -   **Performance Reports:** A bar chart visualizing the number of reservations per room type.
+
+-   **User Authentication:**
+    -   Secure login and registration system with password hashing.
+    -   Session-based authentication to protect routes and functionalities.

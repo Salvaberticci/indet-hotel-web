@@ -36,10 +36,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_param("iiss", $user_id, $room_id, $checkin, $checkout);
 
         if ($stmt->execute()) {
-            $_SESSION['flash_message'] = [
-                'status' => 'success',
-                'text' => 'Reserva realizada con éxito.'
+            $reservation_id = $stmt->insert_id;
+            // Store reservation details in session to display on confirmation page
+            $_SESSION['last_reservation'] = [
+                'id' => $reservation_id,
+                'room_type' => $room_type,
+                'checkin' => $checkin,
+                'checkout' => $checkout
             ];
+            header("Location: ../confirmation.php");
+            exit();
         } else {
             $_SESSION['flash_message'] = [
                 'status' => 'error',
@@ -52,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'text' => 'No se pudo encontrar el tipo de habitación.'
         ];
     }
-    header("Location: ../index.php");
+    header("Location: ../index.php#booking");
     exit();
 
     $stmt->close();
