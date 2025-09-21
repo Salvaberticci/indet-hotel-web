@@ -10,22 +10,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Hash the password for security
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
     
-    // Generate a unique verification token
-    $verification_token = bin2hex(random_bytes(50));
-
-    $sql = "INSERT INTO users (name, email, password, role, verification_token) VALUES (?, ?, ?, 'client', ?)";
+    $sql = "INSERT INTO users (name, email, password, role, is_verified) VALUES (?, ?, ?, 'client', 1)";
 
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $name, $email, $hashed_password, $verification_token);
+    $stmt->bind_param("sss", $name, $email, $hashed_password);
 
     if ($stmt->execute()) {
-        // SIMULATE SENDING EMAIL: In a real application, you would send an email here.
-        // For this project, we will show a flash message with the verification link.
-        $verification_link = "http://localhost/indet-hotel-web/php/verify.php?token=" . $verification_token;
-
         $_SESSION['flash_message'] = [
             'status' => 'success',
-            'text' => '¡Registro casi completo! Por favor, verifica tu correo electrónico. <a href="' . $verification_link . '" class="font-bold underline">Verificar ahora</a>'
+            'text' => '¡Registro exitoso! Ahora puedes iniciar sesión.'
         ];
 
         // Redirect to the login page to show the message

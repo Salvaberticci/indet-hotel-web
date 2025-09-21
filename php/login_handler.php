@@ -15,32 +15,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($result->num_rows > 0) {
         $user = $result->fetch_assoc();
         if (password_verify($password, $user['password'])) {
-            // Check if the user is verified (admins don't need verification)
-            if ($user['is_verified'] == 1 || $user['role'] == 'admin') {
-                // Password is correct, start session
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_name'] = $user['name'];
-                $_SESSION['user_role'] = $user['role'];
+            // Password is correct, start session
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_name'] = $user['name'];
+            $_SESSION['user_role'] = $user['role'];
 
-                $_SESSION['flash_message'] = [
-                    'status' => 'success',
-                    'text' => '¡Inicio de sesión exitoso!'
-                ];
-                if ($user['role'] == 'admin') {
-                    header("Location: ../admin.php");
-                } else {
-                    header("Location: ../index.php");
-                }
-                exit();
+            $_SESSION['flash_message'] = [
+                'status' => 'success',
+                'text' => '¡Inicio de sesión exitoso!'
+            ];
+            if ($user['role'] == 'admin') {
+                header("Location: ../admin.php");
             } else {
-                // User is not verified
-                $_SESSION['flash_message'] = [
-                    'status' => 'error',
-                    'text' => 'Tu cuenta no ha sido verificada. Por favor, revisa tu correo electrónico.'
-                ];
-                header("Location: ../login.php");
-                exit();
+                header("Location: ../reservar.php");
             }
+            exit();
         } else {
             // Incorrect password
             $_SESSION['flash_message'] = [
