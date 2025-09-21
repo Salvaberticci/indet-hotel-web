@@ -93,12 +93,9 @@ $maintenance_result = $conn->query($maintenance_sql);
         </aside>
         <main class="flex-1 p-8 overflow-y-auto">
             <?php
+            $flash_message = null;
             if (isset($_SESSION['flash_message'])) {
-                $message = $_SESSION['flash_message'];
-                $status_class = $message['status'] == 'success' ? 'bg-green-100 border-green-400 text-green-700' : 'bg-red-100 border-red-400 text-red-700';
-                echo '<div class="border px-4 py-3 rounded relative mb-4 ' . $status_class . '" role="alert">';
-                echo '<span class="block sm:inline">' . $message['text'] . '</span>';
-                echo '</div>';
+                $flash_message = $_SESSION['flash_message'];
                 unset($_SESSION['flash_message']);
             }
             ?>
@@ -632,6 +629,17 @@ $maintenance_result = $conn->query($maintenance_sql);
         </div>
     </div>
 
+    <!-- Flash Message Modal -->
+    <div id="flashModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center <?php echo $flash_message ? '' : 'hidden'; ?>">
+        <div class="bg-gray-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-6"><?php echo $flash_message ? ($flash_message['status'] == 'success' ? 'Éxito' : 'Error') : ''; ?></h2>
+            <p class="mb-6"><?php echo $flash_message ? $flash_message['text'] : ''; ?></p>
+            <div class="flex justify-end">
+                <button onclick="closeFlashModal()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Aceptar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Edit Reservation Modal -->
     <div id="editReservationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
         <div class="bg-gray-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-md">
@@ -843,6 +851,10 @@ $maintenance_result = $conn->query($maintenance_sql);
 
         function closeEditUserModal() {
             document.getElementById('editUserModal').classList.add('hidden');
+        }
+
+        function closeFlashModal() {
+            document.getElementById('flashModal').classList.add('hidden');
         }
     </script>
 </body>
