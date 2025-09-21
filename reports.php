@@ -38,6 +38,8 @@ $client_analysis_result = $conn->query($client_analysis_sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reportes Avanzados - INDET</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="bg-gray-100 text-gray-800 font-poppins">
@@ -86,6 +88,12 @@ $client_analysis_result = $conn->query($client_analysis_sql);
         <!-- Client Profile Analysis -->
         <div class="bg-white p-6 rounded-xl shadow-2xl">
             <h2 class="text-2xl font-bold mb-6">Análisis de Perfil de Clientes</h2>
+
+            <!-- Chart Container -->
+            <div class="mb-8">
+                <canvas id="clientReservationsChart"></canvas>
+            </div>
+
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-white">
                     <thead class="bg-gray-800 text-white">
@@ -96,8 +104,16 @@ $client_analysis_result = $conn->query($client_analysis_sql);
                         </tr>
                     </thead>
                     <tbody class="text-gray-700">
-                        <?php if ($client_analysis_result->num_rows > 0): ?>
-                            <?php while($row = $client_analysis_result->fetch_assoc()): ?>
+                        <?php 
+                        $client_names = [];
+                        $reservation_counts = [];
+                        if ($client_analysis_result->num_rows > 0):
+                            // Reset pointer to re-iterate for the table
+                            $client_analysis_result->data_seek(0); 
+                            while($row = $client_analysis_result->fetch_assoc()): 
+                                $client_names[] = $row['name'];
+                                $reservation_counts[] = $row['reservation_count'];
+                        ?>
                                 <tr class="hover:bg-gray-100">
                                     <td class="py-3 px-4"><?php echo $row['name']; ?></td>
                                     <td class="py-3 px-4"><?php echo $row['email']; ?></td>
@@ -114,6 +130,44 @@ $client_analysis_result = $conn->query($client_analysis_sql);
             </div>
         </div>
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const ctx = document.getElementById('clientReservationsChart').getContext('2d');
+        const clientReservationsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: <?php echo json_encode($client_names); ?>,
+                datasets: [{
+                    label: '# de Reservas',
+                    data: <?php echo json_encode($reservation_counts); ?>,
+                    backgroundColor: 'rgba(0, 100, 0, 0.6)',
+                    borderColor: 'rgba(0, 100, 0, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Número de Reservas por Cliente'
+                    }
+                }
+            }
+        });
+    });
+    </script>
 </body>
 </html>
 <?php $conn->close(); ?>
