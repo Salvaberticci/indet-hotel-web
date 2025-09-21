@@ -138,7 +138,7 @@ $result = $conn->query($sql);
             <h2 class="text-2xl font-bold mb-6">Estado de las Habitaciones</h2>
             <?php
             // Fetch room statuses
-            $room_status_sql = "SELECT r.type, r.capacity, rs.status, rs.date 
+            $room_status_sql = "SELECT r.id, r.type, r.capacity, rs.status, rs.date 
                                 FROM rooms r 
                                 JOIN room_status rs ON r.id = rs.room_id 
                                 ORDER BY r.type ASC";
@@ -152,6 +152,7 @@ $result = $conn->query($sql);
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Capacidad</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Estado</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Fecha de Actualización</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-700">
@@ -174,6 +175,17 @@ $result = $conn->query($sql);
                                         </span>
                                     </td>
                                     <td class="py-3 px-4"><?php echo $status_row['date']; ?></td>
+                                    <td class="py-3 px-4">
+                                        <form action="php/update_room_status.php" method="POST" class="flex items-center">
+                                            <input type="hidden" name="room_id" value="<?php echo $status_row['id']; ?>">
+                                            <select name="status" class="p-1 border rounded-lg text-sm">
+                                                <option value="available" <?php if($status_row['status'] == 'available') echo 'selected'; ?>>Disponible</option>
+                                                <option value="occupied" <?php if($status_row['status'] == 'occupied') echo 'selected'; ?>>Ocupada</option>
+                                                <option value="cleaning" <?php if($status_row['status'] == 'cleaning') echo 'selected'; ?>>En Limpieza</option>
+                                            </select>
+                                            <button type="submit" class="ml-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1 px-3 rounded-lg text-sm">Actualizar</button>
+                                        </form>
+                                    </td>
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
