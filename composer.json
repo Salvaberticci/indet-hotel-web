@@ -1,5 +1,7 @@
 {
     "require": {
-        "setasign/fpdf": "^1.8"
+        "setasign/fpdf": "^1.8",
+        "phpoffice/phpword": "^1.0",
+        "erusev/parsedown": "^1.7"
     }
 }
