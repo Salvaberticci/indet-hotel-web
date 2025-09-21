@@ -10,20 +10,20 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 
 // --- Data Fetching ---
 
-// 1. Daily Room Status Report (for today)
-$today = date('Y-m-d');
-$daily_status_sql = "SELECT rs.status, COUNT(rs.id) as count
-                     FROM room_status rs
-                     WHERE rs.date = ?
-                     GROUP BY rs.status";
-$stmt_daily = $conn->prepare($daily_status_sql);
-$stmt_daily->bind_param("s", $today);
-$stmt_daily->execute();
-$daily_status_result = $stmt_daily->get_result();
+// 1. Reservations per Room Type
+$chart_sql = "SELECT r.type, COUNT(res.id) as reservation_count
+              FROM rooms r
+              LEFT JOIN reservations res ON r.id = res.room_id
+              GROUP BY r.type";
+$chart_result = $conn->query($chart_sql);
 
-$status_counts = ['available' => 0, 'occupied' => 0, 'cleaning' => 0];
-while ($row = $daily_status_result->fetch_assoc()) {
-    $status_counts[$row['status']] = $row['count'];
+$room_types = [];
+$reservation_counts = [];
+if ($chart_result->num_rows > 0) {
+    while($row = $chart_result->fetch_assoc()) {
+        $room_types[] = ucfirst($row['type']);
+        $reservation_counts[] = $row['reservation_count'];
+    }
 }
 
 // 2. Client Profile Analysis (reservations per user)
@@ -98,9 +98,9 @@ while ($row = $reservation_trend_result->fetch_assoc()) {
             <a href="admin.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-transform hover:scale-105">Volver al Panel</a>
         </div>
 
-        <!-- Daily Room Status Report -->
+        <!-- Reservations per Room Type -->
         <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mb-8">
-            <h2 class="text-2xl font-bold mb-6">Distribución de Estado de Habitaciones (<?php echo $today; ?>)</h2>
+            <h2 class="text-2xl font-bold mb-6">Reservas por Tipo de Habitación</h2>
             <div class="max-w-md mx-auto">
                 <canvas id="roomStatusChart"></canvas>
             </div>
@@ -206,27 +206,25 @@ while ($row = $reservation_trend_result->fetch_assoc()) {
         animate();
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Room Status Chart
-        console.log(<?php echo $status_counts['available']; ?>, <?php echo $status_counts['occupied']; ?>, <?php echo $status_counts['cleaning']; ?>);
-        const roomStatusCtx = document.getElementById('roomStatusChart').getContext('2d');
-        const roomStatusChart = new Chart(roomStatusCtx, {
-            type: 'pie',
+        // Reservations per Room Type Chart
+        console.log(<?php echo json_encode($room_types); ?>, <?php echo json_encode($reservation_counts); ?>);
+        const roomChartCtx = document.getElementById('roomStatusChart').getContext('2d');
+        const roomChart = new Chart(roomChartCtx, {
+            type: 'bar',
             data: {
-                labels: ['Disponibles', 'Ocupadas', 'En Limpieza'],
+                labels: <?php echo json_encode($room_types); ?>,
                 datasets: [{
-                    data: [<?php echo $status_counts['available']; ?>, <?php echo $status_counts['occupied']; ?>, <?php echo $status_counts['cleaning']; ?>],
-                    backgroundColor: ['#10B981', '#EF4444', '#3B82F6'],
+                    label: '# de Reservas',
+                    data: <?php echo json_encode($reservation_counts); ?>,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
                 }]
             },
             options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    title: {
-                        display: true,
-                        text: 'Estado Actual de las Habitaciones'
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
             }
