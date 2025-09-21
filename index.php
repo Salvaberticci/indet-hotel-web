@@ -62,7 +62,8 @@ $reviews_result = $conn->query($reviews_sql);
                     <img src="images/logo.png" alt="INDET Logo" class="w-24 logo">
                 </div>
                 <div class="hidden md:flex items-center space-x-4 nav-link-container justify-self-center">
-                    <a href="#about" class="nav-button">Sobre La Institución</a>
+                    <a href="index.php" class="nav-button">Inicio</a>
+                    <a href="hotel_info.php" class="nav-button">Nuestro Hotel</a>
                     <a href="#rooms" class="nav-button">Habitaciones</a>
                     <a href="#booking" class="nav-button">Disponibilidad</a>
                     <a href="events.php" class="nav-button">Eventos</a>

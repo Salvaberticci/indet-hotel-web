@@ -42,7 +42,8 @@ include 'php/db.php';
                     <a href="index.php"><img src="images/logo.png" alt="INDET Logo" class="w-24 logo"></a>
                 </div>
                 <div class="hidden md:flex items-center space-x-4 nav-link-container justify-self-center">
-                    <a href="index.php#about" class="nav-button">Sobre La Institución</a>
+                    <a href="index.php" class="nav-button">Inicio</a>
+                    <a href="hotel_info.php" class="nav-button">Nuestro Hotel</a>
                     <a href="index.php#rooms" class="nav-button">Habitaciones</a>
                     <a href="index.php#booking" class="nav-button">Disponibilidad</a>
                     <a href="events.php" class="nav-button">Eventos</a>
@@ -67,8 +68,7 @@ include 'php/db.php';
         </nav>
 
         <!-- Hero Content -->
-        <div class="relative z-30 flex flex-col items-center justify-center h-full text-center px-4">
-            <h1 class="text-6xl md:text-7xl font-montserrat font-black text-white tracking-widest" data-aos="zoom-in">Preguntas Frecuentes</h1>
+        <div class="relative z-30 flex flex-col items-center justify-center h-full text-center px-4 py-32">
         </div>
     </header>
 
