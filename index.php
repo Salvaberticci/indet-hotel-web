@@ -5,6 +5,10 @@ include 'php/db.php';
 // Fetch rooms for the new section
 $rooms_sql = "SELECT `type`, `capacity`, `description`, `price`, `photos` FROM `rooms`";
 $rooms_result = $conn->query($rooms_sql);
+
+// Fetch reviews for the reviews section
+$reviews_sql = "SELECT u.name, r.rating, r.comment FROM reviews r JOIN users u ON r.user_id = u.id ORDER BY r.created_at DESC LIMIT 5";
+$reviews_result = $conn->query($reviews_sql);
 ?>
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
@@ -157,6 +161,76 @@ $rooms_result = $conn->query($rooms_sql);
                         <p class="text-center col-span-full">No hay información de habitaciones para mostrar en este momento.</p>
                     <?php endif; ?>
                 </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="py-24 bg-gray-800 text-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-5xl md:text-6xl font-montserrat font-black text-center" data-aos="fade-up">Preguntas Frecuentes</h2>
+                <div class="max-w-4xl mx-auto mt-12 space-y-6">
+                    <div class="faq-item bg-gray-700 p-6 rounded-lg" data-aos="fade-up">
+                        <h3 class="text-xl font-bold">¿Cuáles son los horarios de check-in y check-out?</h3>
+                        <p class="mt-2 text-gray-300">Nuestro check-in es a partir de las 3:00 PM y el check-out es hasta las 12:00 PM.</p>
+                    </div>
+                    <div class="faq-item bg-gray-700 p-6 rounded-lg" data-aos="fade-up" data-aos-delay="100">
+                        <h3 class="text-xl font-bold">¿Las instalaciones están abiertas para todo público?</h3>
+                        <p class="mt-2 text-gray-300">El acceso a las villas es principalmente para atletas y delegaciones. Sin embargo, algunas áreas comunes pueden tener acceso público en horarios específicos. Recomendamos contactarnos para más detalles.</p>
+                    </div>
+                    <div class="faq-item bg-gray-700 p-6 rounded-lg" data-aos="fade-up" data-aos-delay="200">
+                        <h3 class="text-xl font-bold">¿Cómo puedo realizar una reserva para un grupo grande?</h3>
+                        <p class="mt-2 text-gray-300">Para reservas de grupos o delegaciones deportivas, por favor contáctenos directamente a través de nuestro formulario de contacto o número de teléfono para una atención personalizada.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reviews Section -->
+        <section id="reviews" class="py-24 bg-white text-gray-800">
+            <div class="container mx-auto px-6">
+                <h2 class="text-5xl md:text-6xl font-montserrat font-black text-center" data-aos="fade-up">Opiniones de Nuestros Huéspedes</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
+                    <?php if ($reviews_result && $reviews_result->num_rows > 0): ?>
+                        <?php while($review = $reviews_result->fetch_assoc()): ?>
+                            <div class="review-card bg-gray-50 p-6 rounded-lg shadow-md" data-aos="fade-up">
+                                <div class="flex items-center mb-4">
+                                    <div class="font-bold text-lg"><?php echo htmlspecialchars($review['name']); ?></div>
+                                    <div class="ml-auto text-yellow-500">
+                                        <?php for ($i = 0; $i < 5; $i++): ?>
+                                            <i class="fas fa-star <?php echo $i < $review['rating'] ? '' : 'text-gray-300'; ?>"></i>
+                                        <?php endfor; ?>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600">"<?php echo htmlspecialchars($review['comment']); ?>"</p>
+                            </div>
+                        <?php endwhile; ?>
+                    <?php else: ?>
+                        <p class="col-span-full text-center">Aún no hay opiniones. ¡Sé el primero en dejar una!</p>
+                    <?php endif; ?>
+                </div>
+
+                <?php if (isset($_SESSION['user_id'])): ?>
+                <div class="mt-16 max-w-2xl mx-auto" data-aos="fade-up">
+                    <h3 class="text-3xl font-bold text-center mb-6">Deja tu Opinión</h3>
+                    <form action="php/submit_review.php" method="POST" class="bg-gray-50 p-8 rounded-lg shadow-lg">
+                        <div class="mb-4">
+                            <label for="rating" class="block font-semibold mb-2">Calificación</label>
+                            <select name="rating" required class="w-full p-3 border rounded-lg">
+                                <option value="5">5 Estrellas</option>
+                                <option value="4">4 Estrellas</option>
+                                <option value="3">3 Estrellas</option>
+                                <option value="2">2 Estrellas</option>
+                                <option value="1">1 Estrella</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label for="comment" class="block font-semibold mb-2">Comentario</label>
+                            <textarea name="comment" rows="4" required placeholder="Escribe tu experiencia aquí..." class="w-full p-3 border rounded-lg"></textarea>
+                        </div>
+                        <button type="submit" class="w-full action-button">Enviar Opinión</button>
+                    </form>
+                </div>
+                <?php endif; ?>
             </div>
         </section>
 
