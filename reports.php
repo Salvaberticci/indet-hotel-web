@@ -35,10 +35,10 @@ $client_analysis_sql = "SELECT u.name, u.email, COUNT(res.id) as reservation_cou
 $client_analysis_result = $conn->query($client_analysis_sql);
 
 // 3. Reservation Trends (last 30 days)
-$reservation_trend_sql = "SELECT DATE(created_at) as date, COUNT(id) as count
+$reservation_trend_sql = "SELECT DATE(checkin_date) as date, COUNT(id) as count
                           FROM reservations
-                          WHERE created_at >= CURDATE() - INTERVAL 30 DAY
-                          GROUP BY DATE(created_at)
+                          WHERE checkin_date >= CURDATE() - INTERVAL 30 DAY
+                          GROUP BY DATE(checkin_date)
                           ORDER BY date ASC";
 $reservation_trend_result = $conn->query($reservation_trend_sql);
 
