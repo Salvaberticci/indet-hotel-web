@@ -285,6 +285,23 @@ $maintenance_result = $conn->query($maintenance_sql);
 
         <div id="users-section" class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl">
             <h2 class="text-2xl font-bold mb-6">Gestionar Usuarios</h2>
+
+            <!-- Add User Form -->
+            <form action="php/user_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
+                <h3 class="text-xl font-semibold mb-4">Agregar Nuevo Usuario</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input type="text" name="name" placeholder="Nombre" required class="p-2 border rounded bg-gray-600 text-white">
+                    <input type="email" name="email" placeholder="Email" required class="p-2 border rounded bg-gray-600 text-white">
+                    <input type="password" name="password" placeholder="Contraseña" required class="p-2 border rounded bg-gray-600 text-white">
+                    <select name="role" required class="p-2 border rounded bg-gray-600 text-white">
+                        <option value="user">Usuario</option>
+                        <option value="admin">Admin</option>
+                        <option value="maintenance">Mantenimiento</option>
+                    </select>
+                </div>
+                <button type="submit" name="add_user" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Agregar Usuario</button>
+            </form>
+
             <?php
             // Fetch users to display
             $users_sql = "SELECT id, name, email, role FROM users ORDER BY name ASC";
@@ -297,7 +314,8 @@ $maintenance_result = $conn->query($maintenance_sql);
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Nombre</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Email</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Rol</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Editar</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Eliminar</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-300">
@@ -318,6 +336,9 @@ $maintenance_result = $conn->query($maintenance_sql);
                                         </form>
                                     </td>
                                     <td class="py-3 px-4">
+                                        <button onclick="openEditUserModal(<?php echo htmlspecialchars(json_encode($user_row)); ?>)" class="text-blue-500 hover:text-blue-700">Editar</button>
+                                    </td>
+                                    <td class="py-3 px-4">
                                         <?php if ($_SESSION['user_id'] != $user_row['id']): ?>
                                             <a href="php/user_handler.php?delete_user=<?php echo $user_row['id']; ?>" onclick="return confirm('¿Estás seguro? Esta acción no se puede deshacer.')" class="text-red-500 hover:text-red-700">Eliminar</a>
                                         <?php endif; ?>
@@ -326,7 +347,7 @@ $maintenance_result = $conn->query($maintenance_sql);
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="4" class="text-center py-4">No hay usuarios encontrados.</td>
+                                <td colspan="5" class="text-center py-4">No hay usuarios encontrados.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -660,6 +681,36 @@ $maintenance_result = $conn->query($maintenance_sql);
         </div>
     </div>
 
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-gray-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-6">Editar Usuario</h2>
+            <form action="php/user_handler.php" method="POST">
+                <input type="hidden" id="editUserId" name="id">
+                <div class="mb-4">
+                    <label for="editUserName" class="block font-semibold mb-2">Nombre</label>
+                    <input type="text" id="editUserName" name="name" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                </div>
+                <div class="mb-4">
+                    <label for="editUserEmail" class="block font-semibold mb-2">Email</label>
+                    <input type="email" id="editUserEmail" name="email" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                </div>
+                <div class="mb-4">
+                    <label for="editUserRole" class="block font-semibold mb-2">Rol</label>
+                    <select id="editUserRole" name="role" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                        <option value="user">Usuario</option>
+                        <option value="admin">Admin</option>
+                        <option value="maintenance">Mantenimiento</option>
+                    </select>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" onclick="closeEditUserModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-2">Cancelar</button>
+                    <button type="submit" name="update_user" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Actualizar Usuario</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         const canvas = document.getElementById('networkCanvas');
         const ctx = canvas.getContext('2d');
@@ -775,6 +826,18 @@ $maintenance_result = $conn->query($maintenance_sql);
 
         function closeEditReservationModal() {
             document.getElementById('editReservationModal').classList.add('hidden');
+        }
+
+        function openEditUserModal(user) {
+            document.getElementById('editUserId').value = user.id;
+            document.getElementById('editUserName').value = user.name;
+            document.getElementById('editUserEmail').value = user.email;
+            document.getElementById('editUserRole').value = user.role;
+            document.getElementById('editUserModal').classList.remove('hidden');
+        }
+
+        function closeEditUserModal() {
+            document.getElementById('editUserModal').classList.add('hidden');
         }
     </script>
 </body>
