@@ -111,6 +111,46 @@ $maintenance_result = $conn->query($maintenance_sql);
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold">Reservas</h2>
             </div>
+
+            <!-- Add Reservation Form -->
+            <form action="php/reservation_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
+                <h3 class="text-xl font-semibold mb-4">Agregar Nueva Reserva</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label for="user_id" class="block font-semibold mb-2">Cliente</label>
+                        <select name="user_id" required class="w-full p-2 border rounded bg-gray-600 text-white">
+                            <option value="">Seleccionar cliente...</option>
+                            <?php
+                            $users_sql = "SELECT id, name FROM users ORDER BY name ASC";
+                            $users_result = $conn->query($users_sql);
+                            while($user = $users_result->fetch_assoc()): ?>
+                                <option value="<?php echo $user['id']; ?>"><?php echo $user['name']; ?></option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="room_id" class="block font-semibold mb-2">Habitación</label>
+                        <select name="room_id" required class="w-full p-2 border rounded bg-gray-600 text-white">
+                            <option value="">Seleccionar habitación...</option>
+                            <?php
+                            $rooms_sql = "SELECT id, type FROM rooms ORDER BY type ASC";
+                            $rooms_result = $conn->query($rooms_sql);
+                            while($room = $rooms_result->fetch_assoc()): ?>
+                                <option value="<?php echo $room['id']; ?>"><?php echo ucfirst($room['type']); ?></option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="checkin_date" class="block font-semibold mb-2">Fecha de Llegada</label>
+                        <input type="date" name="checkin_date" required class="w-full p-2 border rounded bg-gray-600 text-white">
+                    </div>
+                    <div>
+                        <label for="checkout_date" class="block font-semibold mb-2">Fecha de Salida</label>
+                        <input type="date" name="checkout_date" required class="w-full p-2 border rounded bg-gray-600 text-white">
+                    </div>
+                </div>
+                <button type="submit" name="add_reservation" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Agregar Reserva</button>
+            </form>
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-gray-800">
                     <thead class="bg-gray-700 text-white">
@@ -122,6 +162,8 @@ $maintenance_result = $conn->query($maintenance_sql);
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Salida</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Estado</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm">Acciones</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Editar</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm">Eliminar</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-300">
@@ -158,11 +200,17 @@ $maintenance_result = $conn->query($maintenance_sql);
                                             <a href="php/update_reservation_status.php?id=<?php echo $row['id']; ?>&status=cancelled" class="text-red-500 hover:text-red-700">Cancelar</a>
                                         <?php endif; ?>
                                     </td>
+                                    <td class="py-3 px-4">
+                                        <button onclick="openEditReservationModal(<?php echo htmlspecialchars(json_encode($row)); ?>)" class="text-blue-500 hover:text-blue-700">Editar</button>
+                                    </td>
+                                    <td class="py-3 px-4">
+                                        <a href="php/reservation_handler.php?delete_reservation=<?php echo $row['id']; ?>" onclick="return confirm('¿Estás seguro de eliminar esta reserva?')" class="text-red-500 hover:text-red-700">Eliminar</a>
+                                    </td>
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7" class="text-center py-4">No hay reservas encontradas.</td>
+                                <td colspan="9" class="text-center py-4">No hay reservas encontradas.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -558,6 +606,60 @@ $maintenance_result = $conn->query($maintenance_sql);
         </div>
     </div>
 
+    <!-- Edit Reservation Modal -->
+    <div id="editReservationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-gray-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-6">Editar Reserva</h2>
+            <form action="php/reservation_handler.php" method="POST">
+                <input type="hidden" id="editReservationId" name="id">
+                <div class="mb-4">
+                    <label for="editReservationUser" class="block font-semibold mb-2">Cliente</label>
+                    <select id="editReservationUser" name="user_id" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                        <option value="">Seleccionar cliente...</option>
+                        <?php
+                        $users_sql = "SELECT id, name FROM users ORDER BY name ASC";
+                        $users_result = $conn->query($users_sql);
+                        while($user = $users_result->fetch_assoc()): ?>
+                            <option value="<?php echo $user['id']; ?>"><?php echo $user['name']; ?></option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="editReservationRoom" class="block font-semibold mb-2">Habitación</label>
+                    <select id="editReservationRoom" name="room_id" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                        <option value="">Seleccionar habitación...</option>
+                        <?php
+                        $rooms_sql = "SELECT id, type FROM rooms ORDER BY type ASC";
+                        $rooms_result = $conn->query($rooms_sql);
+                        while($room = $rooms_result->fetch_assoc()): ?>
+                            <option value="<?php echo $room['id']; ?>"><?php echo ucfirst($room['type']); ?></option>
+                        <?php endwhile; ?>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="editReservationCheckin" class="block font-semibold mb-2">Fecha de Llegada</label>
+                    <input type="date" id="editReservationCheckin" name="checkin_date" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                </div>
+                <div class="mb-4">
+                    <label for="editReservationCheckout" class="block font-semibold mb-2">Fecha de Salida</label>
+                    <input type="date" id="editReservationCheckout" name="checkout_date" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                </div>
+                <div class="mb-4">
+                    <label for="editReservationStatus" class="block font-semibold mb-2">Estado</label>
+                    <select id="editReservationStatus" name="status" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                        <option value="pending">Pendiente</option>
+                        <option value="confirmed">Confirmada</option>
+                        <option value="cancelled">Cancelada</option>
+                    </select>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" onclick="closeEditReservationModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-2">Cancelar</button>
+                    <button type="submit" name="update_reservation" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Actualizar Reserva</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         const canvas = document.getElementById('networkCanvas');
         const ctx = canvas.getContext('2d');
@@ -659,6 +761,20 @@ $maintenance_result = $conn->query($maintenance_sql);
 
         function closeEditRoomModal() {
             document.getElementById('editRoomModal').classList.add('hidden');
+        }
+
+        function openEditReservationModal(reservation) {
+            document.getElementById('editReservationId').value = reservation.id;
+            document.getElementById('editReservationUser').value = reservation.user_id;
+            document.getElementById('editReservationRoom').value = reservation.room_id;
+            document.getElementById('editReservationCheckin').value = reservation.checkin_date;
+            document.getElementById('editReservationCheckout').value = reservation.checkout_date;
+            document.getElementById('editReservationStatus').value = reservation.status;
+            document.getElementById('editReservationModal').classList.remove('hidden');
+        }
+
+        function closeEditReservationModal() {
+            document.getElementById('editReservationModal').classList.add('hidden');
         }
     </script>
 </body>
