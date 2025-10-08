@@ -273,7 +273,6 @@ $maintenance_result = $conn->query($maintenance_sql);
                         echo '<p class="text-gray-300 text-sm mb-2">' . htmlspecialchars($room['description']) . '</p>';
                         echo '<ul class="text-sm space-y-1">';
                         echo '<li><i class="fas fa-users mr-2 text-green-400"></i>Capacidad: ' . htmlspecialchars($room['capacity']) . '</li>';
-                        echo '<li><i class="fas fa-dollar-sign mr-2 text-green-400"></i>Precio: $' . htmlspecialchars(number_format($room['price'], 2)) . ' / noche</li>';
                         echo '</ul>';
                         echo '</div>';
                         echo '</div>';
@@ -370,7 +369,6 @@ $maintenance_result = $conn->query($maintenance_sql);
                     <input type="text" name="type" placeholder="Tipo (ej. Individual)" required class="p-2 border rounded bg-gray-600 text-white">
                     <input type="number" name="capacity" placeholder="Capacidad" required class="p-2 border rounded bg-gray-600 text-white">
                     <input type="text" name="description" placeholder="Descripción" required class="p-2 border rounded bg-gray-600 text-white">
-                    <input type="number" step="0.01" name="price" placeholder="Precio por noche" required class="p-2 border rounded bg-gray-600 text-white">
                 </div>
                 <div class="mt-4">
                     <label for="room_image" class="block font-semibold mb-2">Imagen de la Habitación</label>
@@ -388,7 +386,6 @@ $maintenance_result = $conn->query($maintenance_sql);
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Tipo</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Descripción</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Capacidad</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Precio</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -401,7 +398,6 @@ $maintenance_result = $conn->query($maintenance_sql);
                                     <td class="py-3 px-4 text-center capitalize"><?php echo $room['type']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $room['description']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $room['capacity']; ?></td>
-                                    <td class="py-3 px-4 text-center">$<?php echo number_format($room['price'], 2); ?></td>
                                     <td class="py-3 px-4 text-center">
                                         <button onclick="openEditRoomModal(<?php echo htmlspecialchars(json_encode($room)); ?>)" class="text-blue-500 hover:text-blue-700 mr-2">Editar</button>
                                         <a href="php/room_handler.php?delete_room=<?php echo $room['id']; ?>" onclick="return confirm('¿Estás seguro? Esto no se puede hacer si la habitación tiene reservas.')" class="text-red-500 hover:text-red-700">Eliminar</a>
@@ -606,10 +602,6 @@ $maintenance_result = $conn->query($maintenance_sql);
                 <div class="mb-4">
                     <label class="block font-semibold">Descripción</label>
                     <textarea id="editRoomDescription" name="description" rows="3" required class="w-full p-3 border rounded-lg bg-gray-700 text-white"></textarea>
-                </div>
-                <div class="mb-4">
-                    <label class="block font-semibold">Precio</label>
-                    <input type="number" step="0.01" id="editRoomPrice" name="price" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                 </div>
                 <div class="mb-4">
                     <label class="block font-semibold">Imagen (opcional)</label>
