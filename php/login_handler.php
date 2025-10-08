@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 'status' => 'success',
                 'text' => '¡Inicio de sesión exitoso!'
             ];
-            if ($user['role'] == 'admin') {
+            if ($user['role'] == 'admin' || $user['role'] == 'maintenance') {
                 header("Location: ../admin.php");
             } else {
                 header("Location: ../reservar.php");

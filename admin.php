@@ -3,11 +3,13 @@ header('Content-Type: text/html; charset=utf-8');
 session_start();
 include 'php/db.php';
 
-// Check if the user is logged in and is an admin
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
+// Check if the user is logged in and is an admin or maintenance
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['user_role'], ['admin', 'maintenance'])) {
     header("Location: login.php");
     exit();
 }
+
+$is_admin = $_SESSION['user_role'] == 'admin';
 
 // Fetch reservations from the database
 $sql = "SELECT reservations.id, users.name as user_name, rooms.type as room_type, reservations.checkin_date, reservations.checkout_date, reservations.status 
@@ -84,12 +86,14 @@ $maintenance_result = $conn->query($maintenance_sql);
             <img src="images/logo.png" alt="Logo" class="w-16 h-16 mb-4 mx-auto">
             <h2 class="text-xl font-bold mb-6">Menú de Administración</h2>
             <ul class="space-y-4">
+                <?php if ($is_admin): ?>
                 <li><a href="#reservations-section" class="block py-3 px-4 rounded-full hover:bg-gray-700 transition text-center">Reservas</a></li>
                 <li><a href="#availability-section" class="block py-3 px-4 rounded-full hover:bg-gray-700 transition text-center">Disponibilidad</a></li>
                 <li><a href="#users-section" class="block py-3 px-4 rounded-full hover:bg-gray-700 transition text-center">Usuarios</a></li>
                 <li><a href="#rooms-section" class="block py-3 px-4 rounded-full hover:bg-gray-700 transition text-center">Habitaciones</a></li>
                 <li><a href="#reports-section" class="block py-3 px-4 rounded-full hover:bg-gray-700 transition text-center">Reportes</a></li>
                 <li><a href="#events-section" class="block py-3 px-4 rounded-full hover:bg-gray-700 transition text-center">Eventos</a></li>
+                <?php endif; ?>
                 <li><a href="#assign-maintenance-section" class="block py-3 px-4 rounded-full hover:bg-gray-700 transition text-center">Asignar Mantenimiento</a></li>
                 <li><a href="#maintenance-tasks-section" class="block py-3 px-4 rounded-full hover:bg-gray-700 transition text-center">Tareas de Mantenimiento</a></li>
             </ul>
@@ -103,10 +107,11 @@ $maintenance_result = $conn->query($maintenance_sql);
             }
             ?>
             <div class="flex justify-between items-center mb-8">
-                <h1 class="text-3xl font-bold">Panel de Administración</h1>
+                <h1 class="text-3xl font-bold"><?php echo $is_admin ? 'Panel de Administración' : 'Panel de Mantenimiento'; ?></h1>
                 <a href="php/logout.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-transform hover:scale-105">Cerrar Sesión</a>
             </div>
 
+        <?php if ($is_admin): ?>
         <div id="reservations-section" class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mb-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold">Reservas</h2>
@@ -486,6 +491,7 @@ $maintenance_result = $conn->query($maintenance_sql);
                 </table>
             </div>
         </div>
+        <?php endif; ?>
 
         <div id="assign-maintenance-section" class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
             <h2 class="text-2xl font-bold mb-6">Asignar Tarea de Mantenimiento</h2>
@@ -878,6 +884,13 @@ $maintenance_result = $conn->query($maintenance_sql);
 
         function closeFlashModal() {
             document.getElementById('flashModal').classList.add('hidden');
+        }
+
+        // Auto-close flash modal after 3 seconds
+        if (document.getElementById('flashModal') && !document.getElementById('flashModal').classList.contains('hidden')) {
+            setTimeout(() => {
+                closeFlashModal();
+            }, 3000);
         }
     </script>
 </body>
