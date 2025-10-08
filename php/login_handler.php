@@ -20,9 +20,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['user_name'] = $user['name'];
             $_SESSION['user_role'] = $user['role'];
 
+            $message_text = ($user['role'] == 'maintenance') ? '¡Inicio de sesión exitoso como mantenimiento!' : '¡Inicio de sesión exitoso!';
             $_SESSION['flash_message'] = [
                 'status' => 'success',
-                'text' => '¡Inicio de sesión exitoso!'
+                'text' => $message_text
             ];
             if ($user['role'] == 'admin' || $user['role'] == 'maintenance') {
                 header("Location: ../admin.php");

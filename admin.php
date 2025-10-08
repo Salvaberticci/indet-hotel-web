@@ -878,11 +878,11 @@ $maintenance_result = $conn->query($maintenance_sql);
             document.getElementById('flashModal').classList.add('hidden');
         }
 
-        // Auto-close flash modal after 3 seconds
+        // Auto-close flash modal after 2 seconds
         if (document.getElementById('flashModal') && !document.getElementById('flashModal').classList.contains('hidden')) {
             setTimeout(() => {
                 closeFlashModal();
-            }, 3000);
+            }, 2000);
         }
     </script>
 </body>
