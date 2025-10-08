@@ -82,7 +82,7 @@ $maintenance_result = $conn->query($maintenance_sql);
 <body class="bg-gray-900 text-white font-poppins">
     <canvas id="networkCanvas"></canvas>
     <div class="flex min-h-screen">
-        <aside class="w-64 bg-gray-800 p-6 overflow-y-auto sticky top-0 h-screen">
+        <aside class="w-64 bg-gray-800 p-6 overflow-y-auto fixed top-0 left-0 h-screen z-50 md:static md:z-auto hidden md:block">
             <img src="images/logo.png" alt="Logo" class="w-16 h-16 mb-4 mx-auto">
             <h2 class="text-xl font-bold mb-6">Menú de Administración</h2>
             <ul class="space-y-4">
@@ -107,7 +107,10 @@ $maintenance_result = $conn->query($maintenance_sql);
             }
             ?>
             <div class="flex justify-between items-center mb-8">
-                <h1 class="text-3xl font-bold"><?php echo $is_admin ? 'Panel de Administración' : 'Panel de Mantenimiento'; ?></h1>
+                <div class="flex items-center">
+                    <button class="md:hidden bg-gray-700 text-white p-2 rounded mr-4" onclick="toggleSidebar()">☰</button>
+                    <h1 class="text-3xl font-bold"><?php echo $is_admin ? 'Panel de Administración' : 'Panel de Mantenimiento'; ?></h1>
+                </div>
                 <a href="php/logout.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-transform hover:scale-105">Cerrar Sesión</a>
             </div>
 
@@ -876,6 +879,11 @@ $maintenance_result = $conn->query($maintenance_sql);
 
         function closeFlashModal() {
             document.getElementById('flashModal').classList.add('hidden');
+        }
+
+        function toggleSidebar() {
+            const aside = document.querySelector('aside');
+            aside.classList.toggle('hidden');
         }
 
         // Auto-close flash modal after 2 seconds
