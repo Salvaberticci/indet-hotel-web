@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 09-10-2025 a las 00:52:10
+-- Tiempo de generación: 10-10-2025 a las 01:34:56
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -70,6 +70,53 @@ INSERT INTO `events` (`id`, `name`, `description`, `date`, `image`, `created_at`
 -- --------------------------------------------------------
 
 --
+-- Estructura de tabla para la tabla `floors`
+--
+
+CREATE TABLE `floors` (
+  `id` int(11) NOT NULL,
+  `floor_number` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `floors`
+--
+
+INSERT INTO `floors` (`id`, `floor_number`, `name`, `description`) VALUES
+(1, 1, 'Planta Baja', 'Piso principal del hotel'),
+(2, 2, 'piso 2', '');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `floor_inventory`
+--
+
+CREATE TABLE `floor_inventory` (
+  `id` int(11) NOT NULL,
+  `floor_id` int(11) NOT NULL,
+  `floor` int(11) NOT NULL,
+  `item_name` varchar(255) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `description` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `floor_inventory`
+--
+
+INSERT INTO `floor_inventory` (`id`, `floor_id`, `floor`, `item_name`, `quantity`, `description`, `created_at`) VALUES
+(1, 1, 1, 'Cama individual', 10, 'Camas para habitaciones individuales', '2025-10-10 03:20:00'),
+(2, 1, 1, 'Silla', 20, 'Sillas para habitaciones', '2025-10-10 03:20:00'),
+(3, 1, 0, 'cama matrimonial', 2, 'cama para dos personas', '2025-10-09 23:33:42'),
+(4, 2, 0, 'cama matrimonial', 2, 'cama para dos personas', '2025-10-09 23:34:27');
+
+-- --------------------------------------------------------
+
+--
 -- Estructura de tabla para la tabla `hotel_info`
 --
 
@@ -102,7 +149,8 @@ CREATE TABLE `maintenance_tasks` (
 --
 
 INSERT INTO `maintenance_tasks` (`id`, `room_id`, `assigned_to_user_id`, `task_description`, `status`, `created_at`, `completed_at`) VALUES
-(5, 8, 3, 'Limpieza est├índar de la habitaci├│n.', 'completed', '2025-09-21 22:06:48', NULL);
+(5, 8, 3, 'Limpieza est├índar de la habitaci├│n.', 'completed', '2025-09-21 22:06:48', NULL),
+(6, 8, 1, 'Limpieza est├índar de la habitaci├│n.', 'completed', '2025-10-09 23:13:17', NULL);
 
 -- --------------------------------------------------------
 
@@ -137,7 +185,8 @@ INSERT INTO `reservations` (`id`, `user_id`, `room_id`, `checkin_date`, `checkou
 (27, 1, 2, '2025-09-23', '2025-09-30', 'Salvatore', 'salvatoreberticci19@gmail.com', 'pending'),
 (28, 1, 1, '2025-09-01', '2025-09-22', 'Salvatore', 'salvatoreberticci19@gmail.com', 'pending'),
 (29, 1, 2, '2025-09-21', '2025-09-22', 'Salvatore', 'salvatoreberticci19@gmail.com', 'pending'),
-(30, 2, 5, '2025-09-16', '2025-09-04', '', '', 'confirmed');
+(30, 2, 5, '2025-09-16', '2025-09-04', '', '', 'confirmed'),
+(31, 4, 8, '2025-10-01', '2025-10-31', 'Salvatore', 'salvatoreberticci19@gmail.com', 'pending');
 
 -- --------------------------------------------------------
 
@@ -165,16 +214,19 @@ CREATE TABLE `rooms` (
   `type` varchar(255) NOT NULL,
   `capacity` int(11) NOT NULL,
   `description` text NOT NULL,
+  `price` decimal(10,2) NOT NULL,
   `photos` text NOT NULL,
-  `floor` int(11) NOT NULL
+  `floor` int(11) NOT NULL,
+  `floor_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `rooms`
 --
 
-INSERT INTO `rooms` (`id`, `type`, `capacity`, `description`, `photos`, `floor`) VALUES
-(8, 'dual', 2, 'habitacion para dos', '[\"Opera Captura de pantalla_2025-09-17_120407_www.instagram.com.png\"]', 1);
+INSERT INTO `rooms` (`id`, `type`, `capacity`, `description`, `price`, `photos`, `floor`, `floor_id`) VALUES
+(8, 'dual', 2, 'habitacion para dos', 20.00, '[\"Opera Captura de pantalla_2025-09-17_120407_www.instagram.com.png\"]', 1, 1),
+(9, 'individual', 1, 'individual', 0.00, '[\"Opera Captura de pantalla_2025-09-17_115927_www.instagram.com.png\"]', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -189,29 +241,7 @@ CREATE TABLE `room_status` (
   `date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Estructura de tabla para la tabla `floor_inventory`
---
-
-CREATE TABLE `floor_inventory` (
-  `id` int(11) NOT NULL,
-  `floor` int(11) NOT NULL,
-  `item_name` varchar(255) NOT NULL,
-  `quantity` int(11) NOT NULL,
-  `description` text NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Volcado de datos para la tabla `floor_inventory`
---
-
-INSERT INTO `floor_inventory` (`id`, `floor`, `item_name`, `quantity`, `description`, `created_at`) VALUES
-(1, 1, 'Cama individual', 10, 'Camas para habitaciones individuales', '2025-10-09 23:20:00'),
-(2, 1, 'Silla', 20, 'Sillas para habitaciones', '2025-10-09 23:20:00');
-
 -- --------------------------------------------------------
-
 
 --
 -- Estructura de tabla para la tabla `users`
@@ -253,6 +283,20 @@ ALTER TABLE `events`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indices de la tabla `floors`
+--
+ALTER TABLE `floors`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `floor_number` (`floor_number`);
+
+--
+-- Indices de la tabla `floor_inventory`
+--
+ALTER TABLE `floor_inventory`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_floor_inventory_floor` (`floor_id`);
+
+--
 -- Indices de la tabla `hotel_info`
 --
 ALTER TABLE `hotel_info`
@@ -283,16 +327,11 @@ ALTER TABLE `reviews`
   ADD KEY `room_id` (`room_id`);
 
 --
--- Indices de la tabla `floor_inventory`
---
-ALTER TABLE `floor_inventory`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indices de la tabla `rooms`
 --
 ALTER TABLE `rooms`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_rooms_floor` (`floor_id`);
 
 --
 -- Indices de la tabla `room_status`
@@ -325,10 +364,16 @@ ALTER TABLE `events`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT de la tabla `floors`
+--
+ALTER TABLE `floors`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de la tabla `floor_inventory`
 --
 ALTER TABLE `floor_inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `hotel_info`
@@ -340,13 +385,13 @@ ALTER TABLE `hotel_info`
 -- AUTO_INCREMENT de la tabla `maintenance_tasks`
 --
 ALTER TABLE `maintenance_tasks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `reservations`
 --
 ALTER TABLE `reservations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT de la tabla `reviews`
@@ -358,7 +403,7 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT de la tabla `rooms`
 --
 ALTER TABLE `rooms`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `room_status`
@@ -375,6 +420,12 @@ ALTER TABLE `users`
 --
 -- Restricciones para tablas volcadas
 --
+
+--
+-- Filtros para la tabla `floor_inventory`
+--
+ALTER TABLE `floor_inventory`
+  ADD CONSTRAINT `fk_floor_inventory_floor` FOREIGN KEY (`floor_id`) REFERENCES `floors` (`id`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `maintenance_tasks`
@@ -396,6 +447,12 @@ ALTER TABLE `reservations`
 ALTER TABLE `reviews`
   ADD CONSTRAINT `reviews_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `reviews_ibfk_2` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`id`);
+
+--
+-- Filtros para la tabla `rooms`
+--
+ALTER TABLE `rooms`
+  ADD CONSTRAINT `fk_rooms_floor` FOREIGN KEY (`floor_id`) REFERENCES `floors` (`id`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `room_status`
