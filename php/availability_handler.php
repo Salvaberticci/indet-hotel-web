@@ -6,6 +6,7 @@ header('Content-Type: text/html; charset=utf-8');
 if (isset($_GET['checkin']) && isset($_GET['checkout'])) {
     $checkin_date = $_GET['checkin'];
     $checkout_date = $_GET['checkout'];
+    $room_type = isset($_GET['room_type']) ? $_GET['room_type'] : null;
 
     // Find rooms that are NOT booked during the selected dates
     $sql = "SELECT r.id, r.type, r.capacity, r.description, r.price, r.photos
@@ -15,11 +16,20 @@ if (isset($_GET['checkin']) && isset($_GET['checkout'])) {
                 FROM reservations res
                 WHERE (res.checkin_date < ? AND res.checkout_date > ?)
                 OR (res.checkin_date >= ? AND res.checkin_date < ?)
-            )
-            ORDER BY r.type";
+            )";
+    $params = [$checkout_date, $checkin_date, $checkin_date, $checkout_date];
+    $types = "ssss";
+
+    if ($room_type) {
+        $sql .= " AND r.type = ?";
+        $params[] = $room_type;
+        $types .= "s";
+    }
+
+    $sql .= " ORDER BY r.type";
 
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $checkout_date, $checkin_date, $checkin_date, $checkout_date);
+    $stmt->bind_param($types, ...$params);
     $stmt->execute();
     $result = $stmt->get_result();
 

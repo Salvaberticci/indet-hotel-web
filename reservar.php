@@ -103,7 +103,7 @@ if (!isset($_SESSION['user_id'])) {
                             <select name="room_type" required class="booking-input">
                                 <option value="">SELECCIONA</option>
                                 <option value="individual">Individual</option>
-                                <option value="doble">Doble</option>
+                                <option value="dual">Doble</option>
                                 <option value="suite">Suite</option>
                             </select>
                         </div>
@@ -129,14 +129,20 @@ if (!isset($_SESSION['user_id'])) {
         document.addEventListener('DOMContentLoaded', function () {
             const checkinInput = document.querySelector('input[name="checkin"]');
             const checkoutInput = document.querySelector('input[name="checkout"]');
+            const roomTypeSelect = document.querySelector('select[name="room_type"]');
             const resultsContainer = document.getElementById('availability-results');
 
             function checkAvailability() {
                 const checkin = checkinInput.value;
                 const checkout = checkoutInput.value;
+                const roomType = roomTypeSelect.value;
 
                 if (checkin && checkout) {
-                    fetch(`php/availability_handler.php?checkin=${checkin}&checkout=${checkout}`)
+                    let url = `php/availability_handler.php?checkin=${checkin}&checkout=${checkout}`;
+                    if (roomType) {
+                        url += `&room_type=${roomType}`;
+                    }
+                    fetch(url)
                         .then(response => response.text())
                         .then(data => {
                             resultsContainer.innerHTML = data;
@@ -147,6 +153,7 @@ if (!isset($_SESSION['user_id'])) {
 
             checkinInput.addEventListener('change', checkAvailability);
             checkoutInput.addEventListener('change', checkAvailability);
+            roomTypeSelect.addEventListener('change', checkAvailability);
         });
     </script>
 
