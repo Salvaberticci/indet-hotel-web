@@ -3,20 +3,34 @@ header('Content-Type: text/html; charset=utf-8');
 session_start();
 include 'php/db.php';
 
-// Check if the user is logged in and is an admin or maintenance
-if (!isset($_SESSION['user_id']) || !in_array($_SESSION['user_role'], ['admin', 'maintenance'])) {
+// Check if the user is logged in and is an admin
+if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
     header("Location: login.php");
     exit();
 }
 
-$is_admin = $_SESSION['user_role'] == 'admin';
+// Fetch data for chart: Reservations per room type
+$chart_sql = "SELECT r.type, COUNT(res.id) as reservation_count 
+              FROM rooms r 
+              LEFT JOIN reservations res ON r.id = res.room_id 
+              GROUP BY r.type";
+$chart_result = $conn->query($chart_sql);
+
+$room_types = [];
+$reservation_counts = [];
+if ($chart_result->num_rows > 0) {
+    while($row = $chart_result->fetch_assoc()) {
+        $room_types[] = ucfirst($row['type']);
+        $reservation_counts[] = $row['reservation_count'];
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - INDET</title>
+    <title>Reportes - Panel de Administración - INDET</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -66,61 +80,25 @@ $is_admin = $_SESSION['user_role'] == 'admin';
         }
         ?>
         <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold"><?php echo $is_admin ? 'Panel de Administración' : 'Panel de Mantenimiento'; ?></h1>
-            <a href="php/logout.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Cerrar Sesión</a>
+            <div class="flex items-center">
+                <h1 class="text-3xl font-bold">Reportes</h1>
+            </div>
+            <div>
+                <a href="admin.php" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-4">Volver al Menú</a>
+                <a href="php/logout.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Cerrar Sesión</a>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <?php if ($is_admin): ?>
-            <a href="admin_reservations.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-calendar-check fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Reservas</h3>
-                <p>Gestionar reservas de habitaciones</p>
-            </a>
-            <a href="admin_availability.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-search fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Disponibilidad</h3>
-                <p>Ver habitaciones disponibles</p>
-            </a>
-            <a href="admin_users.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-users fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Usuarios</h3>
-                <p>Gestionar usuarios del sistema</p>
-            </a>
-            <a href="admin_rooms.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-bed fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Habitaciones</h3>
-                <p>Gestionar habitaciones</p>
-            </a>
-            <a href="admin_reports.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-chart-bar fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Reportes</h3>
-                <p>Ver reportes de desempeño</p>
-            </a>
-            <a href="admin_events.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-calendar-alt fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Eventos</h3>
-                <p>Gestionar eventos</p>
-            </a>
-            <?php endif; ?>
-            <a href="admin_assign_maintenance.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-tools fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Asignar Mantenimiento</h3>
-                <p>Asignar tareas de mantenimiento</p>
-            </a>
-            <a href="admin_maintenance_tasks.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-tasks fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Tareas de Mantenimiento</h3>
-                <p>Ver tareas de mantenimiento</p>
-            </a>
-            <a href="admin_comments.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-comments fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Comentarios</h3>
-                <p>Gestionar comentarios</p>
-            </a>
+        <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">Reportes de Desempeño</h2>
+                <a href="reports.php" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg">Ver Reportes Avanzados</a>
+            </div>
+            <div>
+                <canvas id="reservationsChart" width="400" height="200"></canvas>
+            </div>
         </div>
     </div>
-
 
     <script>
         const canvas = document.getElementById('networkCanvas');
@@ -166,6 +144,39 @@ $is_admin = $_SESSION['user_role'] == 'admin';
             requestAnimationFrame(animate);
         }
         animate();
+
+        const chartCtx = document.getElementById('reservationsChart').getContext('2d');
+        console.log(<?php echo json_encode($room_types); ?>, <?php echo json_encode($reservation_counts); ?>);
+        const reservationsChart = new Chart(chartCtx, {
+            type: 'bar',
+            data: {
+                labels: <?php echo json_encode($room_types); ?>,
+                datasets: [{
+                    label: '# de Reservas por Tipo de Habitación',
+                    data: <?php echo json_encode($reservation_counts); ?>,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>

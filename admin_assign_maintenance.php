@@ -9,14 +9,22 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['user_role'], ['admin', 
     exit();
 }
 
-$is_admin = $_SESSION['user_role'] == 'admin';
+// Fetch rooms that are not already pending cleaning
+$rooms_to_clean_sql = "SELECT r.id, r.type FROM rooms r
+                       LEFT JOIN maintenance_tasks mt ON r.id = mt.room_id AND mt.status = 'pending'
+                       WHERE mt.id IS NULL";
+$rooms_to_clean_result = $conn->query($rooms_to_clean_sql);
+
+// Fetch maintenance staff
+$maintenance_staff_sql = "SELECT id, name FROM users WHERE role = 'maintenance'";
+$maintenance_staff_result = $conn->query($maintenance_staff_sql);
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - INDET</title>
+    <title>Asignar Mantenimiento - Panel de Administración - INDET</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -31,9 +39,6 @@ $is_admin = $_SESSION['user_role'] == 'admin';
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
@@ -66,61 +71,44 @@ $is_admin = $_SESSION['user_role'] == 'admin';
         }
         ?>
         <div class="flex justify-between items-center mb-8">
-            <h1 class="text-3xl font-bold"><?php echo $is_admin ? 'Panel de Administración' : 'Panel de Mantenimiento'; ?></h1>
-            <a href="php/logout.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Cerrar Sesión</a>
+            <div class="flex items-center">
+                <h1 class="text-3xl font-bold">Asignar Mantenimiento</h1>
+            </div>
+            <div>
+                <a href="admin.php" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-4">Volver al Menú</a>
+                <a href="php/logout.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Cerrar Sesión</a>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <?php if ($is_admin): ?>
-            <a href="admin_reservations.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-calendar-check fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Reservas</h3>
-                <p>Gestionar reservas de habitaciones</p>
-            </a>
-            <a href="admin_availability.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-search fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Disponibilidad</h3>
-                <p>Ver habitaciones disponibles</p>
-            </a>
-            <a href="admin_users.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-users fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Usuarios</h3>
-                <p>Gestionar usuarios del sistema</p>
-            </a>
-            <a href="admin_rooms.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-bed fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Habitaciones</h3>
-                <p>Gestionar habitaciones</p>
-            </a>
-            <a href="admin_reports.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-chart-bar fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Reportes</h3>
-                <p>Ver reportes de desempeño</p>
-            </a>
-            <a href="admin_events.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-calendar-alt fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Eventos</h3>
-                <p>Gestionar eventos</p>
-            </a>
-            <?php endif; ?>
-            <a href="admin_assign_maintenance.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-tools fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Asignar Mantenimiento</h3>
-                <p>Asignar tareas de mantenimiento</p>
-            </a>
-            <a href="admin_maintenance_tasks.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-tasks fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Tareas de Mantenimiento</h3>
-                <p>Ver tareas de mantenimiento</p>
-            </a>
-            <a href="admin_comments.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-comments fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Comentarios</h3>
-                <p>Gestionar comentarios</p>
-            </a>
+        <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
+            <h2 class="text-2xl font-bold mb-6">Asignar Tarea de Mantenimiento</h2>
+            <form action="php/assign_task.php" method="POST">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="room_id" class="block font-semibold mb-2">Habitación</label>
+                        <select name="room_id" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                            <option value="">Seleccionar habitación...</option>
+                            <?php while($room = $rooms_to_clean_result->fetch_assoc()): ?>
+                                <option value="<?php echo $room['id']; ?>"><?php echo ucfirst($room['type']); ?></option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="user_id" class="block font-semibold mb-2">Asignar a</label>
+                        <select name="user_id" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                            <option value="">Seleccionar personal...</option>
+                            <?php while($staff = $maintenance_staff_result->fetch_assoc()): ?>
+                                <option value="<?php echo $staff['id']; ?>"><?php echo $staff['name']; ?></option>
+                            <?php endwhile; ?>
+                        </select>
+                    </div>
+                    <div class="self-end">
+                        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg">Asignar Tarea</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
-
 
     <script>
         const canvas = document.getElementById('networkCanvas');
