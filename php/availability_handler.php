@@ -9,7 +9,7 @@ if (isset($_GET['checkin']) && isset($_GET['checkout'])) {
     $room_type = isset($_GET['room_type']) ? $_GET['room_type'] : null;
 
     // Find rooms that are NOT booked during the selected dates
-    $sql = "SELECT r.id, r.type, r.capacity, r.description, r.price, r.photos
+    $sql = "SELECT r.id, r.type, r.capacity, r.description, r.photos
             FROM rooms r
             WHERE r.id NOT IN (
                 SELECT res.room_id
@@ -47,7 +47,6 @@ if (isset($_GET['checkin']) && isset($_GET['checkout'])) {
             echo '<p class="text-gray-600 text-sm mb-2">' . htmlspecialchars($room['description']) . '</p>';
             echo '<ul class="text-sm space-y-1">';
             echo '<li><i class="fas fa-users mr-2 text-green-600"></i>Capacidad: ' . htmlspecialchars($room['capacity']) . '</li>';
-            echo '<li><i class="fas fa-dollar-sign mr-2 text-green-600"></i>Precio: $' . htmlspecialchars(number_format($room['price'], 2)) . ' / noche</li>';
             echo '</ul>';
             echo '</div>';
             echo '</div>';

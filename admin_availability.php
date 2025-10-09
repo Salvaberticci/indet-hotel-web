@@ -91,7 +91,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
                 $checkout_date = $_GET['checkout'];
 
                 // Find rooms that are NOT booked during the selected dates
-                $sql = "SELECT r.id, r.type, r.capacity, r.description, r.price, r.photos
+                $sql = "SELECT r.id, r.type, r.capacity, r.description, r.photos
                         FROM rooms r
                         WHERE r.id NOT IN (
                             SELECT res.room_id

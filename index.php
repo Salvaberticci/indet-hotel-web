@@ -4,8 +4,12 @@ session_start();
 include 'php/db.php';
 
 // Fetch rooms for the new section
-$rooms_sql = "SELECT `type`, `capacity`, `description`, `price`, `photos` FROM `rooms`";
+$rooms_sql = "SELECT `type`, `capacity`, `description`, `photos` FROM `rooms`";
 $rooms_result = $conn->query($rooms_sql);
+
+// Fetch approved comments
+$comments_sql = "SELECT name, comment, created_at FROM comments WHERE approved = 1 ORDER BY created_at DESC";
+$comments_result = $conn->query($comments_sql);
 
 ?>
 <!DOCTYPE html>
@@ -142,7 +146,6 @@ $rooms_result = $conn->query($rooms_sql);
                                     <p class="text-gray-600 mb-4"><?php echo htmlspecialchars($room['description']); ?></p>
                                     <ul class="text-left mb-4 space-y-2">
                                         <li><i class="fas fa-users mr-2 text-green-600"></i> Capacidad: <?php echo htmlspecialchars($room['capacity']); ?> personas</li>
-                                        <li><i class="fas fa-dollar-sign mr-2 text-green-600"></i> Precio: $<?php echo htmlspecialchars(number_format($room['price'], 2)); ?> / noche</li>
                                     </ul>
                                 </div>
                             </div>
@@ -170,6 +173,52 @@ $rooms_result = $conn->query($rooms_sql);
                     <div class="gallery-card" data-aos="fade-up" data-aos-delay="200">
                         <img src="images/equipo-voleibol.jpg" alt="Voleibol">
                         <h3>Voleibol</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comments Section -->
+        <section id="comments" class="py-24 bg-white text-gray-800">
+            <div class="container mx-auto px-6">
+                <h2 class="text-5xl md:text-6xl font-montserrat font-black text-center" data-aos="fade-up">Comentarios</h2>
+                <p class="max-w-3xl mx-auto mt-6 text-lg text-gray-600 text-center" data-aos="fade-up" data-aos-delay="100">Deja tu comentario sobre nuestra experiencia deportiva.</p>
+                <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <!-- Comment Form -->
+                    <div class="bg-gray-50 p-6 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-bold mb-4">Deja un Comentario</h3>
+                        <form action="php/comment_handler.php" method="POST">
+                            <div class="mb-4">
+                                <label for="name" class="block font-semibold mb-2">Nombre</label>
+                                <input type="text" id="name" name="name" required class="w-full p-3 border rounded bg-white">
+                            </div>
+                            <div class="mb-4">
+                                <label for="email" class="block font-semibold mb-2">Correo Electrónico</label>
+                                <input type="email" id="email" name="email" required class="w-full p-3 border rounded bg-white">
+                            </div>
+                            <div class="mb-4">
+                                <label for="comment" class="block font-semibold mb-2">Comentario</label>
+                                <textarea id="comment" name="comment" rows="4" required class="w-full p-3 border rounded bg-white"></textarea>
+                            </div>
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Enviar Comentario</button>
+                        </form>
+                    </div>
+                    <!-- Display Comments -->
+                    <div class="bg-gray-50 p-6 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-bold mb-4">Comentarios Recientes</h3>
+                        <div class="space-y-4">
+                            <?php if ($comments_result && $comments_result->num_rows > 0): ?>
+                                <?php while($comment = $comments_result->fetch_assoc()): ?>
+                                    <div class="bg-white p-4 rounded shadow">
+                                        <h4 class="font-bold"><?php echo htmlspecialchars($comment['name']); ?></h4>
+                                        <p class="text-gray-600 text-sm"><?php echo date('d/m/Y', strtotime($comment['created_at'])); ?></p>
+                                        <p class="mt-2"><?php echo htmlspecialchars($comment['comment']); ?></p>
+                                    </div>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                                <p>No hay comentarios aprobados aún.</p>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </div>

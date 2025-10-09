@@ -12,8 +12,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 if (isset($_POST['add_room'])) {
     $type = $_POST['type'];
     $capacity = $_POST['capacity'];
+    $floor_id = $_POST['floor_id'];
     $description = $_POST['description'];
-    $price = $_POST['price'];
 
     $photos = [];
     if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
@@ -32,9 +32,9 @@ if (isset($_POST['add_room'])) {
     }
     $photos_json = json_encode($photos);
 
-    $sql = "INSERT INTO rooms (type, capacity, description, price, photos) VALUES (?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO rooms (type, capacity, floor_id, description, photos) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sisds", $type, $capacity, $description, $price, $photos_json);
+    $stmt->bind_param("siiss", $type, $capacity, $floor_id, $description, $photos_json);
 
     if ($stmt->execute()) {
         $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Habitación agregada exitosamente.'];
@@ -50,8 +50,8 @@ if (isset($_POST['update_room'])) {
     $id = $_POST['id'];
     $type = $_POST['type'];
     $capacity = $_POST['capacity'];
+    $floor_id = $_POST['floor_id'];
     $description = $_POST['description'];
-    $price = $_POST['price'];
 
     // Fetch current photos
     $current_sql = "SELECT photos FROM rooms WHERE id = ?";
@@ -76,9 +76,9 @@ if (isset($_POST['update_room'])) {
     }
     $photos_json = json_encode($photos);
 
-    $sql = "UPDATE rooms SET type = ?, capacity = ?, description = ?, price = ?, photos = ? WHERE id = ?";
+    $sql = "UPDATE rooms SET type = ?, capacity = ?, floor_id = ?, description = ?, photos = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sisdsi", $type, $capacity, $description, $price, $photos_json, $id);
+    $stmt->bind_param("siissi", $type, $capacity, $floor_id, $description, $photos_json, $id);
 
     if ($stmt->execute()) {
         $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Habitación actualizada exitosamente.'];

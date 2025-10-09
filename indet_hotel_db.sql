@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 09-10-2025 a las 00:22:36
+-- Tiempo de generación: 09-10-2025 a las 00:52:10
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -20,6 +20,28 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `indet_hotel_db`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `comments`
+--
+
+CREATE TABLE `comments` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `comment` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `approved` tinyint(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `comments`
+--
+
+INSERT INTO `comments` (`id`, `name`, `email`, `comment`, `created_at`, `approved`) VALUES
+(1, 'Salvatore', 'salvatoreberticci19@gmail.com', 'Me gustaron mucho las habitaciones', '2025-10-08 22:51:09', 1);
 
 -- --------------------------------------------------------
 
@@ -143,16 +165,16 @@ CREATE TABLE `rooms` (
   `type` varchar(255) NOT NULL,
   `capacity` int(11) NOT NULL,
   `description` text NOT NULL,
-  `price` decimal(10,2) NOT NULL,
-  `photos` text NOT NULL
+  `photos` text NOT NULL,
+  `floor` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `rooms`
 --
 
-INSERT INTO `rooms` (`id`, `type`, `capacity`, `description`, `price`, `photos`) VALUES
-(8, 'dual', 2, 'habitacion para dos', 20.00, '[\"Opera Captura de pantalla_2025-09-17_120407_www.instagram.com.png\"]');
+INSERT INTO `rooms` (`id`, `type`, `capacity`, `description`, `photos`, `floor`) VALUES
+(8, 'dual', 2, 'habitacion para dos', '[\"Opera Captura de pantalla_2025-09-17_120407_www.instagram.com.png\"]', 1);
 
 -- --------------------------------------------------------
 
@@ -167,7 +189,29 @@ CREATE TABLE `room_status` (
   `date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Estructura de tabla para la tabla `floor_inventory`
+--
+
+CREATE TABLE `floor_inventory` (
+  `id` int(11) NOT NULL,
+  `floor` int(11) NOT NULL,
+  `item_name` varchar(255) NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `description` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `floor_inventory`
+--
+
+INSERT INTO `floor_inventory` (`id`, `floor`, `item_name`, `quantity`, `description`, `created_at`) VALUES
+(1, 1, 'Cama individual', 10, 'Camas para habitaciones individuales', '2025-10-09 23:20:00'),
+(2, 1, 'Silla', 20, 'Sillas para habitaciones', '2025-10-09 23:20:00');
+
 -- --------------------------------------------------------
+
 
 --
 -- Estructura de tabla para la tabla `users`
@@ -195,6 +239,12 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `is_verified`) V
 --
 -- Índices para tablas volcadas
 --
+
+--
+-- Indices de la tabla `comments`
+--
+ALTER TABLE `comments`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `events`
@@ -233,6 +283,12 @@ ALTER TABLE `reviews`
   ADD KEY `room_id` (`room_id`);
 
 --
+-- Indices de la tabla `floor_inventory`
+--
+ALTER TABLE `floor_inventory`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indices de la tabla `rooms`
 --
 ALTER TABLE `rooms`
@@ -257,10 +313,22 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT de la tabla `comments`
+--
+ALTER TABLE `comments`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT de la tabla `events`
 --
 ALTER TABLE `events`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `floor_inventory`
+--
+ALTER TABLE `floor_inventory`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `hotel_info`

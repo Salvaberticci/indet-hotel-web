@@ -38,7 +38,9 @@ El proyecto está construido con tecnologías modernas y sigue las mejores prác
 ### Panel de Administración (admin.php)
 - **Gestión de Reservas:** Ver, confirmar, cancelar y editar reservas
 - **Gestión de Usuarios:** CRUD completo para usuarios con asignación de roles
-- **Gestión de Habitaciones:** Agregar, editar y eliminar habitaciones
+- **Gestión de Habitaciones:** Agregar, editar y eliminar habitaciones con asignación por piso
+- **Gestión de Inventario:** Sistema completo de inventario por piso (camas, sillas, muebles)
+- **Gestión de Pisos:** Crear, editar y eliminar pisos del hotel
 - **Gestión de Eventos:** Crear y gestionar eventos deportivos
 - **Asignación de Mantenimiento:** Asignar tareas de limpieza a personal de mantenimiento
 - **Reportes Avanzados (reports.php):** Gráficos y análisis de rendimiento
@@ -59,7 +61,9 @@ El proyecto está construido con tecnologías modernas y sigue las mejores prác
 El sistema utiliza las siguientes tablas principales:
 
 - **users:** Información de usuarios (id, name, email, password, role)
-- **rooms:** Detalles de habitaciones (id, type, capacity, description, price, photos)
+- **floors:** Pisos del hotel (id, floor_number, name, description)
+- **rooms:** Detalles de habitaciones (id, type, capacity, description, photos, floor_id)
+- **floor_inventory:** Inventario por piso (id, floor_id, item_name, quantity, description, created_at)
 - **reservations:** Reservas (id, user_id, room_id, checkin_date, checkout_date, status)
 - **reviews:** Reseñas de usuarios (id, user_id, rating, comment, created_at)
 - **events:** Eventos programados (id, name, description, date, image)
@@ -119,6 +123,7 @@ indet-hotel-web/
 │   ├── user_handler.php    # Gestión de usuarios (CRUD)
 │   ├── reservation_handler.php # Gestión de reservas
 │   ├── room_handler.php    # Gestión de habitaciones
+│   ├── inventory_handler.php # Gestión de inventario y pisos
 │   ├── event_handler.php   # Gestión de eventos
 │   ├── assign_task.php     # Asignación de tareas mantenimiento
 │   ├── maintenance_handler.php # Procesamiento mantenimiento
@@ -129,6 +134,7 @@ indet-hotel-web/
 │   ├── availability_handler.php # Verificación disponibilidad
 │   └── user_management.php # Gestión usuarios (legacy)
 ├── admin.php               # Panel de administración
+├── admin_inventory.php     # Gestión de inventario por piso
 ├── reports.php             # Reportes avanzados
 ├── maintenance.php         # Panel de mantenimiento
 ├── index.php               # Página principal
@@ -166,9 +172,18 @@ indet-hotel-web/
 - **Dashboard:** Vista general con estadísticas
 - **CRUD de Reservas:** Crear, leer, actualizar, eliminar reservas
 - **Gestión de Usuarios:** Asignación de roles y permisos
-- **Gestión de Habitaciones:** Inventario completo con fotos y precios
+- **Gestión de Habitaciones:** Inventario completo con fotos, precios y asignación por piso
+- **Sistema de Inventario por Piso:** Gestión completa de muebles y objetos (camas, sillas, etc.)
+- **Gestión de Pisos:** Crear, editar y eliminar pisos del hotel con nombres personalizados
 - **Gestión de Eventos:** Calendario de actividades deportivas
 - **Sistema de Mantenimiento:** Asignación automática de tareas
+
+### 3.1 Sistema de Gestión de Inventario por Piso
+- **Gestión de Pisos:** Crear pisos con nombres personalizados (Planta Baja, Primer Piso, etc.)
+- **Inventario por Piso:** Gestionar muebles y objetos específicos de cada piso
+- **Items de Inventario:** Camas, sillas, mesas, televisores, etc. con cantidad y descripción
+- **Filtrado por Piso:** Visualizar y gestionar inventario piso por piso
+- **Validaciones:** Prevención de eliminación de pisos con habitaciones o inventario asignado
 
 ### 4. Módulo de Reportes
 - **Gráficos Interactivos:** Usando Chart.js para visualizaciones

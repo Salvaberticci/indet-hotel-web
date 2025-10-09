@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 }
 
 // Fetch rooms for management
-$rooms_sql = "SELECT id, type, capacity, description, price, photos FROM rooms ORDER BY type ASC";
+$rooms_sql = "SELECT r.id, r.type, r.capacity, r.description, r.photos, r.floor_id, f.name as floor_name FROM rooms r JOIN floors f ON r.floor_id = f.id ORDER BY f.floor_number ASC, r.type ASC";
 $rooms_result = $conn->query($rooms_sql);
 if (!$rooms_result) {
     die("Query failed: " . $conn->error);
@@ -86,6 +86,16 @@ if (!$rooms_result) {
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <input type="text" name="type" placeholder="Tipo (ej. Individual)" required class="p-2 border rounded bg-gray-600 text-white">
                     <input type="number" name="capacity" placeholder="Capacidad" required class="p-2 border rounded bg-gray-600 text-white">
+                    <select name="floor_id" required class="p-2 border rounded bg-gray-600 text-white">
+                        <option value="">Seleccionar Piso</option>
+                        <?php
+                        $floors_sql = "SELECT id, name FROM floors ORDER BY floor_number ASC";
+                        $floors_result = $conn->query($floors_sql);
+                        while($floor = $floors_result->fetch_assoc()) {
+                            echo "<option value='" . $floor['id'] . "'>" . htmlspecialchars($floor['name']) . "</option>";
+                        }
+                        ?>
+                    </select>
                     <input type="text" name="description" placeholder="Descripción" required class="p-2 border rounded bg-gray-600 text-white">
                 </div>
                 <div class="mt-4">
@@ -102,6 +112,7 @@ if (!$rooms_result) {
                         <tr>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Imagen</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Tipo</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Piso</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Descripción</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Capacidad</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Acciones</th>
@@ -114,6 +125,7 @@ if (!$rooms_result) {
                                 <tr class="hover:bg-gray-700 border-b border-gray-700">
                                     <td class="py-3 px-4 text-center"><img src="images/<?php echo htmlspecialchars($photos[0] ?? 'default_room.jpg'); ?>" alt="Room Image" class="w-16 h-16 object-cover rounded"></td>
                                     <td class="py-3 px-4 text-center capitalize"><?php echo $room['type']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($room['floor_name']); ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $room['description']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $room['capacity']; ?></td>
                                     <td class="py-3 px-4 text-center">
@@ -144,6 +156,19 @@ if (!$rooms_result) {
                 <div class="mb-4">
                     <label class="block font-semibold">Capacidad</label>
                     <input type="number" id="editRoomCapacity" name="capacity" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                </div>
+                <div class="mb-4">
+                    <label class="block font-semibold">Piso</label>
+                    <select id="editRoomFloor" name="floor_id" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                        <option value="">Seleccionar Piso</option>
+                        <?php
+                        $edit_floors_sql = "SELECT id, name FROM floors ORDER BY floor_number ASC";
+                        $edit_floors_result = $conn->query($edit_floors_sql);
+                        while($floor = $edit_floors_result->fetch_assoc()) {
+                            echo "<option value='" . $floor['id'] . "'>" . htmlspecialchars($floor['name']) . "</option>";
+                        }
+                        ?>
+                    </select>
                 </div>
                 <div class="mb-4">
                     <label class="block font-semibold">Descripción</label>
@@ -211,8 +236,9 @@ if (!$rooms_result) {
             document.getElementById('editRoomId').value = room.id;
             document.getElementById('editRoomType').value = room.type;
             document.getElementById('editRoomCapacity').value = room.capacity;
+            // Note: room.floor_id should be passed from the query result
+            document.getElementById('editRoomFloor').value = room.floor_id || room.floor;
             document.getElementById('editRoomDescription').value = room.description;
-            document.getElementById('editRoomPrice').value = room.price;
             const photos = room.photos ? JSON.parse(room.photos) : ['default_room.jpg'];
             document.getElementById('currentImage').innerHTML = '<img src="images/' + photos[0] + '" alt="Current Image" class="w-16 h-16 object-cover rounded">';
             document.getElementById('editRoomModal').classList.remove('hidden');

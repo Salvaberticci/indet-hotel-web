@@ -13,8 +13,8 @@ if (!isset($_GET['id'])) {
 $id = intval($_GET['id']);
 
 // Fetch reservation details
-// Adjusted to use actual DB fields: rooms.price as price_per_night, rooms.capacity as adults (assuming capacity = number of people), placeholders for missing fields
-$sql = "SELECT r.id, ro.type as room_type, ro.price as price_per_night, ro.capacity as adults, r.checkin_date, r.checkout_date, r.status, u.name, u.email FROM reservations r JOIN users u ON r.user_id = u.id JOIN rooms ro ON r.room_id = ro.id WHERE r.id = ?";
+// Adjusted to use actual DB fields: rooms.capacity as adults (assuming capacity = number of people), placeholders for missing fields
+$sql = "SELECT r.id, ro.type as room_type, ro.capacity as adults, r.checkin_date, r.checkout_date, r.status, u.name, u.email FROM reservations r JOIN users u ON r.user_id = u.id JOIN rooms ro ON r.room_id = ro.id WHERE r.id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $id);
 $stmt->execute();
@@ -30,7 +30,8 @@ $reservation = $result->fetch_assoc();
 $checkin = new DateTime($reservation['checkin_date']);
 $checkout = new DateTime($reservation['checkout_date']);
 $nights = $checkin->diff($checkout)->days;
-$subtotal = $nights * $reservation['price_per_night'];
+$price_per_night = 0; // Price removed
+$subtotal = $nights * $price_per_night;
 $tax_rate = 0.10; // Assuming 10% tax
 $taxes = $subtotal * $tax_rate;
 $total = $subtotal + $taxes;
@@ -105,8 +106,6 @@ $pdf->Cell(50, 8, utf8_decode('Número de Personas:'), 0, 0);
 $pdf->Cell(0, 8, utf8_decode($reservation['adults']), 0, 1);
 $pdf->Cell(50, 8, utf8_decode('Número de Noches:'), 0, 0);
 $pdf->Cell(0, 8, utf8_decode($nights), 0, 1);
-$pdf->Cell(50, 8, utf8_decode('Costo por Noche:'), 0, 0);
-$pdf->Cell(0, 8, utf8_decode('$' . number_format($reservation['price_per_night'], 2)), 0, 1);
 
 $pdf->Ln(5);
 
