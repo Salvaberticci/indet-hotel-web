@@ -73,12 +73,16 @@ $comments_result = $conn->query($comments_sql);
                 </div>
                 <div class="flex items-center space-x-4 justify-self-end">
                     <?php if (isset($_SESSION['user_id'])): ?>
-                        <div class="flex flex-col items-center">
+                        <div class="flex flex-col items-center space-y-2">
+                            <a href="user_profile.php" class="login-button">
+                                <span>Mi Perfil</span>
+                                <i class="fas fa-user"></i>
+                            </a>
+                            <span class="text-white font-semibold text-sm"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
                             <a href="php/logout.php" class="login-button">
                                 <span>Logout</span>
                                 <i class="fas fa-sign-out-alt"></i>
                             </a>
-                            <span class="text-white font-semibold text-sm mt-1"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
                         </div>
                     <?php else: ?>
                         <a href="login.php" class="login-button">

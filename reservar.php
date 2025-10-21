@@ -66,11 +66,15 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
                 <div class="flex flex-col items-center space-y-2 justify-self-end">
                     <?php if (isset($_SESSION['user_id'])): ?>
+                        <a href="user_profile.php" class="login-button">
+                            <span>Mi Perfil</span>
+                            <i class="fas fa-user"></i>
+                        </a>
+                        <span class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
                         <a href="php/logout.php" class="login-button">
                             <span>Logout</span>
                             <i class="fas fa-sign-out-alt"></i>
                         </a>
-                        <span class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
                     <?php else: ?>
                         <a href="login.php" class="login-button">
                             <span>Login</span>

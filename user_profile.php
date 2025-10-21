@@ -172,7 +172,7 @@ $reservations_result = $reservations_stmt->get_result();
                                             </td>
                                             <td class="py-3 px-4 text-center">
                                                 <?php if ($reservation['status'] === 'pending'): ?>
-                                                    <button onclick="cancelReservation(<?php echo $reservation['id']; ?>)" class="text-red-500 hover:text-red-700">
+                                                    <button onclick="showCancelModal(<?php echo $reservation['id']; ?>)" class="text-red-500 hover:text-red-700">
                                                         <i class="fas fa-times"></i> Cancelar
                                                     </button>
                                                 <?php else: ?>
@@ -213,28 +213,96 @@ $reservations_result = $reservations_stmt->get_result();
         </div>
     </footer>
 
+    <!-- Cancel Reservation Modal -->
+    <div id="cancelModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white text-gray-800 p-8 rounded-lg max-w-md w-full mx-4 shadow-2xl">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-4 text-gray-800">¿Cancelar Reserva?</h3>
+                <p class="text-gray-600 mb-6">¿Estás seguro de que quieres cancelar esta reserva? Esta acción no se puede deshacer.</p>
+                <div class="flex justify-center space-x-4">
+                    <button onclick="closeCancelModal()" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors">
+                        Cancelar
+                    </button>
+                    <button id="confirmCancelBtn" onclick="confirmCancel()" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors">
+                        Sí, Cancelar Reserva
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        function cancelReservation(reservationId) {
-            if (confirm('¿Estás seguro de que quieres cancelar esta reserva? Esta acción no se puede deshacer.')) {
-                fetch('php/cancel_reservation.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'reservation_id=' + reservationId
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Reserva cancelada exitosamente.');
-                        location.reload();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-            }
+        let reservationToCancel = null;
+
+        function showCancelModal(reservationId) {
+            reservationToCancel = reservationId;
+            document.getElementById('cancelModal').classList.remove('hidden');
         }
+
+        function closeCancelModal() {
+            document.getElementById('cancelModal').classList.add('hidden');
+            reservationToCancel = null;
+        }
+
+        function confirmCancel() {
+            if (!reservationToCancel) return;
+
+            // Disable button to prevent double-clicks
+            const confirmBtn = document.getElementById('confirmCancelBtn');
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = 'Cancelando...';
+
+            fetch('php/cancel_reservation.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'reservation_id=' + reservationToCancel
+            })
+            .then(response => response.json())
+            .then(data => {
+                closeCancelModal();
+                if (data.success) {
+                    // Show success message
+                    showNotification('Reserva cancelada exitosamente.', 'success');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    showNotification('Error: ' + data.message, 'error');
+                    confirmBtn.disabled = false;
+                    confirmBtn.textContent = 'Sí, Cancelar Reserva';
+                }
+            })
+            .catch(error => {
+                closeCancelModal();
+                showNotification('Error al procesar la solicitud.', 'error');
+                console.error('Error:', error);
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = 'Sí, Cancelar Reserva';
+            });
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type} fixed top-4 right-4 z-50`;
+            notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-times-circle'}"></i> ${message}`;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('cancelModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCancelModal();
+            }
+        });
     </script>
 </body>
 </html>
