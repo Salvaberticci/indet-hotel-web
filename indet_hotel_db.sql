@@ -443,7 +443,6 @@ ALTER TABLE `floor_inventory`
 -- Filtros para la tabla `maintenance_tasks`
 --
 ALTER TABLE `maintenance_tasks`
-  ADD CONSTRAINT `maintenance_tasks_ibfk_1` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `maintenance_tasks_ibfk_2` FOREIGN KEY (`assigned_to_user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
