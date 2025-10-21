@@ -257,7 +257,11 @@ $checkout_result = $checkout_stmt->get_result();
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Check-in confirmado exitosamente.');
+                        if (data.pdf_url) {
+                            // Open PDF in new window
+                            window.open(data.pdf_url, '_blank');
+                        }
+                        alert('Check-in confirmado exitosamente. Se ha generado el recibo.');
                         location.reload();
                     } else {
                         alert('Error: ' + data.message);
@@ -279,6 +283,10 @@ $checkout_result = $checkout_stmt->get_result();
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        if (data.pdf_url) {
+                            // Open PDF in new window
+                            window.open(data.pdf_url, '_blank');
+                        }
                         alert('Check-out procesado exitosamente. La habitación ha sido enviada a mantenimiento.');
                         location.reload();
                     } else {

@@ -20,13 +20,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($action === 'checkin') {
-        // Confirm check-in
+        // Confirm check-in and generate PDF receipt
         $sql = "UPDATE reservations SET status = 'confirmed' WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $reservation_id);
 
         if ($stmt->execute()) {
-            echo json_encode(['success' => true, 'message' => 'Check-in confirmado exitosamente.']);
+            // Generate PDF receipt for check-in
+            include 'generate_checkin_pdf.php';
+            $pdf_url = generateCheckinPDF($reservation_id);
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Check-in confirmado exitosamente.',
+                'pdf_url' => $pdf_url
+            ]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Error al confirmar check-in.']);
         }
@@ -62,7 +70,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $conn->commit();
-            echo json_encode(['success' => true, 'message' => 'Check-out procesado exitosamente.']);
+
+            // Generate PDF receipt for check-out
+            include 'generate_checkout_pdf.php';
+            $pdf_url = generateCheckoutPDF($reservation_id);
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Check-out procesado exitosamente.',
+                'pdf_url' => $pdf_url
+            ]);
 
         } catch (Exception $e) {
             $conn->rollback();

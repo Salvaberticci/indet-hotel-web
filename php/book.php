@@ -118,7 +118,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'discapacitados' => $discapacitados
         ];
 
-        header("Location: ../confirmation.php");
+        // Redirect to user profile instead of confirmation page
+        header("Location: ../user_profile.php");
         exit();
 
     } catch (Exception $e) {
