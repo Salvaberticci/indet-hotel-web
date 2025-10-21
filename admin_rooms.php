@@ -72,7 +72,9 @@ if (!$rooms_result) {
                 <h1 class="text-3xl font-bold">Habitaciones</h1>
             </div>
             <div>
-                <a href="admin.php" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-4">Volver al Menú</a>
+                <a href="admin.php" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-4">
+                    <i class="fas fa-arrow-left mr-2"></i>Volver al Menú
+                </a>
                 <a href="php/logout.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Cerrar Sesión</a>
             </div>
         </div>
@@ -83,7 +85,8 @@ if (!$rooms_result) {
             <!-- Add Room Form -->
             <form action="php/room_handler.php" method="POST" enctype="multipart/form-data" class="mb-8 p-4 bg-gray-700 rounded-lg">
                 <h3 class="text-xl font-semibold mb-4">Agregar Nueva Habitación</h3>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <input type="text" name="room_id" placeholder="ID (ej. 001)" required class="p-2 border rounded bg-gray-600 text-white">
                     <input type="text" name="type" placeholder="Tipo (ej. Individual)" required class="p-2 border rounded bg-gray-600 text-white">
                     <input type="number" name="capacity" placeholder="Capacidad" required class="p-2 border rounded bg-gray-600 text-white">
                     <select name="floor_id" required class="p-2 border rounded bg-gray-600 text-white">
@@ -98,23 +101,43 @@ if (!$rooms_result) {
                     </select>
                     <input type="text" name="description" placeholder="Descripción" required class="p-2 border rounded bg-gray-600 text-white">
                 </div>
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="room_images" class="block font-semibold mb-2">Imágenes de la Habitación (múltiples)</label>
+                        <input type="file" name="images[]" id="room_images" accept="image/*" multiple class="p-2 border rounded bg-gray-600 text-white">
+                    </div>
+                    <div>
+                        <label for="room_videos" class="block font-semibold mb-2">Vídeos de la Habitación (múltiples)</label>
+                        <input type="file" name="videos[]" id="room_videos" accept="video/*" multiple class="p-2 border rounded bg-gray-600 text-white">
+                    </div>
+                </div>
                 <div class="mt-4">
-                    <label for="room_image" class="block font-semibold mb-2">Imagen de la Habitación</label>
-                    <input type="file" name="image" id="room_image" accept="image/*" class="p-2 border rounded bg-gray-600 text-white">
+                    <label class="block font-semibold mb-2">Estado</label>
+                    <select name="status" required class="p-2 border rounded bg-gray-600 text-white">
+                        <option value="enabled">Habilitada</option>
+                        <option value="disabled">No Habilitada</option>
+                    </select>
                 </div>
                 <button type="submit" name="add_room" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Agregar Habitación</button>
             </form>
 
+            <!-- Search Room -->
+            <div class="mb-6">
+                <input type="text" id="room_search" placeholder="Buscar habitación por ID..." class="p-2 border rounded bg-gray-700 text-white w-full md:w-1/3">
+            </div>
+
             <!-- Rooms Table -->
             <div class="overflow-x-auto">
-                <table class="min-w-full bg-gray-800">
+                <table class="min-w-full bg-gray-800" id="rooms_table">
                     <thead class="bg-gray-700 text-white">
                         <tr>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">ID</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Imagen</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Tipo</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Piso</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Descripción</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Capacidad</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Estado</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Acciones</th>
                         </tr>
                     </thead>
@@ -122,12 +145,18 @@ if (!$rooms_result) {
                         <?php if ($rooms_result->num_rows > 0): ?>
                             <?php while($room = $rooms_result->fetch_assoc()): ?>
                                 <?php $photos = json_decode($room['photos'], true); ?>
-                                <tr class="hover:bg-gray-700 border-b border-gray-700">
+                                <tr class="hover:bg-gray-700 border-b border-gray-700 room-row" data-room-id="<?php echo $room['id']; ?>">
+                                    <td class="py-3 px-4 text-center"><?php echo $room['id']; ?></td>
                                     <td class="py-3 px-4 text-center"><img src="images/<?php echo htmlspecialchars($photos[0] ?? 'default_room.jpg'); ?>" alt="Room Image" class="w-16 h-16 object-cover rounded"></td>
                                     <td class="py-3 px-4 text-center capitalize"><?php echo $room['type']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($room['floor_name']); ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $room['description']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $room['capacity']; ?></td>
+                                    <td class="py-3 px-4 text-center">
+                                        <span class="px-2 py-1 rounded-full text-xs <?php echo ($room['status'] ?? 'enabled') === 'enabled' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
+                                            <?php echo ($room['status'] ?? 'enabled') === 'enabled' ? 'Habilitada' : 'No Habilitada'; ?>
+                                        </span>
+                                    </td>
                                     <td class="py-3 px-4 text-center">
                                         <button onclick="openEditRoomModal(<?php echo htmlspecialchars(json_encode($room)); ?>)" class="text-blue-500 hover:text-blue-700 mr-2">Editar</button>
                                         <a href="php/room_handler.php?delete_room=<?php echo $room['id']; ?>" onclick="return confirm('¿Estás seguro? Esto no se puede hacer si la habitación tiene reservas.')" class="text-red-500 hover:text-red-700">Eliminar</a>
@@ -135,7 +164,7 @@ if (!$rooms_result) {
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <tr><td colspan="6" class="text-center py-4">No hay habitaciones para mostrar.</td></tr>
+                            <tr><td colspan="8" class="text-center py-4">No hay habitaciones para mostrar.</td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -247,6 +276,21 @@ if (!$rooms_result) {
         function closeEditRoomModal() {
             document.getElementById('editRoomModal').classList.add('hidden');
         }
+
+        // Search functionality
+        document.getElementById('room_search').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.room-row');
+
+            rows.forEach(row => {
+                const roomId = row.getAttribute('data-room-id').toLowerCase();
+                if (roomId.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
     </script>
 </body>
 </html>

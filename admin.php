@@ -67,7 +67,12 @@ $is_admin = $_SESSION['user_role'] == 'admin';
         ?>
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold"><?php echo $is_admin ? 'Panel de Administración' : 'Panel de Mantenimiento'; ?></h1>
-            <a href="php/logout.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Cerrar Sesión</a>
+            <div>
+                <a href="index.php" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-4">
+                    <i class="fas fa-arrow-left mr-2"></i>Volver al Inicio
+                </a>
+                <a href="php/logout.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Cerrar Sesión</a>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

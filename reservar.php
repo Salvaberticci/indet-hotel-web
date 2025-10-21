@@ -88,73 +88,301 @@ if (!isset($_SESSION['user_id'])) {
         <section id="booking" class="bg-white text-gray-800 py-12 relative z-30 mx-4 md:mx-auto max-w-5xl rounded-2xl shadow-2xl w-full">
             <div class="container mx-auto">
                 <h2 class="text-4xl font-bold text-center mb-8">Realizar una Reserva</h2>
-                <form action="php/book.php" method="POST" class="px-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end mb-6">
+                <form action="php/book.php" method="POST" class="px-6" id="reservationForm">
+                    <!-- Datos Personales -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="form-group text-left">
+                            <label for="cedula" class="font-bold text-sm mb-2 block text-gray-500">CÉDULA*</label>
+                            <input type="text" name="cedula" placeholder="Ingresa tu cédula" required class="booking-input">
+                        </div>
+                        <div class="form-group text-left">
+                            <label for="guest_name" class="font-bold text-sm mb-2 block text-gray-500">NOMBRE*</label>
+                            <input type="text" name="guest_name" placeholder="Ingresa tu nombre" required class="booking-input">
+                        </div>
+                        <div class="form-group text-left">
+                            <label for="guest_lastname" class="font-bold text-sm mb-2 block text-gray-500">APELLIDO*</label>
+                            <input type="text" name="guest_lastname" placeholder="Ingresa tu apellido" required class="booking-input">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="form-group text-left">
+                            <label for="guest_email" class="font-bold text-sm mb-2 block text-gray-500">CORREO ELECTRÓNICO*</label>
+                            <input type="email" name="guest_email" placeholder="Ingresa tu correo" required class="booking-input">
+                        </div>
                         <div class="form-group text-left">
                             <label for="checkin" class="font-bold text-sm mb-2 block text-gray-500">FECHA DE LLEGADA*</label>
                             <input type="text" name="checkin" placeholder="SELECCIONA" onfocus="(this.type='date')" onblur="(this.type='text')" required class="booking-input">
                         </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div class="form-group text-left">
                             <label for="checkout" class="font-bold text-sm mb-2 block text-gray-500">FECHA DE SALIDA*</label>
                             <input type="text" name="checkout" placeholder="SELECCIONA" onfocus="(this.type='date')" onblur="(this.type='text')" required class="booking-input">
                         </div>
                         <div class="form-group text-left">
-                            <label for="room_type" class="font-bold text-sm mb-2 block text-gray-500">HABITACIÓN*</label>
-                            <select name="room_type" required class="booking-input">
-                                <option value="">SELECCIONA</option>
-                                <option value="individual">Individual</option>
-                                <option value="dual">Doble</option>
-                                <option value="suite">Suite</option>
-                            </select>
+                            <label class="font-bold text-sm mb-2 block text-gray-500">PERSONAS*</label>
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="text-center">
+                                    <label class="block text-sm">Adultos</label>
+                                    <div class="flex items-center justify-center">
+                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded" onclick="changeCount('adultos', -1)">-</button>
+                                        <span id="adultos-count" class="mx-2">0</span>
+                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded" onclick="changeCount('adultos', 1)">+</button>
+                                    </div>
+                                    <input type="hidden" name="adultos" id="adultos" value="0">
+                                </div>
+                                <div class="text-center">
+                                    <label class="block text-sm">Niños</label>
+                                    <div class="flex items-center justify-center">
+                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded" onclick="changeCount('ninos', -1)">-</button>
+                                        <span id="ninos-count" class="mx-2">0</span>
+                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded" onclick="changeCount('ninos', 1)">+</button>
+                                    </div>
+                                    <input type="hidden" name="ninos" id="ninos" value="0">
+                                </div>
+                                <div class="text-center">
+                                    <label class="block text-sm">Discapacitados</label>
+                                    <div class="flex items-center justify-center">
+                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded" onclick="changeCount('discapacitados', -1)">-</button>
+                                        <span id="discapacitados-count" class="mx-2">0</span>
+                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded" onclick="changeCount('discapacitados', 1)">+</button>
+                                    </div>
+                                    <input type="hidden" name="discapacitados" id="discapacitados" value="0">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div class="form-group text-left">
-                            <label for="guest_name" class="font-bold text-sm mb-2 block text-gray-500">NOMBRE COMPLETO*</label>
-                            <input type="text" name="guest_name" placeholder="Ingresa tu nombre" required class="booking-input">
+                            <label for="floor_id" class="font-bold text-sm mb-2 block text-gray-500">PISO*</label>
+                            <select name="floor_id" id="floor_id" required class="booking-input">
+                                <option value="">SELECCIONA</option>
+                                <?php
+                                include 'php/db.php';
+                                $floors_sql = "SELECT id, name FROM floors ORDER BY floor_number ASC";
+                                $floors_result = $conn->query($floors_sql);
+                                while($floor = $floors_result->fetch_assoc()) {
+                                    echo "<option value='" . $floor['id'] . "'>" . htmlspecialchars($floor['name']) . "</option>";
+                                }
+                                $conn->close();
+                                ?>
+                            </select>
                         </div>
                         <div class="form-group text-left">
-                            <label for="guest_email" class="font-bold text-sm mb-2 block text-gray-500">CORREO ELECTRÓNICO*</label>
-                            <input type="email" name="guest_email" placeholder="Ingresa tu correo" required class="booking-input">
+                            <label for="room_capacity" class="font-bold text-sm mb-2 block text-gray-500">CAPACIDAD DE HABITACIÓN*</label>
+                            <select name="room_capacity" id="room_capacity" required class="booking-input">
+                                <option value="">SELECCIONA</option>
+                                <option value="3">3 Literas</option>
+                                <option value="7">7 Literas</option>
+                                <option value="8">8 Literas</option>
+                            </select>
                         </div>
                     </div>
-                    <button type="submit" class="action-button w-full">Confirmar Reserva <i class="fas fa-arrow-right"></i></button>
+                    <div id="room-selection" class="mb-6 hidden">
+                        <h3 class="text-lg font-bold mb-4">Seleccionar Habitaciones</h3>
+                        <div id="available-rooms" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                        <div id="selected-rooms" class="mt-4">
+                            <h4 class="font-bold">Habitaciones Seleccionadas:</h4>
+                            <ul id="selected-list" class="list-disc pl-5"></ul>
+                        </div>
+                    </div>
+                    <button type="button" id="reserve-btn" class="action-button w-full hidden">Reservar <i class="fas fa-arrow-right"></i></button>
                 </form>
                 <div id="availability-results" class="mt-8"></div>
             </div>
         </section>
     </main>
 
+    <!-- Botón de volver -->
+    <div class="fixed bottom-4 left-4 z-50">
+        <a href="index.php" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg">
+            <i class="fas fa-arrow-left mr-2"></i>Volver
+        </a>
+    </div>
+
     <script>
+        let selectedRooms = [];
+
+        function changeCount(type, delta) {
+            const countElement = document.getElementById(type + '-count');
+            const hiddenInput = document.getElementById(type);
+            let count = parseInt(countElement.textContent) + delta;
+            if (count < 0) count = 0;
+            countElement.textContent = count;
+            hiddenInput.value = count;
+            updateFloorOptions();
+            checkRoomSelection();
+        }
+
+        function updateFloorOptions() {
+            const discapacitados = parseInt(document.getElementById('discapacitados').value);
+            const floorSelect = document.getElementById('floor_id');
+            const options = floorSelect.querySelectorAll('option');
+
+            options.forEach(option => {
+                if (option.value !== '') {
+                    if (discapacitados > 0 && option.textContent !== 'Planta Baja') {
+                        option.disabled = true;
+                        option.style.display = 'none';
+                    } else {
+                        option.disabled = false;
+                        option.style.display = 'block';
+                    }
+                }
+            });
+
+            // Reset selection if current floor is disabled
+            if (floorSelect.selectedOptions[0] && floorSelect.selectedOptions[0].disabled) {
+                floorSelect.selectedIndex = 0;
+            }
+        }
+
+        function checkRoomSelection() {
+            const checkin = document.querySelector('input[name="checkin"]').value;
+            const checkout = document.querySelector('input[name="checkout"]').value;
+            const floorId = document.getElementById('floor_id').value;
+            const capacity = document.getElementById('room_capacity').value;
+            const adultos = parseInt(document.getElementById('adultos').value);
+            const ninos = parseInt(document.getElementById('ninos').value);
+            const discapacitados = parseInt(document.getElementById('discapacitados').value);
+            const totalPeople = adultos + ninos + discapacitados;
+
+            if (checkin && checkout && floorId && capacity && totalPeople > 0) {
+                loadAvailableRooms(checkin, checkout, floorId, capacity, totalPeople);
+            } else {
+                document.getElementById('room-selection').classList.add('hidden');
+                document.getElementById('reserve-btn').classList.add('hidden');
+            }
+        }
+
+        function loadAvailableRooms(checkin, checkout, floorId, capacity, totalPeople) {
+            fetch(`php/availability_handler.php?checkin=${checkin}&checkout=${checkout}&floor_id=${floorId}&capacity=${capacity}&total_people=${totalPeople}`)
+                .then(response => response.json())
+                .then(data => {
+                    displayAvailableRooms(data);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function displayAvailableRooms(rooms) {
+            const container = document.getElementById('available-rooms');
+            container.innerHTML = '';
+
+            if (rooms.length === 0) {
+                container.innerHTML = '<p>No hay habitaciones disponibles para los criterios seleccionados.</p>';
+                return;
+            }
+
+            rooms.forEach(room => {
+                const roomDiv = document.createElement('div');
+                roomDiv.className = 'border p-4 rounded bg-gray-50';
+                roomDiv.innerHTML = `
+                    <h4 class="font-bold">Habitación ${room.id}</h4>
+                    <p>Tipo: ${room.type}</p>
+                    <p>Capacidad: ${room.capacity}</p>
+                    <p>Piso: ${room.floor_name}</p>
+                    <button type="button" onclick="selectRoom(${room.id}, '${room.type}', ${room.capacity})" class="bg-blue-500 text-white px-4 py-2 rounded mt-2">Seleccionar</button>
+                `;
+                container.appendChild(roomDiv);
+            });
+
+            document.getElementById('room-selection').classList.remove('hidden');
+            document.getElementById('reserve-btn').classList.remove('hidden');
+        }
+
+        function selectRoom(id, type, capacity) {
+            if (selectedRooms.find(room => room.id === id)) {
+                alert('Esta habitación ya está seleccionada.');
+                return;
+            }
+            selectedRooms.push({ id, type, capacity });
+            updateSelectedRoomsDisplay();
+        }
+
+        function updateSelectedRoomsDisplay() {
+            const list = document.getElementById('selected-list');
+            list.innerHTML = '';
+            selectedRooms.forEach(room => {
+                const li = document.createElement('li');
+                li.textContent = `Habitación ${room.id} - ${room.type} (Capacidad: ${room.capacity})`;
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'ml-2 text-red-500';
+                removeBtn.textContent = 'Remover';
+                removeBtn.onclick = () => removeRoom(room.id);
+                li.appendChild(removeBtn);
+                list.appendChild(li);
+            });
+        }
+
+        function removeRoom(id) {
+            selectedRooms = selectedRooms.filter(room => room.id !== id);
+            updateSelectedRoomsDisplay();
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             const checkinInput = document.querySelector('input[name="checkin"]');
             const checkoutInput = document.querySelector('input[name="checkout"]');
-            const roomTypeSelect = document.querySelector('select[name="room_type"]');
-            const resultsContainer = document.getElementById('availability-results');
+            const floorSelect = document.getElementById('floor_id');
+            const capacitySelect = document.getElementById('room_capacity');
 
-            function checkAvailability() {
-                const checkin = checkinInput.value;
-                const checkout = checkoutInput.value;
-                const roomType = roomTypeSelect.value;
+            checkinInput.addEventListener('change', checkRoomSelection);
+            checkoutInput.addEventListener('change', checkRoomSelection);
+            floorSelect.addEventListener('change', checkRoomSelection);
+            capacitySelect.addEventListener('change', checkRoomSelection);
 
-                if (checkin && checkout) {
-                    let url = `php/availability_handler.php?checkin=${checkin}&checkout=${checkout}`;
-                    if (roomType) {
-                        url += `&room_type=${roomType}`;
-                    }
-                    fetch(url)
-                        .then(response => response.text())
-                        .then(data => {
-                            resultsContainer.innerHTML = data;
-                        })
-                        .catch(error => console.error('Error:', error));
+            // Add listeners for person counters
+            ['adultos', 'ninos', 'discapacitados'].forEach(type => {
+                document.getElementById(type + '-count').addEventListener('DOMSubtreeModified', checkRoomSelection);
+            });
+
+            document.getElementById('reserve-btn').addEventListener('click', function() {
+                if (selectedRooms.length === 0) {
+                    alert('Por favor selecciona al menos una habitación.');
+                    return;
                 }
-            }
-
-            checkinInput.addEventListener('change', checkAvailability);
-            checkoutInput.addEventListener('change', checkAvailability);
-            roomTypeSelect.addEventListener('change', checkAvailability);
+                showConfirmation();
+            });
         });
+
+        function showConfirmation() {
+            const form = document.getElementById('reservationForm');
+            const confirmationDiv = document.createElement('div');
+            confirmationDiv.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            confirmationDiv.innerHTML = `
+                <div class="bg-white p-8 rounded-lg max-w-md w-full mx-4">
+                    <h3 class="text-xl font-bold mb-4">Confirmar Reserva</h3>
+                    <p class="mb-4">¿Estás seguro de que quieres proceder con esta reserva?</p>
+                    <div class="mb-4">
+                        <h4 class="font-bold">Detalles de la reserva:</h4>
+                        <p>Check-in: ${document.querySelector('input[name="checkin"]').value}</p>
+                        <p>Check-out: ${document.querySelector('input[name="checkout"]').value}</p>
+                        <p>Habitaciones seleccionadas: ${selectedRooms.length}</p>
+                    </div>
+                    <div class="flex justify-end space-x-4">
+                        <button onclick="this.closest('.fixed').remove()" class="bg-gray-500 text-white px-4 py-2 rounded">Volver</button>
+                        <button onclick="submitReservation()" class="bg-green-500 text-white px-4 py-2 rounded">Confirmar</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(confirmationDiv);
+        }
+
+        function submitReservation() {
+            const form = document.getElementById('reservationForm');
+            const formData = new FormData(form);
+            formData.append('selected_rooms', JSON.stringify(selectedRooms));
+
+            fetch('php/book.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                window.location.href = 'confirmation.php';
+            })
+            .catch(error => console.error('Error:', error));
+        }
     </script>
 
     <!-- Footer -->

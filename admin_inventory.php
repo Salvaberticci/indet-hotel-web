@@ -87,7 +87,9 @@ $selected_floor_name = $selected_floor_result->fetch_assoc()['name'] ?? 'Piso De
                 <h1 class="text-3xl font-bold">Inventario del <?php echo $selected_floor_name; ?></h1>
             </div>
             <div>
-                <a href="admin.php" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-4">Volver al Menú</a>
+                <a href="admin.php" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-4">
+                    <i class="fas fa-arrow-left mr-2"></i>Volver al Menú
+                </a>
                 <a href="php/logout.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Cerrar Sesión</a>
             </div>
         </div>

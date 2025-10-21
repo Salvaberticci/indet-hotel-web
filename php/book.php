@@ -3,14 +3,52 @@ session_start();
 include 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (!isset($_POST['checkin']) || empty($_POST['checkin']) || !isset($_POST['checkout']) || empty($_POST['checkout']) || !isset($_POST['room_type']) || empty($_POST['room_type']) || !isset($_POST['guest_name']) || empty($_POST['guest_name']) || !isset($_POST['guest_email']) || empty($_POST['guest_email'])) {
-        die("Error: Por favor, complete todos los campos del formulario.");
+    // Validaciones básicas
+    $required_fields = ['cedula', 'guest_name', 'guest_lastname', 'guest_email', 'checkin', 'checkout', 'floor_id', 'room_capacity', 'selected_rooms'];
+    foreach ($required_fields as $field) {
+        if (!isset($_POST[$field]) || empty($_POST[$field])) {
+            $_SESSION['flash_message'] = [
+                'status' => 'error',
+                'text' => 'Por favor, complete todos los campos del formulario.'
+            ];
+            header("Location: ../reservar.php");
+            exit();
+        }
     }
+
+    // Validar fechas
     $checkin = $_POST['checkin'];
     $checkout = $_POST['checkout'];
-    $room_type = $_POST['room_type'];
+    $today = date('Y-m-d');
+
+    if ($checkin < $today) {
+        $_SESSION['flash_message'] = [
+            'status' => 'error',
+            'text' => 'La fecha de llegada no puede ser anterior a hoy.'
+        ];
+        header("Location: ../reservar.php");
+        exit();
+    }
+
+    if ($checkout <= $checkin) {
+        $_SESSION['flash_message'] = [
+            'status' => 'error',
+            'text' => 'La fecha de salida debe ser posterior a la fecha de llegada.'
+        ];
+        header("Location: ../reservar.php");
+        exit();
+    }
+
+    $cedula = $_POST['cedula'];
     $guest_name = $_POST['guest_name'];
+    $guest_lastname = $_POST['guest_lastname'];
     $guest_email = $_POST['guest_email'];
+    $floor_id = $_POST['floor_id'];
+    $room_capacity = $_POST['room_capacity'];
+    $selected_rooms = json_decode($_POST['selected_rooms'], true);
+    $adultos = (int)$_POST['adultos'];
+    $ninos = (int)$_POST['ninos'];
+    $discapacitados = (int)$_POST['discapacitados'];
 
     if (!isset($_SESSION['user_id'])) {
         $_SESSION['flash_message'] = [
@@ -22,49 +60,66 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     $user_id = $_SESSION['user_id'];
 
-    // Get room_id based on room_type.
-    $room_id_query = "SELECT id FROM rooms WHERE type = ? LIMIT 1";
-    $stmt = $conn->prepare($room_id_query);
-    $stmt->bind_param("s", $room_type);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    // Verificar que las habitaciones seleccionadas estén disponibles
+    $conn->begin_transaction();
+    try {
+        foreach ($selected_rooms as $room) {
+            $room_id = $room['id'];
 
-    if ($result->num_rows > 0) {
-        $room = $result->fetch_assoc();
-        $room_id = $room['id'];
+            // Verificar disponibilidad
+            $availability_query = "SELECT COUNT(*) as count FROM reservations
+                                   WHERE room_id = ? AND status IN ('confirmed', 'pending')
+                                   AND ((checkin_date <= ? AND checkout_date > ?) OR
+                                        (checkin_date < ? AND checkout_date >= ?) OR
+                                        (checkin_date >= ? AND checkout_date <= ?))";
+            $stmt = $conn->prepare($availability_query);
+            $stmt->bind_param("issssss", $room_id, $checkin, $checkin, $checkout, $checkout, $checkin, $checkout);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $count = $result->fetch_assoc()['count'];
 
-        $sql = "INSERT INTO reservations (user_id, room_id, checkin_date, checkout_date, guest_name, guest_email, status) VALUES (?, ?, ?, ?, ?, ?, 'pending')";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("iissss", $user_id, $room_id, $checkin, $checkout, $guest_name, $guest_email);
+            if ($count > 0) {
+                throw new Exception("La habitación {$room_id} no está disponible en las fechas seleccionadas.");
+            }
 
-        if ($stmt->execute()) {
-            $reservation_id = $stmt->insert_id;
-            // Store reservation details in session to display on confirmation page
-            $_SESSION['last_reservation'] = [
-                'id' => $reservation_id,
-                'room_type' => $room_type,
-                'checkin' => $checkin,
-                'checkout' => $checkout,
-                'guest_name' => $guest_name
-            ];
-            header("Location: ../confirmation.php");
-            exit();
-        } else {
-            $_SESSION['flash_message'] = [
-                'status' => 'error',
-                'text' => 'Error al realizar la reserva.'
-            ];
+            // Insertar reserva
+            $sql = "INSERT INTO reservations (user_id, room_id, checkin_date, checkout_date, guest_name, guest_email, cedula, guest_lastname, adultos, ninos, discapacitados, status)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending')";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("iissssssiii", $user_id, $room_id, $checkin, $checkout, $guest_name, $guest_email, $cedula, $guest_lastname, $adultos, $ninos, $discapacitados);
+
+            if (!$stmt->execute()) {
+                throw new Exception("Error al crear la reserva para la habitación {$room_id}.");
+            }
         }
-    } else {
+
+        $conn->commit();
+
+        // Store reservation details in session
+        $_SESSION['last_reservation'] = [
+            'checkin' => $checkin,
+            'checkout' => $checkout,
+            'guest_name' => $guest_name,
+            'guest_lastname' => $guest_lastname,
+            'selected_rooms' => $selected_rooms,
+            'adultos' => $adultos,
+            'ninos' => $ninos,
+            'discapacitados' => $discapacitados
+        ];
+
+        header("Location: ../confirmation.php");
+        exit();
+
+    } catch (Exception $e) {
+        $conn->rollback();
         $_SESSION['flash_message'] = [
             'status' => 'error',
-            'text' => 'No se pudo encontrar el tipo de habitación.'
+            'text' => $e->getMessage()
         ];
+        header("Location: ../reservar.php");
+        exit();
     }
-    header("Location: ../reservar.php");
-    exit();
 
-    $stmt->close();
     $conn->close();
 }
 ?>

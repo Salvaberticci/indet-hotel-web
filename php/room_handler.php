@@ -10,38 +10,61 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 
 // Add Room
 if (isset($_POST['add_room'])) {
+    $room_id = $_POST['room_id'];
     $type = $_POST['type'];
     $capacity = $_POST['capacity'];
     $floor_id = $_POST['floor_id'];
     $description = $_POST['description'];
+    $status = $_POST['status'];
 
     $photos = [];
-    if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
+    $videos = [];
+
+    // Handle multiple images
+    if (isset($_FILES['images'])) {
         $upload_dir = '../images/';
-        $file_name = basename($_FILES['image']['name']);
-        $target_file = $upload_dir . $file_name;
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-            $photos[] = $file_name;
-        } else {
-            $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al subir la imagen.'];
-            header("Location: ../admin.php#rooms-section");
-            exit();
+        foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
+            if ($_FILES['images']['error'][$key] == UPLOAD_ERR_OK) {
+                $file_name = basename($_FILES['images']['name'][$key]);
+                $target_file = $upload_dir . $file_name;
+                if (move_uploaded_file($tmp_name, $target_file)) {
+                    $photos[] = $file_name;
+                }
+            }
         }
-    } else {
+    }
+
+    // Handle multiple videos
+    if (isset($_FILES['videos'])) {
+        $upload_dir = '../images/'; // Using same directory for simplicity
+        foreach ($_FILES['videos']['tmp_name'] as $key => $tmp_name) {
+            if ($_FILES['videos']['error'][$key] == UPLOAD_ERR_OK) {
+                $file_name = basename($_FILES['videos']['name'][$key]);
+                $target_file = $upload_dir . $file_name;
+                if (move_uploaded_file($tmp_name, $target_file)) {
+                    $videos[] = $file_name;
+                }
+            }
+        }
+    }
+
+    if (empty($photos)) {
         $photos[] = 'default_room.jpg';
     }
-    $photos_json = json_encode($photos);
 
-    $sql = "INSERT INTO rooms (type, capacity, floor_id, description, photos) VALUES (?, ?, ?, ?, ?)";
+    $photos_json = json_encode($photos);
+    $videos_json = json_encode($videos);
+
+    $sql = "INSERT INTO rooms (id, type, capacity, floor_id, description, photos, videos, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("siiss", $type, $capacity, $floor_id, $description, $photos_json);
+    $stmt->bind_param("ssiiisss", $room_id, $type, $capacity, $floor_id, $description, $photos_json, $videos_json, $status);
 
     if ($stmt->execute()) {
         $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Habitación agregada exitosamente.'];
     } else {
         $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al agregar la habitación: ' . $stmt->error];
     }
-    header("Location: ../admin.php#rooms-section");
+    header("Location: ../admin_rooms.php");
     exit();
 }
 
@@ -52,40 +75,59 @@ if (isset($_POST['update_room'])) {
     $capacity = $_POST['capacity'];
     $floor_id = $_POST['floor_id'];
     $description = $_POST['description'];
+    $status = $_POST['status'] ?? 'enabled';
 
-    // Fetch current photos
-    $current_sql = "SELECT photos FROM rooms WHERE id = ?";
+    // Fetch current photos and videos
+    $current_sql = "SELECT photos, videos FROM rooms WHERE id = ?";
     $current_stmt = $conn->prepare($current_sql);
     $current_stmt->bind_param("i", $id);
     $current_stmt->execute();
     $current_result = $current_stmt->get_result();
     $current_room = $current_result->fetch_assoc();
     $photos = json_decode($current_room['photos'], true) ?? ['default_room.jpg'];
+    $videos = json_decode($current_room['videos'], true) ?? [];
 
-    if (isset($_FILES['image']) && $_FILES['image']['error'] == UPLOAD_ERR_OK) {
+    // Handle multiple images (append to existing)
+    if (isset($_FILES['images'])) {
         $upload_dir = '../images/';
-        $file_name = basename($_FILES['image']['name']);
-        $target_file = $upload_dir . $file_name;
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-            $photos = [$file_name]; // Replace with new image
-        } else {
-            $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al subir la imagen.'];
-            header("Location: ../admin.php#rooms-section");
-            exit();
+        foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
+            if ($_FILES['images']['error'][$key] == UPLOAD_ERR_OK) {
+                $file_name = basename($_FILES['images']['name'][$key]);
+                $target_file = $upload_dir . $file_name;
+                if (move_uploaded_file($tmp_name, $target_file)) {
+                    $photos[] = $file_name;
+                }
+            }
         }
     }
-    $photos_json = json_encode($photos);
 
-    $sql = "UPDATE rooms SET type = ?, capacity = ?, floor_id = ?, description = ?, photos = ? WHERE id = ?";
+    // Handle multiple videos (append to existing)
+    if (isset($_FILES['videos'])) {
+        $upload_dir = '../images/';
+        foreach ($_FILES['videos']['tmp_name'] as $key => $tmp_name) {
+            if ($_FILES['videos']['error'][$key] == UPLOAD_ERR_OK) {
+                $file_name = basename($_FILES['videos']['name'][$key]);
+                $target_file = $upload_dir . $file_name;
+                if (move_uploaded_file($tmp_name, $target_file)) {
+                    $videos[] = $file_name;
+                }
+            }
+        }
+    }
+
+    $photos_json = json_encode($photos);
+    $videos_json = json_encode($videos);
+
+    $sql = "UPDATE rooms SET type = ?, capacity = ?, floor_id = ?, description = ?, photos = ?, videos = ?, status = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("siissi", $type, $capacity, $floor_id, $description, $photos_json, $id);
+    $stmt->bind_param("siissssi", $type, $capacity, $floor_id, $description, $photos_json, $videos_json, $status, $id);
 
     if ($stmt->execute()) {
         $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Habitación actualizada exitosamente.'];
     } else {
         $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al actualizar la habitación: ' . $stmt->error];
     }
-    header("Location: ../admin.php#rooms-section");
+    header("Location: ../admin_rooms.php");
     exit();
 }
 
@@ -113,7 +155,7 @@ if (isset($_GET['delete_room'])) {
             $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al eliminar la habitación: ' . $stmt->error];
         }
     }
-    header("Location: ../admin.php#rooms-section");
+    header("Location: ../admin_rooms.php");
     exit();
 }
 ?>

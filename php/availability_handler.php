@@ -1,62 +1,49 @@
 <?php
 include 'db.php';
 
-header('Content-Type: text/html; charset=utf-8');
+header('Content-Type: application/json; charset=utf-8');
 
-if (isset($_GET['checkin']) && isset($_GET['checkout'])) {
-    $checkin_date = $_GET['checkin'];
-    $checkout_date = $_GET['checkout'];
-    $room_type = isset($_GET['room_type']) ? $_GET['room_type'] : null;
+$checkin = $_GET['checkin'] ?? '';
+$checkout = $_GET['checkout'] ?? '';
+$floor_id = $_GET['floor_id'] ?? '';
+$capacity = $_GET['capacity'] ?? '';
+$total_people = $_GET['total_people'] ?? 0;
 
-    // Find rooms that are NOT booked during the selected dates
-    $sql = "SELECT r.id, r.type, r.capacity, r.description, r.photos
-            FROM rooms r
-            WHERE r.id NOT IN (
-                SELECT res.room_id
-                FROM reservations res
-                WHERE (res.checkin_date < ? AND res.checkout_date > ?)
-                OR (res.checkin_date >= ? AND res.checkin_date < ?)
-            )";
-    $params = [$checkout_date, $checkin_date, $checkin_date, $checkout_date];
-    $types = "ssss";
-
-    if ($room_type) {
-        $sql .= " AND r.type = ?";
-        $params[] = $room_type;
-        $types .= "s";
-    }
-
-    $sql .= " ORDER BY r.type";
-
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param($types, ...$params);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        echo '<h3 class="text-2xl font-bold text-center mb-6">Habitaciones Disponibles</h3>';
-        echo '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-6">';
-        while ($room = $result->fetch_assoc()) {
-            $photos = json_decode($room['photos'], true);
-            $image = (!empty($photos) && isset($photos[0])) ? "images/{$photos[0]}" : 'images/hero-bg.jpg';
-            
-            echo '<div class="room-card bg-gray-50 rounded-lg overflow-hidden shadow-lg">';
-            echo '<img src="' . htmlspecialchars($image) . '" alt="' . htmlspecialchars($room['type']) . '" class="w-full h-48 object-cover">';
-            echo '<div class="p-4">';
-            echo '<h4 class="text-xl font-bold capitalize">' . htmlspecialchars($room['type']) . '</h4>';
-            echo '<p class="text-gray-600 text-sm mb-2">' . htmlspecialchars($room['description']) . '</p>';
-            echo '<ul class="text-sm space-y-1">';
-            echo '<li><i class="fas fa-users mr-2 text-green-600"></i>Capacidad: ' . htmlspecialchars($room['capacity']) . '</li>';
-            echo '</ul>';
-            echo '</div>';
-            echo '</div>';
-        }
-        echo '</div>';
-    } else {
-        echo '<p class="text-center text-red-500">No hay habitaciones disponibles para las fechas seleccionadas.</p>';
-    }
-
-    $stmt->close();
-    $conn->close();
+if (empty($checkin) || empty($checkout) || empty($floor_id) || empty($capacity)) {
+    echo json_encode([]);
+    exit();
 }
+
+// Query to find available rooms
+$sql = "SELECT r.id, r.type, r.capacity, r.description, r.photos, r.price, f.name as floor_name
+        FROM rooms r
+        JOIN floors f ON r.floor_id = f.id
+        WHERE r.id NOT IN (
+            SELECT room_id FROM reservations
+            WHERE status IN ('confirmed', 'pending')
+            AND ((checkin_date <= ? AND checkout_date > ?) OR
+                 (checkin_date < ? AND checkout_date >= ?) OR
+                 (checkin_date >= ? AND checkout_date <= ?))
+        )
+        AND r.floor_id = ?
+        AND r.capacity = ?
+        AND r.status = 'enabled'"; // Solo habitaciones habilitadas
+
+$params = [$checkin, $checkin, $checkout, $checkout, $checkin, $checkout, $floor_id, $capacity];
+$types = "ssssssii";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param($types, ...$params);
+$stmt->execute();
+$result = $stmt->get_result();
+
+$rooms = [];
+while ($room = $result->fetch_assoc()) {
+    $rooms[] = $room;
+}
+
+echo json_encode($rooms);
+
+$stmt->close();
+$conn->close();
 ?>
