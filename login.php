@@ -76,6 +76,10 @@ session_start();
             <h2 class="text-3xl font-bold mb-6 text-center">Iniciar Sesión</h2>
             <form action="php/login_handler.php" method="POST">
                 <div class="mb-4">
+                    <label for="cedula" class="block font-semibold mb-2">Cédula</label>
+                    <input type="text" id="cedula" name="cedula" required class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+                </div>
+                <div class="mb-4">
                     <label for="email" class="block font-semibold mb-2">Correo Electrónico</label>
                     <input type="email" id="email" name="email" required class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
                 </div>

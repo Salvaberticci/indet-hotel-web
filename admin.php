@@ -123,6 +123,11 @@ $is_admin = $_SESSION['user_role'] == 'admin';
                 <h3 class="text-xl font-bold">Tareas de Mantenimiento</h3>
                 <p>Ver tareas de mantenimiento</p>
             </a>
+            <a href="admin_checkin_checkout.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
+                <i class="fas fa-concierge-bell fa-3x mb-4"></i>
+                <h3 class="text-xl font-bold">Check-in/Check-out</h3>
+                <p>Gestionar check-ins y check-outs diarios</p>
+            </a>
             <a href="admin_comments.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
                 <i class="fas fa-comments fa-3x mb-4"></i>
                 <h3 class="text-xl font-bold">Comentarios</h3>

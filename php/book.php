@@ -95,6 +95,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $conn->commit();
 
+        // Schedule maintenance tasks for each reservation
+        include 'maintenance_scheduler.php';
+        foreach ($selected_rooms as $room) {
+            // Get the reservation ID for this room (assuming we can get it from the last insert)
+            $last_id_sql = "SELECT LAST_INSERT_ID() as id";
+            $last_id_result = $conn->query($last_id_sql);
+            $reservation_id = $last_id_result->fetch_assoc()['id'];
+
+            scheduleCleaningBeforeReservation($reservation_id);
+        }
+
         // Store reservation details in session
         $_SESSION['last_reservation'] = [
             'checkin' => $checkin,

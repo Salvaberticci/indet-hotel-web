@@ -3,12 +3,13 @@ session_start();
 include 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $cedula = $_POST['cedula'];
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $sql = "SELECT id, name, password, role, is_verified FROM users WHERE email = ?";
+    $sql = "SELECT id, name, password, role, is_verified FROM users WHERE email = ? AND cedula = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $email);
+    $stmt->bind_param("ss", $email, $cedula);
     $stmt->execute();
     $result = $stmt->get_result();
 
