@@ -86,7 +86,9 @@ CREATE TABLE `floors` (
 
 INSERT INTO `floors` (`id`, `floor_number`, `name`, `description`) VALUES
 (1, 1, 'Planta Baja', 'Piso principal del hotel'),
-(2, 2, 'piso 2', '');
+(2, 2, 'Piso 2', 'Segundo piso del hotel'),
+(3, 3, 'Piso 3', 'Tercer piso del hotel'),
+(4, 4, 'Piso 4', 'Cuarto piso del hotel');
 
 -- --------------------------------------------------------
 
@@ -138,7 +140,7 @@ CREATE TABLE `maintenance_tasks` (
   `id` int(11) NOT NULL,
   `room_id` int(11) NOT NULL,
   `assigned_to_user_id` int(11) NOT NULL,
-  `task_description` text DEFAULT 'Limpieza est├índar de la habitaci├│n.',
+  `task_description` text DEFAULT 'Limpieza estándar de la habitación.',
   `status` enum('pending','completed') NOT NULL DEFAULT 'pending',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `completed_at` timestamp NULL DEFAULT NULL
@@ -165,8 +167,13 @@ CREATE TABLE `reservations` (
   `checkin_date` date NOT NULL,
   `checkout_date` date NOT NULL,
   `guest_name` varchar(255) NOT NULL,
+  `guest_lastname` varchar(255) DEFAULT NULL,
   `guest_email` varchar(255) NOT NULL,
-  `status` enum('pending','confirmed','cancelled') NOT NULL DEFAULT 'pending'
+  `cedula` varchar(20) DEFAULT NULL,
+  `adultos` int(11) DEFAULT 0,
+  `ninos` int(11) DEFAULT 0,
+  `discapacitados` int(11) DEFAULT 0,
+  `status` enum('pending','confirmed','cancelled','completed') NOT NULL DEFAULT 'pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -210,23 +217,32 @@ CREATE TABLE `reviews` (
 --
 
 CREATE TABLE `rooms` (
-  `id` int(11) NOT NULL,
+  `id` varchar(10) NOT NULL,
   `type` varchar(255) NOT NULL,
   `capacity` int(11) NOT NULL,
   `description` text NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `photos` text NOT NULL,
   `floor` int(11) NOT NULL,
-  `floor_id` int(11) NOT NULL
+  `floor_id` int(11) NOT NULL,
+  `status` enum('enabled','disabled') NOT NULL DEFAULT 'enabled'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `rooms`
 --
 
-INSERT INTO `rooms` (`id`, `type`, `capacity`, `description`, `price`, `photos`, `floor`, `floor_id`) VALUES
-(8, 'dual', 2, 'habitacion para dos', 20.00, '[\"Opera Captura de pantalla_2025-09-17_120407_www.instagram.com.png\"]', 1, 1),
-(9, 'individual', 1, 'individual', 0.00, '[\"Opera Captura de pantalla_2025-09-17_115927_www.instagram.com.png\"]', 0, 1);
+INSERT INTO `rooms` (`id`, `type`, `capacity`, `description`, `price`, `photos`, `floor`, `floor_id`, `status`) VALUES
+('001', 'Habitación 3 literas', 3, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', 1, 1, 'enabled'),
+('002', 'Habitación 7 literas', 7, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', 2, 2, 'enabled'),
+('003', 'Habitación 8 literas', 8, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', 3, 3, 'enabled'),
+('004', 'Habitación 3 literas', 3, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', 1, 1, 'enabled'),
+('005', 'Habitación 7 literas', 7, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', 2, 2, 'enabled'),
+('006', 'Habitación 8 literas', 8, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', 3, 3, 'enabled'),
+('007', 'Habitación 3 literas', 3, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', 1, 1, 'enabled'),
+('008', 'Habitación 7 literas', 7, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', 2, 2, 'enabled'),
+('009', 'Habitación 8 literas', 8, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', 3, 3, 'enabled'),
+('010', 'Habitación 3 literas', 3, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', 1, 1, 'enabled');
 
 -- --------------------------------------------------------
 
@@ -251,6 +267,7 @@ CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
+  `cedula` varchar(20) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `role` enum('client','admin','maintenance') NOT NULL DEFAULT 'client',
   `is_verified` tinyint(1) NOT NULL DEFAULT 1
@@ -260,11 +277,11 @@ CREATE TABLE `users` (
 -- Volcado de datos para la tabla `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `is_verified`) VALUES
-(1, 'Salvatore Berticci', 'salvatoreberticci19@gmail.com', '$2y$10$8lxCyjzvMRtCx9.KoYl/SehkJRhAZ.0NE.6PxLNcMmjR29P8wgTGG', 'maintenance', 1),
-(2, 'Admin', 'admin@indet.com', '$2y$10$OO3jGfLdAwp/MX9n16IDOegda0dNj5v4zhWdWmUelxpvALymxF2sO', 'admin', 1),
-(3, 'Juan Perez', 'juanperez11@gmail.com', '$2y$10$Qgsk4klfwiNj.NaARvWAAOmJeoTrUURmJ92tD5t4vGw/2QLem3.AG', 'maintenance', 1),
-(4, 'pedro', 'pedro@gmail.com', '$2y$10$ELs4NU4olvDyJ6QSpaUQpOk672qhmjWQJfT7bUY3bxo2lk.kd1j52', 'client', 1);
+INSERT INTO `users` (`id`, `name`, `email`, `cedula`, `password`, `role`, `is_verified`) VALUES
+(1, 'Salvatore Berticci', 'salvatoreberticci19@gmail.com', '12345678', '$2y$10$8lxCyjzvMRtCx9.KoYl/SehkJRhAZ.0NE.6PxLNcMmjR29P8wgTGG', 'maintenance', 1),
+(2, 'Admin', 'admin@indet.com', '87654321', '$2y$10$OO3jGfLdAwp/MX9n16IDOegda0dNj5v4zhWdWmUelxpvALymxF2sO', 'admin', 1),
+(3, 'Juan Perez', 'juanperez11@gmail.com', '11223344', '$2y$10$Qgsk4klfwiNj.NaARvWAAOmJeoTrUURmJ92tD5t4vGw/2QLem3.AG', 'maintenance', 1),
+(4, 'pedro', 'pedro@gmail.com', '44332211', '$2y$10$ELs4NU4olvDyJ6QSpaUQpOk672qhmjWQJfT7bUY3bxo2lk.kd1j52', 'client', 1);
 
 --
 -- Índices para tablas volcadas
@@ -345,7 +362,8 @@ ALTER TABLE `room_status`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `cedula` (`cedula`);
 
 --
 -- AUTO_INCREMENT de las tablas volcadas
@@ -367,7 +385,7 @@ ALTER TABLE `events`
 -- AUTO_INCREMENT de la tabla `floors`
 --
 ALTER TABLE `floors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `floor_inventory`
@@ -400,10 +418,11 @@ ALTER TABLE `reviews`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de la tabla `rooms`
+-- Indices de la tabla `rooms`
 --
 ALTER TABLE `rooms`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_rooms_floor` (`floor_id`);
 
 --
 -- AUTO_INCREMENT de la tabla `room_status`
@@ -459,6 +478,100 @@ ALTER TABLE `rooms`
 --
 ALTER TABLE `room_status`
   ADD CONSTRAINT `room_status_ibfk_1` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`id`);
+--
+-- Estructura de tabla para la tabla `room_inventory`
+--
+
+CREATE TABLE `room_inventory` (
+  `id` int(11) NOT NULL,
+  `room_id` varchar(10) NOT NULL,
+  `item_name` varchar(255) NOT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 0,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Estructura de tabla para la tabla `cleaning_inventory`
+--
+
+CREATE TABLE `cleaning_inventory` (
+  `id` int(11) NOT NULL,
+  `floor_id` int(11) NOT NULL,
+  `item_name` varchar(255) NOT NULL,
+  `quantity` int(11) NOT NULL DEFAULT 0,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `room_inventory`
+--
+
+INSERT INTO `room_inventory` (`id`, `room_id`, `item_name`, `quantity`, `description`, `created_at`) VALUES
+(1, '001', 'Almohadas', 3, 'Almohadas para habitación', '2025-10-21 05:41:19'),
+(2, '001', 'Sábanas', 3, 'Sábanas para literas', '2025-10-21 05:41:19'),
+(3, '001', 'Toallas', 6, 'Toallas de baño', '2025-10-21 05:41:19'),
+(4, '002', 'Almohadas', 7, 'Almohadas para habitación', '2025-10-21 05:41:19'),
+(5, '002', 'Sábanas', 7, 'Sábanas para literas', '2025-10-21 05:41:19'),
+(6, '002', 'Toallas', 14, 'Toallas de baño', '2025-10-21 05:41:19');
+
+--
+-- Volcado de datos para la tabla `cleaning_inventory`
+--
+
+INSERT INTO `cleaning_inventory` (`id`, `floor_id`, `item_name`, `quantity`, `description`, `created_at`) VALUES
+(1, 1, 'Escobas', 5, 'Escobas para limpieza', '2025-10-21 05:41:19'),
+(2, 1, 'Desinfectante', 10, 'Botellas de desinfectante', '2025-10-21 05:41:19'),
+(3, 1, 'Trapos', 20, 'Trapos de limpieza', '2025-10-21 05:41:19'),
+(4, 2, 'Escobas', 5, 'Escobas para limpieza', '2025-10-21 05:41:19'),
+(5, 2, 'Desinfectante', 10, 'Botellas de desinfectante', '2025-10-21 05:41:19'),
+(6, 2, 'Trapos', 20, 'Trapos de limpieza', '2025-10-21 05:41:19');
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `room_inventory`
+--
+ALTER TABLE `room_inventory`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_room_id` (`room_id`);
+
+--
+-- Indices de la tabla `cleaning_inventory`
+--
+ALTER TABLE `cleaning_inventory`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_floor_id` (`floor_id`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `room_inventory`
+--
+ALTER TABLE `room_inventory`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT de la tabla `cleaning_inventory`
+--
+ALTER TABLE `cleaning_inventory`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `cleaning_inventory`
+--
+ALTER TABLE `cleaning_inventory`
+  ADD CONSTRAINT `cleaning_inventory_ibfk_1` FOREIGN KEY (`floor_id`) REFERENCES `floors` (`id`) ON DELETE CASCADE;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
