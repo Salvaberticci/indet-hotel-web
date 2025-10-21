@@ -350,18 +350,18 @@ if (!isset($_SESSION['user_id'])) {
             const confirmationDiv = document.createElement('div');
             confirmationDiv.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
             confirmationDiv.innerHTML = `
-                <div class="bg-white p-8 rounded-lg max-w-md w-full mx-4">
-                    <h3 class="text-xl font-bold mb-4">Confirmar Reserva</h3>
-                    <p class="mb-4">¿Estás seguro de que quieres proceder con esta reserva?</p>
+                <div class="bg-white text-gray-800 p-8 rounded-lg max-w-md w-full mx-4">
+                    <h3 class="text-xl font-bold mb-4 text-gray-800">Confirmar Reserva</h3>
+                    <p class="mb-4 text-gray-700">¿Estás seguro de que quieres proceder con esta reserva?</p>
                     <div class="mb-4">
-                        <h4 class="font-bold">Detalles de la reserva:</h4>
-                        <p>Check-in: ${document.querySelector('input[name="checkin"]').value}</p>
-                        <p>Check-out: ${document.querySelector('input[name="checkout"]').value}</p>
-                        <p>Habitaciones seleccionadas: ${selectedRooms.length}</p>
+                        <h4 class="font-bold text-gray-800">Detalles de la reserva:</h4>
+                        <p class="text-gray-700">Check-in: ${document.querySelector('input[name="checkin"]').value}</p>
+                        <p class="text-gray-700">Check-out: ${document.querySelector('input[name="checkout"]').value}</p>
+                        <p class="text-gray-700">Habitaciones seleccionadas: ${selectedRooms.length}</p>
                     </div>
                     <div class="flex justify-end space-x-4">
-                        <button onclick="this.closest('.fixed').remove()" class="bg-gray-500 text-white px-4 py-2 rounded">Volver</button>
-                        <button onclick="submitReservation()" class="bg-green-500 text-white px-4 py-2 rounded">Confirmar</button>
+                        <button onclick="this.closest('.fixed').remove()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Volver</button>
+                        <button onclick="submitReservation()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">Confirmar</button>
                     </div>
                 </div>
             `;
