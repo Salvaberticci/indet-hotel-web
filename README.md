@@ -26,6 +26,8 @@ El proyecto está construido con tecnologías modernas y sigue las mejores prác
 - **Información del Hotel (hotel_info.php):** Detalles sobre las instalaciones, servicios disponibles y horarios
 - **Habitaciones:** Visualización de tipos de habitaciones con precios, capacidad y descripciones
 - **Sistema de Reservas:** Formulario interactivo para verificar disponibilidad y realizar reservas
+- **Flujo Post-Reserva:** Redirección automática al perfil de usuario después de completar una reserva
+- **Gestión de Reservas:** Cancelación de reservas con modal estilizado y confirmación visual
 - **Eventos (events.php):** Lista de eventos deportivos y actividades programadas
 - **FAQ (faq.php):** Preguntas frecuentes sobre políticas del hotel
 - **Formulario de Contacto:** Sistema para enviar mensajes a la administración
@@ -34,6 +36,8 @@ El proyecto está construido con tecnologías modernas y sigue las mejores prác
 - **Registro y Login:** Sistema seguro con hash de contraseñas
 - **Sesiones:** Gestión de sesiones para proteger rutas y funcionalidades
 - **Roles de Usuario:** Cliente, Administrador, Mantenimiento
+- **Perfil de Usuario:** Página dedicada con información personal y lista completa de reservas
+- **Navegación Mejorada:** Enlaces directos al perfil de usuario en todas las páginas autenticadas
 
 ### Panel de Administración (admin.php)
 - **Gestión de Reservas:** Ver, confirmar, cancelar y editar reservas
@@ -161,6 +165,8 @@ indet-hotel-web/
 - **Reservas:** Formulario con validación de fechas y tipos de habitación
 - **Verificación de Disponibilidad:** AJAX para mostrar habitaciones disponibles
 - **Sistema de Reseñas:** Calificaciones de 1-5 estrellas con comentarios
+- **Perfil de Usuario:** Acceso directo al perfil con información personal y historial de reservas
+- **Flujo Mejorado:** Redirección automática al perfil después de completar reservas
 
 ### 2. Módulo de Autenticación
 - **Registro:** Validación de email único y hash de contraseñas
@@ -206,7 +212,7 @@ indet-hotel-web/
 - **Responsive Design:** Adaptable a móviles y tablets
 - **Seguridad:** Hash de contraseñas, prepared statements, validación de inputs
 - **Performance:** Optimización de consultas SQL, lazy loading de imágenes
-- **UX/UI:** Animaciones suaves, feedback visual, navegación intuitiva
+- **UX/UI:** Animaciones suaves, feedback visual, navegación intuitiva, modales estilizados
 - **Internacionalización:** Soporte para español (fácil extensión a otros idiomas)
 
 ## Contribución
