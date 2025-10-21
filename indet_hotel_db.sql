@@ -347,6 +347,7 @@ ALTER TABLE `reviews`
 -- Indices de la tabla `rooms`
 --
 ALTER TABLE `rooms`
+  ADD PRIMARY KEY (`id`),
   ADD KEY `fk_rooms_floor` (`floor_id`);
 
 --
@@ -415,13 +416,6 @@ ALTER TABLE `reservations`
 --
 ALTER TABLE `reviews`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- Indices de la tabla `rooms`
---
-ALTER TABLE `rooms`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_rooms_floor` (`floor_id`);
 
 --
 -- AUTO_INCREMENT de la tabla `room_status`
