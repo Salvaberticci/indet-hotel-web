@@ -347,7 +347,6 @@ ALTER TABLE `reviews`
 -- Indices de la tabla `rooms`
 --
 ALTER TABLE `rooms`
-  ADD PRIMARY KEY (`id`),
   ADD KEY `fk_rooms_floor` (`floor_id`);
 
 --
