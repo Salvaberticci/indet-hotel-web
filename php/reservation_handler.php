@@ -19,6 +19,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("iiss", $user_id, $room_id, $checkin_date, $checkout_date);
         if ($stmt->execute()) {
+            // Schedule cleaning task for this reservation
+            include 'maintenance_scheduler.php';
+            scheduleCleaningBeforeReservation($stmt->insert_id);
+
             $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Reserva agregada exitosamente.'];
         } else {
             $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al agregar la reserva.'];

@@ -61,12 +61,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($room_data) {
                 $room_id = $room_data['room_id'];
 
-                // Assign maintenance task
-                $maintenance_sql = "INSERT INTO maintenance_tasks (room_id, assigned_to_user_id, task_description, status, created_at)
-                                   VALUES (?, (SELECT id FROM users WHERE role = 'maintenance' LIMIT 1), 'Limpieza después del check-out', 'pending', NOW())";
-                $maintenance_stmt = $conn->prepare($maintenance_sql);
-                $maintenance_stmt->bind_param("i", $room_id);
-                $maintenance_stmt->execute();
+                // Schedule cleaning task 30 minutes after checkout
+                include 'maintenance_scheduler.php';
+                scheduleCleaningAfterCheckout($reservation_id);
             }
 
             $conn->commit();
