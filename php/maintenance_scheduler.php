@@ -1,5 +1,8 @@
 <?php
-include 'db.php';
+// Only include db.php if not already included
+if (!isset($conn)) {
+    include 'db.php';
+}
 
 // Function to schedule cleaning tasks 1 day before reservation
 function scheduleCleaningBeforeReservation($reservation_id) {
@@ -122,7 +125,6 @@ function checkAndScheduleMaintenanceTasks() {
 if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
     checkAndScheduleMaintenanceTasks();
     echo "Maintenance tasks checked and scheduled.";
+    $conn->close();
 }
-
-$conn->close();
 ?>
