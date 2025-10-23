@@ -80,11 +80,13 @@ $maintenance_result = $conn->query($maintenance_sql);
             </div>
         </div>
 
-        <!-- Create New Task Section -->
+        <!-- Combined Task Management Section -->
         <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mb-8">
-            <h2 class="text-2xl font-bold mb-6">Asignar Tarea de Mantenimiento</h2>
+            <h2 class="text-2xl font-bold mb-6">Gestión de Tareas de Mantenimiento</h2>
+
+            <!-- Create New Task Form -->
             <form action="php/maintenance_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
-                <h3 class="text-xl font-semibold mb-4">Nueva Tarea</h3>
+                <h3 class="text-xl font-semibold mb-4">Asignar Nueva Tarea</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <select name="room_id" required class="p-2 border rounded bg-gray-600 text-white">
                         <option value="">Seleccionar Habitación</option>
@@ -108,11 +110,9 @@ $maintenance_result = $conn->query($maintenance_sql);
                 </div>
                 <button type="submit" name="create_task" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Asignar Tarea</button>
             </form>
-        </div>
 
-        <!-- Tasks List -->
-        <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
-            <h2 class="text-2xl font-bold mb-6">Tareas Asignadas</h2>
+            <!-- Tasks List -->
+            <h3 class="text-xl font-semibold mb-4">Tareas Asignadas</h3>
             <div class="mb-4 flex justify-between items-center">
                 <div>
                     <button onclick="filterTasks('all')" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg mr-2">Todas</button>
