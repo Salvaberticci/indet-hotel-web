@@ -100,7 +100,7 @@ $is_admin = $_SESSION['user_role'] == 'admin';
             <a href="admin_inventory.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
                 <i class="fas fa-boxes fa-3x mb-4"></i>
                 <h3 class="text-xl font-bold">Inventario</h3>
-                <p>Gestionar inventario por piso</p>
+                <p>Gestionar inventario por habitación</p>
             </a>
             <a href="admin_reports.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
                 <i class="fas fa-chart-bar fa-3x mb-4"></i>

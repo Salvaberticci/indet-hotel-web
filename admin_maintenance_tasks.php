@@ -80,13 +80,55 @@ $maintenance_result = $conn->query($maintenance_sql);
             </div>
         </div>
 
+        <!-- Create New Task Section -->
+        <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mb-8">
+            <h2 class="text-2xl font-bold mb-6">Crear Nueva Tarea de Mantenimiento</h2>
+            <form action="php/maintenance_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
+                <h3 class="text-xl font-semibold mb-4">Asignar Nueva Tarea</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <select name="room_id" required class="p-2 border rounded bg-gray-600 text-white">
+                        <option value="">Seleccionar Habitación</option>
+                        <?php
+                        $rooms_sql = "SELECT id, type FROM rooms WHERE status = 'enabled' ORDER BY id ASC";
+                        $rooms_result = $conn->query($rooms_sql);
+                        while($room = $rooms_result->fetch_assoc()): ?>
+                            <option value="<?php echo $room['id']; ?>"><?php echo $room['id']; ?> - <?php echo htmlspecialchars($room['type']); ?></option>
+                        <?php endwhile; ?>
+                    </select>
+                    <select name="assigned_to_user_id" required class="p-2 border rounded bg-gray-600 text-white">
+                        <option value="">Seleccionar Personal</option>
+                        <?php
+                        $staff_sql = "SELECT id, name FROM users WHERE role IN ('admin', 'maintenance') ORDER BY name ASC";
+                        $staff_result = $conn->query($staff_sql);
+                        while($staff = $staff_result->fetch_assoc()): ?>
+                            <option value="<?php echo $staff['id']; ?>"><?php echo htmlspecialchars($staff['name']); ?></option>
+                        <?php endwhile; ?>
+                    </select>
+                    <input type="text" name="task_description" placeholder="Descripción de la tarea" required class="p-2 border rounded bg-gray-600 text-white">
+                </div>
+                <button type="submit" name="create_task" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Crear Tarea</button>
+            </form>
+        </div>
+
+        <!-- Tasks List -->
         <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
             <h2 class="text-2xl font-bold mb-6">Tareas de Mantenimiento</h2>
+            <div class="mb-4 flex justify-between items-center">
+                <div>
+                    <button onclick="filterTasks('all')" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg mr-2">Todas</button>
+                    <button onclick="filterTasks('pending')" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-lg mr-2">Pendientes</button>
+                    <button onclick="filterTasks('completed')" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg">Completadas</button>
+                </div>
+                <button onclick="generateReport()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">
+                    <i class="fas fa-file-pdf mr-2"></i>Generar Reporte
+                </button>
+            </div>
             <div class="overflow-x-auto">
-                <table class="min-w-full bg-gray-800">
+                <table class="min-w-full bg-gray-800" id="tasks-table">
                     <thead class="bg-gray-700 text-white">
                         <tr>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Habitación</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Descripción</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Asignado a</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Estado</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Fecha de Creación</th>
@@ -96,8 +138,9 @@ $maintenance_result = $conn->query($maintenance_sql);
                     <tbody class="text-gray-300">
                         <?php if ($maintenance_result->num_rows > 0): ?>
                             <?php while($task = $maintenance_result->fetch_assoc()): ?>
-                                <tr class="hover:bg-gray-700 border-b border-gray-700">
+                                <tr class="hover:bg-gray-700 border-b border-gray-700 task-row" data-status="<?php echo $task['status']; ?>">
                                     <td class="py-3 px-4 text-center"><?php echo $task['room_type']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($task['task_description'] ?? 'Limpieza estándar de la habitación.'); ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $task['staff_name']; ?></td>
                                     <td class="py-3 px-4 text-center">
                                         <?php
@@ -116,17 +159,18 @@ $maintenance_result = $conn->query($maintenance_sql);
                                             <?php echo $translated_status; ?>
                                         </span>
                                     </td>
-                                    <td class="py-3 px-4 text-center"><?php echo $task['created_at']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo date('d/m/Y H:i', strtotime($task['created_at'])); ?></td>
                                     <td class="py-3 px-4 text-center">
                                         <?php if ($task['status'] == 'pending'): ?>
-                                            <a href="php/maintenance_handler.php?action=complete&id=<?php echo $task['id']; ?>" class="text-green-500 hover:text-green-700">Marcar como Completada</a>
+                                            <a href="php/maintenance_handler.php?action=complete&id=<?php echo $task['id']; ?>" class="text-green-500 hover:text-green-700 mr-2">Marcar como Completada</a>
                                         <?php endif; ?>
+                                        <a href="php/maintenance_handler.php?action=delete&id=<?php echo $task['id']; ?>" onclick="return confirm('¿Estás seguro de eliminar esta tarea?')" class="text-red-500 hover:text-red-700">Eliminar</a>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="5" class="text-center py-4">No hay tareas de mantenimiento pendientes.</td>
+                                <td colspan="6" class="text-center py-4">No hay tareas de mantenimiento.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -179,6 +223,84 @@ $maintenance_result = $conn->query($maintenance_sql);
             requestAnimationFrame(animate);
         }
         animate();
+
+        function filterTasks(status) {
+            const rows = document.querySelectorAll('.task-row');
+            rows.forEach(row => {
+                if (status === 'all' || row.getAttribute('data-status') === status) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function generateReport() {
+            const printWindow = window.open('', '_blank');
+            const currentDate = new Date().toLocaleDateString();
+
+            let content = `
+                <html>
+                <head>
+                    <title>Reporte de Tareas de Mantenimiento</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        h1 { color: #333; text-align: center; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                        th { background-color: #f2f2f2; }
+                        .header { text-align: center; margin-bottom: 30px; }
+                        .status-pending { background-color: #fff3cd; }
+                        .status-completed { background-color: #d4edda; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>Reporte de Tareas de Mantenimiento</h1>
+                        <p>Fecha: ${currentDate}</p>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Habitación</th>
+                                <th>Descripción</th>
+                                <th>Asignado a</th>
+                                <th>Estado</th>
+                                <th>Fecha de Creación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            // Add table rows
+            const rows = document.querySelectorAll('#tasks-table tbody tr');
+            rows.forEach(row => {
+                if (row.cells.length >= 6) {
+                    const status = row.getAttribute('data-status');
+                    const statusClass = status === 'completed' ? 'status-completed' : 'status-pending';
+                    content += `
+                        <tr class="${statusClass}">
+                            <td>${row.cells[0].textContent}</td>
+                            <td>${row.cells[1].textContent}</td>
+                            <td>${row.cells[2].textContent}</td>
+                            <td>${row.cells[3].textContent}</td>
+                            <td>${row.cells[4].textContent}</td>
+                        </tr>
+                    `;
+                }
+            });
+
+            content += `
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `;
+
+            printWindow.document.write(content);
+            printWindow.document.close();
+            printWindow.print();
+        }
     </script>
 </body>
 </html>

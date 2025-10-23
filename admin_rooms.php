@@ -159,6 +159,7 @@ if (!$rooms_result) {
                                     </td>
                                     <td class="py-3 px-4 text-center">
                                         <button onclick="openEditRoomModal(<?php echo htmlspecialchars(json_encode($room)); ?>)" class="text-blue-500 hover:text-blue-700 mr-2">Editar</button>
+                                        <a href="admin_room_inventory.php?room_id=<?php echo $room['id']; ?>" class="text-green-500 hover:text-green-700 mr-2">Crear Inventario</a>
                                         <a href="php/room_handler.php?delete_room=<?php echo $room['id']; ?>" onclick="return confirm('¿Estás seguro? Esto no se puede hacer si la habitación tiene reservas.')" class="text-red-500 hover:text-red-700">Eliminar</a>
                                     </td>
                                 </tr>

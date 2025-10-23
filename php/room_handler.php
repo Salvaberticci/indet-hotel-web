@@ -60,7 +60,23 @@ if (isset($_POST['add_room'])) {
     $stmt->bind_param("ssiiisss", $room_id, $type, $capacity, $floor_id, $description, $photos_json, $videos_json, $status);
 
     if ($stmt->execute()) {
-        $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Habitación agregada exitosamente.'];
+        // Create default inventory items for the new room based on capacity
+        $default_items = [];
+        if ($capacity >= 1) {
+            $default_items[] = ['item_name' => 'Almohadas', 'quantity' => $capacity, 'description' => 'Almohadas para habitación'];
+            $default_items[] = ['item_name' => 'Sábanas', 'quantity' => $capacity, 'description' => 'Sábanas para literas'];
+            $default_items[] = ['item_name' => 'Toallas', 'quantity' => $capacity * 2, 'description' => 'Toallas de baño'];
+        }
+
+        // Insert default inventory items
+        foreach ($default_items as $item) {
+            $inventory_sql = "INSERT INTO room_inventory (room_id, item_name, quantity, description) VALUES (?, ?, ?, ?)";
+            $inventory_stmt = $conn->prepare($inventory_sql);
+            $inventory_stmt->bind_param("ssis", $room_id, $item['item_name'], $item['quantity'], $item['description']);
+            $inventory_stmt->execute();
+        }
+
+        $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Habitación agregada exitosamente con inventario básico.'];
     } else {
         $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al agregar la habitación: ' . $stmt->error];
     }

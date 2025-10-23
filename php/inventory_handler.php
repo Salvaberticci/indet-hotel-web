@@ -93,6 +93,19 @@ if (isset($_POST['update_floor'])) {
     $name = $_POST['name'];
     $description = $_POST['description'];
 
+    // Check if floor_number already exists for another floor
+    $check_sql = "SELECT id FROM floors WHERE floor_number = ? AND id != ?";
+    $check_stmt = $conn->prepare($check_sql);
+    $check_stmt->bind_param("ii", $floor_number, $id);
+    $check_stmt->execute();
+    $existing = $check_stmt->get_result();
+
+    if ($existing->num_rows > 0) {
+        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'El número de piso ya existe. Por favor, elige un número diferente.'];
+        header("Location: ../admin_inventory.php");
+        exit();
+    }
+
     $sql = "UPDATE floors SET floor_number = ?, name = ?, description = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("issi", $floor_number, $name, $description, $id);

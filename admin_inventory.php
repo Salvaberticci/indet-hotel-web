@@ -9,34 +9,14 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
     exit();
 }
 
-// Get selected floor from GET or default to 1
-$selected_floor_id = isset($_GET['floor_id']) ? (int)$_GET['floor_id'] : 1;
-
-// Fetch inventory for the selected floor
-$inventory_sql = "SELECT fi.id, fi.item_name, fi.quantity, fi.description, fi.created_at, f.name as floor_name FROM floor_inventory fi JOIN floors f ON fi.floor_id = f.id WHERE fi.floor_id = ? ORDER BY fi.item_name ASC";
-$inventory_stmt = $conn->prepare($inventory_sql);
-$inventory_stmt->bind_param("i", $selected_floor_id);
-$inventory_stmt->execute();
-$inventory_result = $inventory_stmt->get_result();
-
-// Fetch all floors
-$floors_sql = "SELECT id, floor_number, name FROM floors ORDER BY floor_number ASC";
-$floors_result = $conn->query($floors_sql);
-
-// Get selected floor name
-$selected_floor_sql = "SELECT name FROM floors WHERE id = ?";
-$selected_floor_stmt = $conn->prepare($selected_floor_sql);
-$selected_floor_stmt->bind_param("i", $selected_floor_id);
-$selected_floor_stmt->execute();
-$selected_floor_result = $selected_floor_stmt->get_result();
-$selected_floor_name = $selected_floor_result->fetch_assoc()['name'] ?? 'Piso Desconocido';
+// No longer need floor-specific variables since we're focusing on room inventory
 ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario - Panel de Administración - INDET</title>
+    <title>Inventario de Habitaciones - Panel de Administración - INDET</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -84,7 +64,7 @@ $selected_floor_name = $selected_floor_result->fetch_assoc()['name'] ?? 'Piso De
         ?>
         <div class="flex justify-between items-center mb-8">
             <div class="flex items-center">
-                <h1 class="text-3xl font-bold">Inventario del <?php echo $selected_floor_name; ?></h1>
+                <h1 class="text-3xl font-bold">Inventario de Habitaciones</h1>
             </div>
             <div>
                 <a href="admin.php" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-4">
@@ -94,132 +74,162 @@ $selected_floor_name = $selected_floor_result->fetch_assoc()['name'] ?? 'Piso De
             </div>
         </div>
 
-        <!-- Floor Filter -->
+        <!-- Room Filter -->
         <div class="mb-6">
-            <label for="floor_select" class="block text-sm font-medium mb-2">Seleccionar Piso:</label>
-            <select id="floor_select" onchange="changeFloor(this.value)" class="p-2 border rounded bg-gray-700 text-white">
-                <?php while($floor = $floors_result->fetch_assoc()): ?>
-                    <option value="<?php echo $floor['id']; ?>" <?php echo $floor['id'] == $selected_floor_id ? 'selected' : ''; ?>>
-                        <?php echo $floor['name']; ?> (Piso <?php echo $floor['floor_number']; ?>)
+            <label for="room_select" class="block text-sm font-medium mb-2">Seleccionar Habitación:</label>
+            <select id="room_select" onchange="changeRoom(this.value)" class="p-2 border rounded bg-gray-700 text-white">
+                <option value="">Todas las Habitaciones</option>
+                <?php
+                $rooms_sql = "SELECT id, type FROM rooms WHERE status = 'enabled' ORDER BY id ASC";
+                $rooms_result = $conn->query($rooms_sql);
+                while($room = $rooms_result->fetch_assoc()): ?>
+                    <option value="<?php echo $room['id']; ?>" <?php echo isset($_GET['room_id']) && $_GET['room_id'] == $room['id'] ? 'selected' : ''; ?>>
+                        Habitación <?php echo $room['id']; ?> - <?php echo htmlspecialchars($room['type']); ?>
                     </option>
                 <?php endwhile; ?>
             </select>
         </div>
 
-        <!-- Floor Management Section -->
+        <!-- Room Inventory Management Section -->
         <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mb-8">
-            <h2 class="text-2xl font-bold mb-6">Gestionar Pisos</h2>
+            <h2 class="text-2xl font-bold mb-6">Gestionar Inventario de Habitaciones</h2>
 
-            <!-- Add Floor Form -->
-            <form action="php/inventory_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
-                <h3 class="text-xl font-semibold mb-4">Agregar Nuevo Piso</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <input type="number" name="floor_number" placeholder="Número del Piso" required class="p-2 border rounded bg-gray-600 text-white">
-                    <input type="text" name="name" placeholder="Nombre del Piso" required class="p-2 border rounded bg-gray-600 text-white">
-                    <input type="text" name="description" placeholder="Descripción" class="p-2 border rounded bg-gray-600 text-white">
-                </div>
-                <button type="submit" name="add_floor" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Agregar Piso</button>
-            </form>
+            <!-- Quick Room Inventory Creation -->
+            <div class="mb-8 p-4 bg-gray-700 rounded-lg">
+                <h3 class="text-xl font-semibold mb-4">Crear Inventario para Habitación</h3>
+                <p class="text-gray-300 mb-4">Para crear inventario específico para una habitación, ve a la gestión de habitaciones y usa el botón "Crear Inventario".</p>
+                <a href="admin_rooms.php" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">
+                    <i class="fas fa-arrow-right mr-2"></i>Ir a Gestión de Habitaciones
+                </a>
+            </div>
 
-            <!-- Floors Table -->
+            <!-- Room Inventory Overview -->
             <div class="overflow-x-auto">
                 <table class="min-w-full bg-gray-800">
                     <thead class="bg-gray-700 text-white">
                         <tr>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Número</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Nombre</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Descripción</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Habitación</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Tipo</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Items en Inventario</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-300">
                         <?php
-                        $all_floors_sql = "SELECT id, floor_number, name, description FROM floors ORDER BY floor_number ASC";
-                        $all_floors_result = $conn->query($all_floors_sql);
-                        if ($all_floors_result->num_rows > 0): ?>
-                            <?php while($floor = $all_floors_result->fetch_assoc()): ?>
+                        $rooms_inventory_sql = "SELECT r.id, r.type, r.capacity, COUNT(ri.id) as item_count
+                                               FROM rooms r
+                                               LEFT JOIN room_inventory ri ON r.id = ri.room_id
+                                               WHERE r.status = 'enabled'
+                                               GROUP BY r.id, r.type, r.capacity
+                                               ORDER BY r.id ASC";
+                        $rooms_inventory_result = $conn->query($rooms_inventory_sql);
+                        if ($rooms_inventory_result->num_rows > 0): ?>
+                            <?php while($room = $rooms_inventory_result->fetch_assoc()): ?>
                                 <tr class="hover:bg-gray-700 border-b border-gray-700">
-                                    <td class="py-3 px-4 text-center"><?php echo $floor['floor_number']; ?></td>
-                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($floor['name']); ?></td>
-                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($floor['description']); ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo $room['id']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($room['type']); ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo $room['item_count']; ?> items</td>
                                     <td class="py-3 px-4 text-center">
-                                        <button onclick="openEditFloorModal(<?php echo htmlspecialchars(json_encode($floor)); ?>)" class="text-blue-500 hover:text-blue-700 mr-2">Editar</button>
-                                        <a href="php/inventory_handler.php?delete_floor=<?php echo $floor['id']; ?>" onclick="return confirm('¿Estás seguro? Esto eliminará todas las habitaciones e inventario del piso.')" class="text-red-500 hover:text-red-700">Eliminar</a>
+                                        <a href="admin_room_inventory.php?room_id=<?php echo $room['id']; ?>" class="text-blue-500 hover:text-blue-700 mr-2">Ver/Editar Inventario</a>
+                                        <a href="admin_rooms.php" class="text-green-500 hover:text-green-700">Gestionar Habitación</a>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <tr><td colspan="4" class="text-center py-4">No hay pisos registrados.</td></tr>
+                            <tr><td colspan="4" class="text-center py-4">No hay habitaciones registradas.</td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
-            <h2 class="text-2xl font-bold mb-6">Gestionar Inventario</h2>
+        <!-- Detailed Room Inventory View -->
+        <?php if (isset($_GET['room_id']) && !empty($_GET['room_id'])): ?>
+            <?php
+            $selected_room_id = $_GET['room_id'];
+            $room_inventory_sql = "SELECT * FROM room_inventory WHERE room_id = ? ORDER BY item_name ASC";
+            $room_inventory_stmt = $conn->prepare($room_inventory_sql);
+            $room_inventory_stmt->bind_param("s", $selected_room_id);
+            $room_inventory_stmt->execute();
+            $room_inventory_result = $room_inventory_stmt->get_result();
 
-            <!-- Add Item Form -->
-            <form action="php/inventory_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
-                <h3 class="text-xl font-semibold mb-4">Agregar Nuevo Item</h3>
-                <input type="hidden" name="floor_id" value="<?php echo $selected_floor_id; ?>">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <input type="text" name="item_name" placeholder="Nombre del Item" required class="p-2 border rounded bg-gray-600 text-white">
-                    <input type="number" name="quantity" placeholder="Cantidad" required class="p-2 border rounded bg-gray-600 text-white">
-                    <input type="text" name="description" placeholder="Descripción" required class="p-2 border rounded bg-gray-600 text-white">
+            $room_info_sql = "SELECT type, capacity FROM rooms WHERE id = ?";
+            $room_info_stmt = $conn->prepare($room_info_sql);
+            $room_info_stmt->bind_param("s", $selected_room_id);
+            $room_info_stmt->execute();
+            $room_info = $room_info_stmt->get_result()->fetch_assoc();
+            ?>
+            <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
+                <h2 class="text-2xl font-bold mb-6">Inventario de Habitación <?php echo $selected_room_id; ?> - <?php echo htmlspecialchars($room_info['type']); ?></h2>
+
+                <!-- Add Item Form -->
+                <form action="php/room_inventory_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
+                    <h3 class="text-xl font-semibold mb-4">Agregar Nuevo Item</h3>
+                    <input type="hidden" name="room_id" value="<?php echo $selected_room_id; ?>">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input type="text" name="item_name" placeholder="Nombre del Item" required class="p-2 border rounded bg-gray-600 text-white">
+                        <input type="number" name="quantity" placeholder="Cantidad" min="0" required class="p-2 border rounded bg-gray-600 text-white">
+                        <input type="text" name="description" placeholder="Descripción" required class="p-2 border rounded bg-gray-600 text-white">
+                    </div>
+                    <button type="submit" name="add_item" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Agregar Item</button>
+                </form>
+
+                <!-- Inventory Table -->
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-gray-800">
+                        <thead class="bg-gray-700 text-white">
+                            <tr>
+                                <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Nombre del Item</th>
+                                <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Cantidad</th>
+                                <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Descripción</th>
+                                <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Fecha de Creación</th>
+                                <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-300">
+                            <?php if ($room_inventory_result->num_rows > 0): ?>
+                                <?php while($item = $room_inventory_result->fetch_assoc()): ?>
+                                    <tr class="hover:bg-gray-700 border-b border-gray-700">
+                                        <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($item['item_name']); ?></td>
+                                        <td class="py-3 px-4 text-center">
+                                            <div class="flex items-center justify-center">
+                                                <button type="button" onclick="updateQuantity('<?php echo $item['id']; ?>', -1)" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded">-</button>
+                                                <span id="quantity-<?php echo $item['id']; ?>" class="mx-2"><?php echo $item['quantity']; ?></span>
+                                                <button type="button" onclick="updateQuantity('<?php echo $item['id']; ?>', 1)" class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded">+</button>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($item['description']); ?></td>
+                                        <td class="py-3 px-4 text-center"><?php echo date('d/m/Y', strtotime($item['created_at'])); ?></td>
+                                        <td class="py-3 px-4 text-center">
+                                            <button onclick="openEditItemModal(<?php echo htmlspecialchars(json_encode($item)); ?>)" class="text-blue-500 hover:text-blue-700 mr-2">Editar</button>
+                                            <a href="php/room_inventory_handler.php?delete_item=<?php echo $item['id']; ?>&room_id=<?php echo $selected_room_id; ?>" onclick="return confirm('¿Estás seguro?')" class="text-red-500 hover:text-red-700">Eliminar</a>
+                                        </td>
+                                    </tr>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                                <tr><td colspan="5" class="text-center py-4">No hay items en el inventario de esta habitación.</td></tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
                 </div>
-                <button type="submit" name="add_item" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Agregar Item</button>
-            </form>
-
-            <!-- Inventory Table -->
-            <div class="overflow-x-auto">
-                <table class="min-w-full bg-gray-800">
-                    <thead class="bg-gray-700 text-white">
-                        <tr>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Nombre del Item</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Cantidad</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Descripción</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Fecha de Creación</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-gray-300">
-                        <?php if ($inventory_result->num_rows > 0): ?>
-                            <?php while($item = $inventory_result->fetch_assoc()): ?>
-                                <tr class="hover:bg-gray-700 border-b border-gray-700">
-                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($item['item_name']); ?></td>
-                                    <td class="py-3 px-4 text-center"><?php echo $item['quantity']; ?></td>
-                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($item['description']); ?></td>
-                                    <td class="py-3 px-4 text-center"><?php echo date('d/m/Y', strtotime($item['created_at'])); ?></td>
-                                    <td class="py-3 px-4 text-center">
-                                        <button onclick="openEditItemModal(<?php echo htmlspecialchars(json_encode($item)); ?>)" class="text-blue-500 hover:text-blue-700 mr-2">Editar</button>
-                                        <a href="php/inventory_handler.php?delete_item=<?php echo $item['id']; ?>&floor_id=<?php echo $selected_floor_id; ?>" onclick="return confirm('¿Estás seguro?')" class="text-red-500 hover:text-red-700">Eliminar</a>
-                                    </td>
-                                </tr>
-                            <?php endwhile; ?>
-                        <?php else: ?>
-                            <tr><td colspan="5" class="text-center py-4">No hay items en el inventario para este piso.</td></tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
             </div>
-        </div>
+        <?php endif; ?>
     </div>
 
     <!-- Edit Item Modal -->
     <div id="editItemModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
         <div class="bg-gray-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-md">
             <h2 class="text-2xl font-bold mb-6">Editar Item</h2>
-            <form action="php/inventory_handler.php" method="POST">
+            <form action="php/room_inventory_handler.php" method="POST">
                 <input type="hidden" id="editItemId" name="id">
-                <input type="hidden" name="floor_id" value="<?php echo $selected_floor_id; ?>">
+                <input type="hidden" id="editItemRoomId" name="room_id">
                 <div class="mb-4">
                     <label class="block font-semibold">Nombre del Item</label>
                     <input type="text" id="editItemName" name="item_name" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                 </div>
                 <div class="mb-4">
                     <label class="block font-semibold">Cantidad</label>
-                    <input type="number" id="editItemQuantity" name="quantity" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                    <input type="number" id="editItemQuantity" name="quantity" min="0" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                 </div>
                 <div class="mb-4">
                     <label class="block font-semibold">Descripción</label>
@@ -228,32 +238,6 @@ $selected_floor_name = $selected_floor_result->fetch_assoc()['name'] ?? 'Piso De
                 <div class="flex justify-end">
                     <button type="button" onclick="closeEditItemModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-2">Cancelar</button>
                     <button type="submit" name="update_item" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Actualizar Item</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Edit Floor Modal -->
-    <div id="editFloorModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-        <div class="bg-gray-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-md">
-            <h2 class="text-2xl font-bold mb-6">Editar Piso</h2>
-            <form action="php/inventory_handler.php" method="POST">
-                <input type="hidden" id="editFloorId" name="id">
-                <div class="mb-4">
-                    <label class="block font-semibold">Número del Piso</label>
-                    <input type="number" id="editFloorNumber" name="floor_number" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
-                </div>
-                <div class="mb-4">
-                    <label class="block font-semibold">Nombre del Piso</label>
-                    <input type="text" id="editFloorName" name="name" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
-                </div>
-                <div class="mb-4">
-                    <label class="block font-semibold">Descripción</label>
-                    <textarea id="editFloorDescription" name="description" rows="3" class="w-full p-3 border rounded-lg bg-gray-700 text-white"></textarea>
-                </div>
-                <div class="flex justify-end">
-                    <button type="button" onclick="closeEditFloorModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-2">Cancelar</button>
-                    <button type="submit" name="update_floor" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Actualizar Piso</button>
                 </div>
             </form>
         </div>
@@ -304,12 +288,41 @@ $selected_floor_name = $selected_floor_result->fetch_assoc()['name'] ?? 'Piso De
         }
         animate();
 
-        function changeFloor(floorId) {
-            window.location.href = 'admin_inventory.php?floor_id=' + floorId;
+        function changeRoom(roomId) {
+            if (roomId === "") {
+                window.location.href = 'admin_inventory.php';
+            } else {
+                window.location.href = 'admin_inventory.php?room_id=' + roomId;
+            }
+        }
+
+        function updateQuantity(itemId, delta) {
+            const quantityElement = document.getElementById('quantity-' + itemId);
+            let quantity = parseInt(quantityElement.textContent) + delta;
+            if (quantity < 0) quantity = 0;
+
+            // Update via AJAX
+            fetch('php/room_inventory_handler.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'update_quantity=1&item_id=' + itemId + '&quantity=' + quantity
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    quantityElement.textContent = quantity;
+                } else {
+                    alert('Error al actualizar cantidad');
+                }
+            })
+            .catch(error => console.error('Error:', error));
         }
 
         function openEditItemModal(item) {
             document.getElementById('editItemId').value = item.id;
+            document.getElementById('editItemRoomId').value = item.room_id;
             document.getElementById('editItemName').value = item.item_name;
             document.getElementById('editItemQuantity').value = item.quantity;
             document.getElementById('editItemDescription').value = item.description;
@@ -318,18 +331,6 @@ $selected_floor_name = $selected_floor_result->fetch_assoc()['name'] ?? 'Piso De
 
         function closeEditItemModal() {
             document.getElementById('editItemModal').classList.add('hidden');
-        }
-
-        function openEditFloorModal(floor) {
-            document.getElementById('editFloorId').value = floor.id;
-            document.getElementById('editFloorNumber').value = floor.floor_number;
-            document.getElementById('editFloorName').value = floor.name;
-            document.getElementById('editFloorDescription').value = floor.description;
-            document.getElementById('editFloorModal').classList.remove('hidden');
-        }
-
-        function closeEditFloorModal() {
-            document.getElementById('editFloorModal').classList.add('hidden');
         }
     </script>
 </body>
