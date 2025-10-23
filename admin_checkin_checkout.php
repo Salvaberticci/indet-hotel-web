@@ -17,7 +17,7 @@ $today = $selected_date;
 $checkin_sql = "SELECT r.id, r.guest_name, r.guest_lastname, r.cedula, r.checkin_date, r.checkout_date, r.status,
                         rm.type as room_type, f.name as floor_name, u.name as user_name
                  FROM reservations r
-                 JOIN rooms rm ON r.room_id = rm.id
+                 JOIN rooms rm ON CAST(r.room_id AS CHAR) = rm.id
                  JOIN floors f ON rm.floor_id = f.id
                  JOIN users u ON r.user_id = u.id
                  WHERE r.checkin_date = ? AND r.status IN ('confirmed', 'pending')
@@ -31,7 +31,7 @@ $checkin_result = $checkin_stmt->get_result();
 $checkout_sql = "SELECT r.id, r.guest_name, r.guest_lastname, r.cedula, r.checkin_date, r.checkout_date, r.status,
                          rm.type as room_type, f.name as floor_name, u.name as user_name
                   FROM reservations r
-                  JOIN rooms rm ON r.room_id = rm.id
+                  JOIN rooms rm ON CAST(r.room_id AS CHAR) = rm.id
                   JOIN floors f ON rm.floor_id = f.id
                   JOIN users u ON r.user_id = u.id
                   WHERE r.checkout_date = ? AND r.status = 'confirmed'
