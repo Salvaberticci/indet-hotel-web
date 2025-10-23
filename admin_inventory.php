@@ -74,20 +74,37 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
             </div>
         </div>
 
-        <!-- Room Filter -->
-        <div class="mb-6">
-            <label for="room_select" class="block text-sm font-medium mb-2">Seleccionar Habitación:</label>
-            <select id="room_select" onchange="changeRoom(this.value)" class="p-2 border rounded bg-gray-700 text-white">
-                <option value="">Todas las Habitaciones</option>
-                <?php
-                $rooms_sql = "SELECT id, type FROM rooms WHERE status = 'enabled' ORDER BY id ASC";
-                $rooms_result = $conn->query($rooms_sql);
-                while($room = $rooms_result->fetch_assoc()): ?>
-                    <option value="<?php echo $room['id']; ?>" <?php echo isset($_GET['room_id']) && $_GET['room_id'] == $room['id'] ? 'selected' : ''; ?>>
-                        Habitación <?php echo $room['id']; ?> - <?php echo htmlspecialchars($room['type']); ?>
-                    </option>
-                <?php endwhile; ?>
-            </select>
+        <!-- Filters -->
+        <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="floor_select" class="block text-sm font-medium mb-2">Filtrar por Piso:</label>
+                <select id="floor_select" onchange="changeFloor(this.value)" class="p-2 border rounded bg-gray-700 text-white w-full">
+                    <option value="">Todos los Pisos</option>
+                    <?php
+                    $floors_sql = "SELECT id, name, floor_number FROM floors ORDER BY floor_number ASC";
+                    $floors_result = $conn->query($floors_sql);
+                    while($floor = $floors_result->fetch_assoc()): ?>
+                        <option value="<?php echo $floor['id']; ?>" <?php echo isset($_GET['floor_id']) && $_GET['floor_id'] == $floor['id'] ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($floor['name']); ?> (Piso <?php echo $floor['floor_number']; ?>)
+                        </option>
+                    <?php endwhile; ?>
+                </select>
+            </div>
+            <div>
+                <label for="room_select" class="block text-sm font-medium mb-2">Seleccionar Habitación:</label>
+                <select id="room_select" onchange="changeRoom(this.value)" class="p-2 border rounded bg-gray-700 text-white w-full">
+                    <option value="">Todas las Habitaciones</option>
+                    <?php
+                    $room_filter = isset($_GET['floor_id']) ? "AND floor_id = '" . $conn->real_escape_string($_GET['floor_id']) . "'" : "";
+                    $rooms_sql = "SELECT id, type, floor_id FROM rooms WHERE status = 'enabled' $room_filter ORDER BY id ASC";
+                    $rooms_result = $conn->query($rooms_sql);
+                    while($room = $rooms_result->fetch_assoc()): ?>
+                        <option value="<?php echo $room['id']; ?>" <?php echo isset($_GET['room_id']) && $_GET['room_id'] == $room['id'] ? 'selected' : ''; ?>>
+                            Habitación <?php echo $room['id']; ?> - <?php echo htmlspecialchars($room['type']); ?>
+                        </option>
+                    <?php endwhile; ?>
+                </select>
+            </div>
         </div>
 
         <!-- Room Inventory Management Section -->
@@ -110,24 +127,28 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
                         <tr>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Habitación</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Tipo</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Piso</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Items en Inventario</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-300">
                         <?php
-                        $rooms_inventory_sql = "SELECT r.id, r.type, r.capacity, COUNT(ri.id) as item_count
+                        $floor_filter = isset($_GET['floor_id']) ? "AND r.floor_id = '" . $conn->real_escape_string($_GET['floor_id']) . "'" : "";
+                        $rooms_inventory_sql = "SELECT r.id, r.type, r.capacity, f.name as floor_name, COUNT(ri.id) as item_count
                                                FROM rooms r
+                                               LEFT JOIN floors f ON r.floor_id = f.id
                                                LEFT JOIN room_inventory ri ON r.id = ri.room_id
-                                               WHERE r.status = 'enabled'
-                                               GROUP BY r.id, r.type, r.capacity
-                                               ORDER BY r.id ASC";
+                                               WHERE r.status = 'enabled' $floor_filter
+                                               GROUP BY r.id, r.type, r.capacity, f.name
+                                               ORDER BY f.floor_number ASC, r.id ASC";
                         $rooms_inventory_result = $conn->query($rooms_inventory_sql);
                         if ($rooms_inventory_result->num_rows > 0): ?>
                             <?php while($room = $rooms_inventory_result->fetch_assoc()): ?>
                                 <tr class="hover:bg-gray-700 border-b border-gray-700">
                                     <td class="py-3 px-4 text-center"><?php echo $room['id']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($room['type']); ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($room['floor_name']); ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $room['item_count']; ?> items</td>
                                     <td class="py-3 px-4 text-center">
                                         <a href="admin_room_inventory.php?room_id=<?php echo $room['id']; ?>" class="text-blue-500 hover:text-blue-700 mr-2">Ver/Editar Inventario</a>
@@ -136,7 +157,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <tr><td colspan="4" class="text-center py-4">No hay habitaciones registradas.</td></tr>
+                            <tr><td colspan="5" class="text-center py-4">No hay habitaciones registradas.</td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -288,12 +309,26 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
         }
         animate();
 
-        function changeRoom(roomId) {
-            if (roomId === "") {
-                window.location.href = 'admin_inventory.php';
+        function changeFloor(floorId) {
+            const url = new URL(window.location);
+            if (floorId === "") {
+                url.searchParams.delete('floor_id');
+                url.searchParams.delete('room_id');
             } else {
-                window.location.href = 'admin_inventory.php?room_id=' + roomId;
+                url.searchParams.set('floor_id', floorId);
+                url.searchParams.delete('room_id');
             }
+            window.location.href = url.toString();
+        }
+
+        function changeRoom(roomId) {
+            const url = new URL(window.location);
+            if (roomId === "") {
+                url.searchParams.delete('room_id');
+            } else {
+                url.searchParams.set('room_id', roomId);
+            }
+            window.location.href = url.toString();
         }
 
         function updateQuantity(itemId, delta) {
