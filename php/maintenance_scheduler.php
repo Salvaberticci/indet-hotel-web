@@ -38,10 +38,12 @@ function scheduleCleaningBeforeReservation($reservation_id) {
             $staff = $staff_result->fetch_assoc();
 
             // Create cleaning task
+            $task_description = 'Limpieza programada antes del check-in';
+            $created_at = $cleaning_date . ' 08:00:00';
             $insert_sql = "INSERT INTO maintenance_tasks (room_id, assigned_to_user_id, task_description, status, created_at)
-                          VALUES (?, ?, 'Limpieza programada antes del check-in', 'pending', ?)";
+                          VALUES (?, ?, ?, 'pending', ?)";
             $insert_stmt = $conn->prepare($insert_sql);
-            $insert_stmt->bind_param("iis", $room_id, $staff['id'], $cleaning_date . ' 08:00:00');
+            $insert_stmt->bind_param("iiss", $room_id, $staff['id'], $task_description, $created_at);
             $insert_stmt->execute();
         }
     }
@@ -81,10 +83,11 @@ function scheduleCleaningAfterCheckout($reservation_id) {
             $staff = $staff_result->fetch_assoc();
 
             // Create cleaning task
+            $task_description = 'Limpieza después del check-out';
             $insert_sql = "INSERT INTO maintenance_tasks (room_id, assigned_to_user_id, task_description, status, created_at)
-                          VALUES (?, ?, 'Limpieza después del check-out', 'pending', ?)";
+                          VALUES (?, ?, ?, 'pending', ?)";
             $insert_stmt = $conn->prepare($insert_sql);
-            $insert_stmt->bind_param("iis", $room_id, $staff['id'], $cleaning_datetime);
+            $insert_stmt->bind_param("iiss", $room_id, $staff['id'], $task_description, $cleaning_datetime);
             $insert_stmt->execute();
         }
     }
