@@ -78,14 +78,14 @@ if (isset($_POST['update_room'])) {
     $status = $_POST['status'];
 
     // Fetch current photos and videos
-    $current_sql = "SELECT photos, videos FROM rooms WHERE id = ?";
+    $current_sql = "SELECT photos FROM rooms WHERE id = ?";
     $current_stmt = $conn->prepare($current_sql);
-    $current_stmt->bind_param("i", $id);
+    $current_stmt->bind_param("s", $id);
     $current_stmt->execute();
     $current_result = $current_stmt->get_result();
     $current_room = $current_result->fetch_assoc();
     $photos = json_decode($current_room['photos'], true) ?? ['default_room.jpg'];
-    $videos = json_decode($current_room['videos'], true) ?? [];
+    $videos = [];
 
     // Handle multiple images (append to existing)
     if (isset($_FILES['images'])) {
@@ -118,9 +118,9 @@ if (isset($_POST['update_room'])) {
     $photos_json = json_encode($photos);
     $videos_json = json_encode($videos);
 
-    $sql = "UPDATE rooms SET type = ?, capacity = ?, floor_id = ?, description = ?, photos = ?, videos = ?, status = ? WHERE id = ?";
+    $sql = "UPDATE rooms SET type = ?, capacity = ?, floor_id = ?, description = ?, photos = ?, status = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("siissssi", $type, $capacity, $floor_id, $description, $photos_json, $videos_json, $status, $id);
+    $stmt->bind_param("siissss", $type, $capacity, $floor_id, $description, $photos_json, $status, $id);
 
     if ($stmt->execute()) {
         $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Habitación actualizada exitosamente.'];
