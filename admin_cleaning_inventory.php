@@ -9,27 +9,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
     exit();
 }
 
-// Get selected floor from GET or default to 1
-$selected_floor_id = isset($_GET['floor_id']) ? (int)$_GET['floor_id'] : 1;
-
-// Fetch inventory for the selected floor
-$inventory_sql = "SELECT * FROM cleaning_inventory WHERE floor_id = ? ORDER BY item_name ASC";
-$inventory_stmt = $conn->prepare($inventory_sql);
-$inventory_stmt->bind_param("i", $selected_floor_id);
-$inventory_stmt->execute();
-$inventory_result = $inventory_stmt->get_result();
-
-// Fetch all floors
-$floors_sql = "SELECT id, floor_number, name FROM floors ORDER BY floor_number ASC";
-$floors_result = $conn->query($floors_sql);
-
-// Get selected floor name
-$selected_floor_sql = "SELECT name FROM floors WHERE id = ?";
-$selected_floor_stmt = $conn->prepare($selected_floor_sql);
-$selected_floor_stmt->bind_param("i", $selected_floor_id);
-$selected_floor_stmt->execute();
-$selected_floor_result = $selected_floor_stmt->get_result();
-$selected_floor_name = $selected_floor_result->fetch_assoc()['name'] ?? 'Piso Desconocido';
+// No longer need floor-specific variables since we're using a single cleaning room
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -149,57 +129,17 @@ $selected_floor_name = $selected_floor_result->fetch_assoc()['name'] ?? 'Piso De
                 </table>
             </div>
         </div>
-
-            <!-- Cleaning Inventory Table -->
-            <div class="overflow-x-auto">
-                <table class="min-w-full bg-gray-800" id="cleaning-inventory-table">
-                    <thead class="bg-gray-700 text-white">
-                        <tr>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Nombre del Item</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Cantidad</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Descripción</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Fecha de Creación</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-gray-300">
-                        <?php if ($inventory_result->num_rows > 0): ?>
-                            <?php while($item = $inventory_result->fetch_assoc()): ?>
-                                <tr class="hover:bg-gray-700 border-b border-gray-700">
-                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($item['item_name']); ?></td>
-                                    <td class="py-3 px-4 text-center">
-                                        <div class="flex items-center justify-center">
-                                            <button type="button" onclick="updateQuantity('<?php echo $item['id']; ?>', -1)" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded">-</button>
-                                            <span id="quantity-<?php echo $item['id']; ?>" class="mx-2"><?php echo $item['quantity']; ?></span>
-                                            <button type="button" onclick="updateQuantity('<?php echo $item['id']; ?>', 1)" class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded">+</button>
-                                        </div>
-                                    </td>
-                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($item['description']); ?></td>
-                                    <td class="py-3 px-4 text-center"><?php echo date('d/m/Y', strtotime($item['created_at'])); ?></td>
-                                    <td class="py-3 px-4 text-center">
-                                        <button onclick="openEditItemModal(<?php echo htmlspecialchars(json_encode($item)); ?>)" class="text-blue-500 hover:text-blue-700 mr-2">Editar</button>
-                                        <a href="php/cleaning_inventory_handler.php?delete_item=<?php echo $item['id']; ?>&floor_id=<?php echo $selected_floor_id; ?>" onclick="return confirm('¿Estás seguro?')" class="text-red-500 hover:text-red-700">Eliminar</a>
-                                    </td>
-                                </tr>
-                            <?php endwhile; ?>
-                        <?php else: ?>
-                            <tr><td colspan="5" class="text-center py-4">No hay items en el inventario de faenas para este piso.</td></tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
 
     <!-- Edit Item Modal -->
     <div id="editItemModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
         <div class="bg-gray-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-md">
-            <h2 class="text-2xl font-bold mb-6">Editar Item de Faena</h2>
+            <h2 class="text-2xl font-bold mb-6">Editar Producto de Limpieza</h2>
             <form action="php/cleaning_inventory_handler.php" method="POST">
                 <input type="hidden" id="editItemId" name="id">
-                <input type="hidden" name="floor_id" value="<?php echo $selected_floor_id; ?>">
+                <!-- No longer need floor_id since we use single cleaning room -->
                 <div class="mb-4">
-                    <label class="block font-semibold">Nombre del Item</label>
+                    <label class="block font-semibold">Nombre del Producto</label>
                     <input type="text" id="editItemName" name="item_name" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                 </div>
                 <div class="mb-4">
@@ -212,7 +152,7 @@ $selected_floor_name = $selected_floor_result->fetch_assoc()['name'] ?? 'Piso De
                 </div>
                 <div class="flex justify-end">
                     <button type="button" onclick="closeEditItemModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-2">Cancelar</button>
-                    <button type="submit" name="update_item" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Actualizar Item</button>
+                    <button type="submit" name="update_item" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Actualizar Producto</button>
                 </div>
             </form>
         </div>
