@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 }
 
 // Fetch rooms for management
-$rooms_sql = "SELECT r.id, r.type, r.capacity, r.description, r.photos, r.floor_id, f.name as floor_name FROM rooms r JOIN floors f ON r.floor_id = f.id ORDER BY f.floor_number ASC, r.type ASC";
+$rooms_sql = "SELECT r.id, r.type, r.capacity, r.description, r.photos, r.floor_id, r.status, f.name as floor_name FROM rooms r JOIN floors f ON r.floor_id = f.id ORDER BY f.floor_number ASC, r.type ASC";
 $rooms_result = $conn->query($rooms_sql);
 if (!$rooms_result) {
     die("Query failed: " . $conn->error);
