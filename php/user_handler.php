@@ -87,7 +87,7 @@ if (isset($_POST['update_user_role'])) {
     // Prevent admin from changing their own role to non-admin
     if ($user_id == $_SESSION['user_id'] && $role != 'admin') {
         $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'No puedes cambiar tu propio rol a no-administrador.'];
-        header("Location: ../admin.php");
+        header("Location: ../admin_users.php");
         exit();
     }
 
