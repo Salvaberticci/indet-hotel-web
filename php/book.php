@@ -106,16 +106,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             scheduleCleaningBeforeReservation($reservation_id);
         }
 
-        // Store reservation details in session
-        $_SESSION['last_reservation'] = [
-            'checkin' => $checkin,
-            'checkout' => $checkout,
-            'guest_name' => $guest_name,
-            'guest_lastname' => $guest_lastname,
-            'selected_rooms' => $selected_rooms,
-            'adultos' => $adultos,
-            'ninos' => $ninos,
-            'discapacitados' => $discapacitados
+        // Store success message in session
+        $_SESSION['flash_message'] = [
+            'status' => 'success',
+            'text' => '¡Reserva realizada exitosamente! Puedes ver los detalles en tu perfil.'
         ];
 
         // Redirect to user profile instead of confirmation page
