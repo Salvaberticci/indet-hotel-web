@@ -21,7 +21,8 @@ $checkin_sql = "SELECT r.id, r.guest_name, r.guest_lastname, r.cedula, r.checkin
                  JOIN floors f ON rm.floor_id = f.id
                  JOIN users u ON r.user_id = u.id
                  WHERE r.checkin_date = ? AND r.status IN ('confirmed', 'pending')
-                 ORDER BY r.checkin_date ASC";
+                 ORDER BY r.checkin_date ASC
+                 COLLATE utf8mb4_unicode_ci";
 $checkin_stmt = $conn->prepare($checkin_sql);
 $checkin_stmt->bind_param("s", $today);
 $checkin_stmt->execute();
@@ -35,7 +36,8 @@ $checkout_sql = "SELECT r.id, r.guest_name, r.guest_lastname, r.cedula, r.checki
                   JOIN floors f ON rm.floor_id = f.id
                   JOIN users u ON r.user_id = u.id
                   WHERE r.checkout_date = ? AND r.status = 'confirmed'
-                  ORDER BY r.checkout_date ASC";
+                  ORDER BY r.checkout_date ASC
+                  COLLATE utf8mb4_unicode_ci";
 $checkout_stmt = $conn->prepare($checkout_sql);
 $checkout_stmt->bind_param("s", $today);
 $checkout_stmt->execute();
