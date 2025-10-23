@@ -2,8 +2,8 @@
 session_start();
 include 'db.php';
 
-// Admin access check
-if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
+// Admin or maintenance access check
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['user_role'], ['admin', 'maintenance'])) {
     header("Location: ../login.php");
     exit();
 }
@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if (empty($room_id) || empty($user_id)) {
         $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Por favor, selecciona una habitación y un miembro del personal.'];
-        header("Location: ../admin.php");
+        header("Location: ../admin_assign_maintenance.php");
         exit();
     }
 
@@ -46,11 +46,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $conn->close();
-    header("Location: ../admin.php");
+    header("Location: ../admin_assign_maintenance.php");
     exit();
 
 } else {
-    header("Location: ../admin.php");
+    header("Location: ../admin_assign_maintenance.php");
     exit();
 }
 ?>
