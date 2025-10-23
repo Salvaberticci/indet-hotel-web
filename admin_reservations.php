@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 }
 
 // Fetch reservations from the database
-$sql = "SELECT reservations.id, users.name as user_name, users.cedula as user_cedula, rooms.type as room_type, reservations.checkin_date, reservations.checkout_date, reservations.status, reservations.user_id
+$sql = "SELECT reservations.id, users.name as user_name, users.cedula_type as user_cedula_type, users.cedula as user_cedula, rooms.type as room_type, reservations.checkin_date, reservations.checkout_date, reservations.status, reservations.user_id
         FROM reservations
         JOIN users ON reservations.user_id = users.id
         JOIN rooms ON reservations.room_id = rooms.id
@@ -101,11 +101,11 @@ $result = $conn->query($sql);
                         <select name="user_id" id="user_select" required class="w-full p-2 border rounded bg-gray-600 text-white">
                             <option value="">Seleccionar cliente...</option>
                             <?php
-                            $users_sql = "SELECT id, name, cedula FROM users WHERE cedula IS NOT NULL AND cedula != '' ORDER BY cedula ASC";
+                            $users_sql = "SELECT id, name, cedula_type, cedula FROM users WHERE cedula IS NOT NULL AND cedula != '' ORDER BY cedula ASC";
                             $users_result = $conn->query($users_sql);
                             while($user = $users_result->fetch_assoc()): ?>
                                 <option value="<?php echo $user['id']; ?>" data-cedula="<?php echo htmlspecialchars($user['cedula']); ?>">
-                                    <?php echo htmlspecialchars($user['cedula'] . ' - ' . $user['name']); ?>
+                                    <?php echo htmlspecialchars($user['cedula_type'] . '-' . $user['cedula'] . ' - ' . $user['name']); ?>
                                 </option>
                             <?php endwhile; ?>
                         </select>
@@ -155,7 +155,7 @@ $result = $conn->query($sql);
                                     <td class="py-3 px-4 text-center"><?php echo $row['id']; ?></td>
                                     <td class="py-3 px-4 text-center">
                                         <?php echo $row['user_name']; ?><br>
-                                        <small class="text-gray-400">Cédula: <?php echo htmlspecialchars($row['user_cedula']); ?></small>
+                                        <small class="text-gray-400">Cédula: <?php echo htmlspecialchars($row['user_cedula_type'] . '-' . $row['user_cedula']); ?></small>
                                     </td>
                                     <td class="py-3 px-4 text-center"><?php echo $row['room_type']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $row['checkin_date']; ?></td>
@@ -215,11 +215,11 @@ $result = $conn->query($sql);
                     <select id="editReservationUser" name="user_id" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                         <option value="">Seleccionar cliente...</option>
                         <?php
-                        $users_sql = "SELECT id, name, cedula FROM users WHERE cedula IS NOT NULL AND cedula != '' ORDER BY cedula ASC";
+                        $users_sql = "SELECT id, name, cedula_type, cedula FROM users WHERE cedula IS NOT NULL AND cedula != '' ORDER BY cedula ASC";
                         $users_result = $conn->query($users_sql);
                         while($user = $users_result->fetch_assoc()): ?>
                             <option value="<?php echo $user['id']; ?>" data-cedula="<?php echo htmlspecialchars($user['cedula']); ?>">
-                                <?php echo htmlspecialchars($user['cedula'] . ' - ' . $user['name']); ?>
+                                <?php echo htmlspecialchars($user['cedula_type'] . '-' . $user['cedula'] . ' - ' . $user['name']); ?>
                             </option>
                         <?php endwhile; ?>
                     </select>

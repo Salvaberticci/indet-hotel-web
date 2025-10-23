@@ -4,16 +4,18 @@ include 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
+    $cedula_type = $_POST['cedula_type'];
+    $cedula = $_POST['cedula'];
     $email = $_POST['email'];
     $password = $_POST['password'];
 
     // Hash the password for security
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    
-    $sql = "INSERT INTO users (name, email, password, role, is_verified) VALUES (?, ?, ?, 'client', 1)";
+
+    $sql = "INSERT INTO users (name, cedula_type, cedula, email, password, role, is_verified) VALUES (?, ?, ?, ?, ?, 'client', 1)";
 
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sss", $name, $email, $hashed_password);
+    $stmt->bind_param("sssss", $name, $cedula_type, $cedula, $email, $hashed_password);
 
     if ($stmt->execute()) {
         $_SESSION['flash_message'] = [

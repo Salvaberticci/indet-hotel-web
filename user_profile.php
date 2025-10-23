@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 // Fetch user data
-$user_sql = "SELECT name, email, cedula FROM users WHERE id = ?";
+$user_sql = "SELECT name, email, cedula_type, cedula FROM users WHERE id = ?";
 $user_stmt = $conn->prepare($user_sql);
 $user_stmt->bind_param("i", $user_id);
 $user_stmt->execute();
@@ -124,7 +124,7 @@ $reservations_result = $reservations_stmt->get_result();
                         </div>
                         <div>
                             <label class="block font-semibold text-gray-600">Cédula</label>
-                            <p class="text-lg"><?php echo htmlspecialchars($user['cedula']); ?></p>
+                            <p class="text-lg"><?php echo htmlspecialchars($user['cedula_type'] . '-' . $user['cedula']); ?></p>
                         </div>
                         <div>
                             <label class="block font-semibold text-gray-600">Correo Electrónico</label>
