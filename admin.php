@@ -92,6 +92,11 @@ $is_admin = $_SESSION['user_role'] == 'admin';
                 <h3 class="text-xl font-bold">Usuarios</h3>
                 <p>Gestionar usuarios del sistema</p>
             </a>
+            <a href="admin_floors.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
+                <i class="fas fa-building fa-3x mb-4"></i>
+                <h3 class="text-xl font-bold">Pisos</h3>
+                <p>Gestionar pisos del hotel</p>
+            </a>
             <a href="admin_rooms.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
                 <i class="fas fa-bed fa-3x mb-4"></i>
                 <h3 class="text-xl font-bold">Habitaciones</h3>
