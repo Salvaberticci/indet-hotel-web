@@ -75,7 +75,7 @@ if (isset($_POST['update_room'])) {
     $capacity = $_POST['capacity'];
     $floor_id = $_POST['floor_id'];
     $description = $_POST['description'];
-    $status = $_POST['status'] ?? 'enabled';
+    $status = $_POST['status'];
 
     // Fetch current photos and videos
     $current_sql = "SELECT photos, videos FROM rooms WHERE id = ?";

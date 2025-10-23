@@ -204,6 +204,13 @@ if (!$rooms_result) {
                     <textarea id="editRoomDescription" name="description" rows="3" required class="w-full p-3 border rounded-lg bg-gray-700 text-white"></textarea>
                 </div>
                 <div class="mb-4">
+                    <label class="block font-semibold">Estado</label>
+                    <select id="editRoomStatus" name="status" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                        <option value="enabled">Habilitada</option>
+                        <option value="disabled">No Habilitada</option>
+                    </select>
+                </div>
+                <div class="mb-4">
                     <label class="block font-semibold">Imagen (opcional)</label>
                     <input type="file" name="image" accept="image/*" class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                     <div id="currentImage" class="mt-2"></div>
@@ -268,6 +275,7 @@ if (!$rooms_result) {
             // Note: room.floor_id should be passed from the query result
             document.getElementById('editRoomFloor').value = room.floor_id || room.floor;
             document.getElementById('editRoomDescription').value = room.description;
+            document.getElementById('editRoomStatus').value = room.status || 'enabled';
             const photos = room.photos ? JSON.parse(room.photos) : ['default_room.jpg'];
             document.getElementById('currentImage').innerHTML = '<img src="images/' + photos[0] + '" alt="Current Image" class="w-16 h-16 object-cover rounded">';
             document.getElementById('editRoomModal').classList.remove('hidden');
