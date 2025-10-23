@@ -140,11 +140,13 @@ $is_admin = $_SESSION['user_role'] == 'admin';
                 <p>Gestionar check-ins y check-outs diarios</p>
             </a>
             <?php endif; ?>
+            <?php if ($is_admin): ?>
             <a href="admin_comments.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
                 <i class="fas fa-comments fa-3x mb-4"></i>
                 <h3 class="text-xl font-bold">Comentarios</h3>
                 <p>Gestionar comentarios</p>
             </a>
+            <?php endif; ?>
         </div>
     </div>
 
