@@ -84,9 +84,6 @@ session_start();
                     <select id="cedula_type" name="cedula_type" required class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
                         <option value="V">V - Venezolano</option>
                         <option value="E">E - Extranjero</option>
-                        <option value="J">J - Jurídico</option>
-                        <option value="G">G - Gobierno</option>
-                        <option value="P">P - Pasaporte</option>
                     </select>
                 </div>
                 <div class="mb-4">
