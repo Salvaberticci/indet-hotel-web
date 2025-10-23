@@ -15,12 +15,13 @@ $today = $selected_date;
 
 // Fetch today's check-ins
 $checkin_sql = "SELECT r.id, r.guest_name, r.guest_lastname, r.cedula, r.checkin_date, r.checkout_date, r.status,
-                       rm.type as room_type, f.name as floor_name
-                FROM reservations r
-                JOIN rooms rm ON r.room_id = rm.id
-                JOIN floors f ON rm.floor_id = f.id
-                WHERE r.checkin_date = ? AND r.status IN ('confirmed', 'pending')
-                ORDER BY r.checkin_date ASC";
+                        rm.type as room_type, f.name as floor_name, u.name as user_name
+                 FROM reservations r
+                 JOIN rooms rm ON r.room_id = rm.id
+                 JOIN floors f ON rm.floor_id = f.id
+                 JOIN users u ON r.user_id = u.id
+                 WHERE r.checkin_date = ? AND r.status IN ('confirmed', 'pending')
+                 ORDER BY r.checkin_date ASC";
 $checkin_stmt = $conn->prepare($checkin_sql);
 $checkin_stmt->bind_param("s", $today);
 $checkin_stmt->execute();
@@ -28,12 +29,13 @@ $checkin_result = $checkin_stmt->get_result();
 
 // Fetch today's check-outs
 $checkout_sql = "SELECT r.id, r.guest_name, r.guest_lastname, r.cedula, r.checkin_date, r.checkout_date, r.status,
-                        rm.type as room_type, f.name as floor_name
-                 FROM reservations r
-                 JOIN rooms rm ON r.room_id = rm.id
-                 JOIN floors f ON rm.floor_id = f.id
-                 WHERE r.checkout_date = ? AND r.status = 'confirmed'
-                 ORDER BY r.checkout_date ASC";
+                         rm.type as room_type, f.name as floor_name, u.name as user_name
+                  FROM reservations r
+                  JOIN rooms rm ON r.room_id = rm.id
+                  JOIN floors f ON rm.floor_id = f.id
+                  JOIN users u ON r.user_id = u.id
+                  WHERE r.checkout_date = ? AND r.status = 'confirmed'
+                  ORDER BY r.checkout_date ASC";
 $checkout_stmt = $conn->prepare($checkout_sql);
 $checkout_stmt->bind_param("s", $today);
 $checkout_stmt->execute();
@@ -148,7 +150,8 @@ $checkout_result = $checkout_stmt->get_result();
                                     <tr class="hover:bg-gray-700 border-b border-gray-700 reservation-row" data-cedula="<?php echo htmlspecialchars($reservation['cedula']); ?>">
                                         <td class="py-3 px-4 text-center">
                                             <?php echo htmlspecialchars($reservation['guest_name'] . ' ' . $reservation['guest_lastname']); ?><br>
-                                            <small class="text-gray-400">Cédula: <?php echo htmlspecialchars($reservation['cedula']); ?></small>
+                                            <small class="text-gray-400">Cédula: <?php echo htmlspecialchars($reservation['cedula']); ?></small><br>
+                                            <small class="text-gray-500">Reservado por: <?php echo htmlspecialchars($reservation['user_name']); ?></small>
                                         </td>
                                         <td class="py-3 px-4 text-center">
                                             <?php echo htmlspecialchars($reservation['room_type']); ?><br>
@@ -200,7 +203,8 @@ $checkout_result = $checkout_stmt->get_result();
                                     <tr class="hover:bg-gray-700 border-b border-gray-700 reservation-row" data-cedula="<?php echo htmlspecialchars($reservation['cedula']); ?>">
                                         <td class="py-3 px-4 text-center">
                                             <?php echo htmlspecialchars($reservation['guest_name'] . ' ' . $reservation['guest_lastname']); ?><br>
-                                            <small class="text-gray-400">Cédula: <?php echo htmlspecialchars($reservation['cedula']); ?></small>
+                                            <small class="text-gray-400">Cédula: <?php echo htmlspecialchars($reservation['cedula']); ?></small><br>
+                                            <small class="text-gray-500">Reservado por: <?php echo htmlspecialchars($reservation['user_name']); ?></small>
                                         </td>
                                         <td class="py-3 px-4 text-center">
                                             <?php echo htmlspecialchars($reservation['room_type']); ?><br>
