@@ -9,8 +9,9 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
     exit();
 }
 
-// Get today's date
-$today = date('Y-m-d');
+// Get selected date from GET parameter or default to today
+$selected_date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
+$today = $selected_date;
 
 // Fetch today's check-ins
 $checkin_sql = "SELECT r.id, r.guest_name, r.guest_lastname, r.cedula, r.checkin_date, r.checkout_date, r.status,
@@ -88,7 +89,7 @@ $checkout_result = $checkout_stmt->get_result();
         ?>
         <div class="flex justify-between items-center mb-8">
             <div class="flex items-center">
-                <h1 class="text-3xl font-bold">Check-in/Check-out - <?php echo date('d/m/Y', strtotime($today)); ?></h1>
+                <h1 class="text-3xl font-bold">Check-in/Check-out - <?php echo date('d/m/Y', strtotime($selected_date)); ?></h1>
             </div>
             <div>
                 <button onclick="printDailyReport()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg mr-4">
@@ -101,13 +102,27 @@ $checkout_result = $checkout_stmt->get_result();
             </div>
         </div>
 
-        <!-- Search by Cédula -->
+        <!-- Search Section -->
         <div class="mb-6">
-            <label for="cedula_search" class="block text-sm font-medium mb-2">Buscar por Cédula:</label>
-            <input type="text" id="cedula_search" placeholder="Ingresa la cédula..." class="p-2 border rounded bg-gray-700 text-white w-full md:w-1/3">
-            <button onclick="searchByCedula()" class="ml-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">
-                <i class="fas fa-search mr-2"></i>Buscar
-            </button>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Search by Cédula -->
+                <div>
+                    <label for="cedula_search" class="block text-sm font-medium mb-2">Buscar por Cédula:</label>
+                    <input type="text" id="cedula_search" placeholder="Ingresa la cédula..." class="p-2 border rounded bg-gray-700 text-white w-full">
+                    <button onclick="searchByCedula()" class="mt-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg w-full">
+                        <i class="fas fa-search mr-2"></i>Buscar por Cédula
+                    </button>
+                </div>
+
+                <!-- Search by Date -->
+                <div>
+                    <label for="date_search" class="block text-sm font-medium mb-2">Buscar por Fecha:</label>
+                    <input type="date" id="date_search" value="<?php echo $selected_date; ?>" class="p-2 border rounded bg-gray-700 text-white w-full">
+                    <button onclick="searchByDate()" class="mt-2 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg w-full">
+                        <i class="fas fa-calendar mr-2"></i>Buscar por Fecha
+                    </button>
+                </div>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8" id="checkin-checkout-sections">
@@ -326,6 +341,17 @@ $checkout_result = $checkout_stmt->get_result();
                     row.style.display = 'none';
                 }
             });
+        }
+
+        function searchByDate() {
+            const selectedDate = document.getElementById('date_search').value;
+            if (!selectedDate) {
+                alert('Por favor selecciona una fecha.');
+                return;
+            }
+
+            // Redirect to the same page with date parameter
+            window.location.href = 'admin_checkin_checkout.php?date=' + selectedDate;
         }
 
         function printDailyReport() {
