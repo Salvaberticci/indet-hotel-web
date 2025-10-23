@@ -60,22 +60,21 @@ if (isset($_POST['add_item'])) {
         }
         header("Location: ../admin_cleaning_inventory.php?station_id=" . $station_id);
     } else {
-        // Legacy floor-based adding (for backward compatibility)
-        $floor_id = $_POST['floor_id'];
+        // General inventory adding (no specific station)
         $item_name = $_POST['item_name'];
         $quantity = (int)$_POST['quantity'];
         $description = $_POST['description'];
 
-        $sql = "INSERT INTO cleaning_inventory (floor_id, item_name, quantity, description) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO cleaning_inventory (item_name, quantity, description) VALUES (?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("isis", $floor_id, $item_name, $quantity, $description);
+        $stmt->bind_param("sis", $item_name, $quantity, $description);
 
         if ($stmt->execute()) {
             $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Item de faena agregado exitosamente.'];
         } else {
             $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al agregar el item: ' . $stmt->error];
         }
-        header("Location: ../admin_cleaning_inventory.php?floor_id=" . $floor_id);
+        header("Location: ../admin_cleaning_inventory.php");
     }
     exit();
 }
