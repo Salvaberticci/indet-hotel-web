@@ -23,7 +23,7 @@ $user = $user_result->fetch_assoc();
 $reservations_sql = "SELECT r.id, r.checkin_date, r.checkout_date, r.guest_name, r.guest_lastname, r.status,
                            rm.type as room_type, f.name as floor_name
                     FROM reservations r
-                    JOIN rooms rm ON r.room_id = rm.id
+                    JOIN rooms rm ON CAST(r.room_id AS CHAR) = rm.id
                     JOIN floors f ON rm.floor_id = f.id
                     WHERE r.user_id = ?
                     ORDER BY r.checkin_date DESC";
