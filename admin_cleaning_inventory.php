@@ -36,7 +36,7 @@ $selected_floor_name = $selected_floor_result->fetch_assoc()['name'] ?? 'Piso De
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario de Faenas - Panel de Administración - INDET</title>
+    <title>Cuarto de Faenas - Panel de Administración - INDET</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -81,7 +81,7 @@ $selected_floor_name = $selected_floor_result->fetch_assoc()['name'] ?? 'Piso De
         ?>
         <div class="flex justify-between items-center mb-8">
             <div class="flex items-center">
-                <h1 class="text-3xl font-bold">Inventario de Faenas</h1>
+                <h1 class="text-3xl font-bold">Cuarto de Faenas</h1>
             </div>
             <div>
                 <a href="admin.php" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-4">
@@ -91,185 +91,64 @@ $selected_floor_name = $selected_floor_result->fetch_assoc()['name'] ?? 'Piso De
             </div>
         </div>
 
-        <!-- Floor Filter -->
-        <div class="mb-6">
-            <label for="floor_select" class="block text-sm font-medium mb-2">Filtrar por Piso:</label>
-            <select id="floor_select" onchange="changeFloor(this.value)" class="p-2 border rounded bg-gray-700 text-white">
-                <option value="">Todos los Pisos</option>
-                <?php
-                $floors_result->data_seek(0); // Reset pointer
-                while($floor = $floors_result->fetch_assoc()): ?>
-                    <option value="<?php echo $floor['id']; ?>" <?php echo $floor['id'] == $selected_floor_id ? 'selected' : ''; ?>>
-                        <?php echo $floor['name']; ?> (Piso <?php echo $floor['floor_number']; ?>)
-                    </option>
-                <?php endwhile; ?>
-            </select>
-        </div>
 
-        <!-- Create Cleaning Station Section -->
+        <!-- Cleaning Inventory Management -->
         <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mb-8">
-            <h2 class="text-2xl font-bold mb-6">Crear Cuarto de Faenas</h2>
+            <h2 class="text-2xl font-bold mb-6">Cuarto de Faenas - Inventario de Productos de Limpieza</h2>
 
-            <!-- Create Cleaning Station Form -->
+            <!-- Add Cleaning Item Form -->
             <form action="php/cleaning_inventory_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
-                <h3 class="text-xl font-semibold mb-4">Crear Nuevo Cuarto de Faenas</h3>
+                <h3 class="text-xl font-semibold mb-4">Agregar Nuevo Producto de Limpieza</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <input type="text" name="station_id" placeholder="ID (ej. F001)" required class="p-2 border rounded bg-gray-600 text-white">
-                    <input type="text" name="station_name" placeholder="Nombre (ej. Cuarto de Limpieza P1)" required class="p-2 border rounded bg-gray-600 text-white">
-                    <select name="floor_id" required class="p-2 border rounded bg-gray-600 text-white">
-                        <option value="">Seleccionar Piso</option>
-                        <?php
-                        $floors_sql = "SELECT id, name, floor_number FROM floors ORDER BY floor_number ASC";
-                        $floors_result = $conn->query($floors_sql);
-                        while($floor = $floors_result->fetch_assoc()): ?>
-                            <option value="<?php echo $floor['id']; ?>"><?php echo htmlspecialchars($floor['name']); ?> (Piso <?php echo $floor['floor_number']; ?>)</option>
-                        <?php endwhile; ?>
-                    </select>
+                    <input type="text" name="item_name" placeholder="Nombre del Producto" required class="p-2 border rounded bg-gray-600 text-white">
+                    <input type="number" name="quantity" placeholder="Cantidad" min="0" required class="p-2 border rounded bg-gray-600 text-white">
+                    <input type="text" name="description" placeholder="Descripción" required class="p-2 border rounded bg-gray-600 text-white">
                 </div>
-                <button type="submit" name="create_station" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Crear Cuarto de Faenas</button>
+                <button type="submit" name="add_item" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Agregar Producto</button>
             </form>
-        </div>
 
-        <!-- Cleaning Stations Overview -->
-        <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mb-8">
-            <h2 class="text-2xl font-bold mb-6">Cuartos de Faenas</h2>
+            <!-- Cleaning Inventory Table -->
             <div class="overflow-x-auto">
-                <table class="min-w-full bg-gray-800">
+                <table class="min-w-full bg-gray-800" id="cleaning-inventory-table">
                     <thead class="bg-gray-700 text-white">
                         <tr>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">ID</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Nombre</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Piso</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Items</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Nombre del Producto</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Cantidad</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Descripción</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Fecha de Creación</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-300">
                         <?php
-                        $stations_sql = "SELECT cs.id, cs.station_id, cs.station_name, f.name as floor_name,
-                                        COUNT(ci.id) as item_count
-                                        FROM cleaning_stations cs
-                                        LEFT JOIN floors f ON cs.floor_id = f.id
-                                        LEFT JOIN cleaning_inventory ci ON cs.id = ci.station_id
-                                        GROUP BY cs.id, cs.station_id, cs.station_name, f.name
-                                        ORDER BY cs.station_id ASC";
-                        $stations_result = $conn->query($stations_sql);
-                        if ($stations_result->num_rows > 0): ?>
-                            <?php while($station = $stations_result->fetch_assoc()): ?>
+                        $cleaning_inventory_sql = "SELECT * FROM cleaning_inventory ORDER BY item_name ASC";
+                        $cleaning_inventory_result = $conn->query($cleaning_inventory_sql);
+                        if ($cleaning_inventory_result->num_rows > 0): ?>
+                            <?php while($item = $cleaning_inventory_result->fetch_assoc()): ?>
                                 <tr class="hover:bg-gray-700 border-b border-gray-700">
-                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($station['station_id']); ?></td>
-                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($station['station_name']); ?></td>
-                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($station['floor_name']); ?></td>
-                                    <td class="py-3 px-4 text-center"><?php echo $station['item_count']; ?> items</td>
+                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($item['item_name']); ?></td>
                                     <td class="py-3 px-4 text-center">
-                                        <a href="admin_cleaning_inventory.php?station_id=<?php echo $station['id']; ?>" class="text-blue-500 hover:text-blue-700 mr-2">Ver Inventario</a>
-                                        <a href="admin_floors.php" class="text-green-500 hover:text-green-700">Gestionar Piso</a>
+                                        <div class="flex items-center justify-center">
+                                            <button type="button" onclick="updateQuantity('<?php echo $item['id']; ?>', -1)" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded">-</button>
+                                            <span id="quantity-<?php echo $item['id']; ?>" class="mx-2"><?php echo $item['quantity']; ?></span>
+                                            <button type="button" onclick="updateQuantity('<?php echo $item['id']; ?>', 1)" class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded">+</button>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($item['description']); ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo date('d/m/Y', strtotime($item['created_at'])); ?></td>
+                                    <td class="py-3 px-4 text-center">
+                                        <button onclick="openEditItemModal(<?php echo htmlspecialchars(json_encode($item)); ?>)" class="text-blue-500 hover:text-blue-700 mr-2">Editar</button>
+                                        <a href="php/cleaning_inventory_handler.php?delete_item=<?php echo $item['id']; ?>" onclick="return confirm('¿Estás seguro?')" class="text-red-500 hover:text-red-700">Eliminar</a>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <tr><td colspan="5" class="text-center py-4">No hay cuartos de faenas registrados.</td></tr>
+                            <tr><td colspan="5" class="text-center py-4">No hay productos de limpieza en el inventario.</td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
             </div>
         </div>
-
-        <!-- Detailed Station Inventory View -->
-        <?php if (isset($_GET['station_id']) && !empty($_GET['station_id'])): ?>
-            <?php
-            $selected_station_id = $_GET['station_id'];
-            $station_inventory_sql = "SELECT * FROM cleaning_inventory WHERE station_id = ? ORDER BY item_name ASC";
-            $station_inventory_stmt = $conn->prepare($station_inventory_sql);
-            $station_inventory_stmt->bind_param("i", $selected_station_id);
-            $station_inventory_stmt->execute();
-            $station_inventory_result = $station_inventory_stmt->get_result();
-
-            $station_info_sql = "SELECT station_id, station_name FROM cleaning_stations WHERE id = ?";
-            $station_info_stmt = $conn->prepare($station_info_sql);
-            $station_info_stmt->bind_param("i", $selected_station_id);
-            $station_info_stmt->execute();
-            $station_info = $station_info_stmt->get_result()->fetch_assoc();
-            ?>
-            <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
-                <h2 class="text-2xl font-bold mb-6">Inventario de <?php echo htmlspecialchars($station_info['station_name']); ?> (<?php echo htmlspecialchars($station_info['station_id']); ?>)</h2>
-
-                <!-- Add Item Form -->
-                <form action="php/cleaning_inventory_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
-                    <h3 class="text-xl font-semibold mb-4">Agregar Nuevo Item</h3>
-                    <input type="hidden" name="station_id" value="<?php echo $selected_station_id; ?>">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <input type="text" name="item_name" placeholder="Nombre del Item" required class="p-2 border rounded bg-gray-600 text-white">
-                        <input type="number" name="quantity" placeholder="Cantidad" min="0" required class="p-2 border rounded bg-gray-600 text-white">
-                        <input type="text" name="description" placeholder="Descripción" required class="p-2 border rounded bg-gray-600 text-white">
-                    </div>
-                    <button type="submit" name="add_item" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Agregar Item</button>
-                </form>
-
-                <!-- Inventory Table -->
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-gray-800">
-                        <thead class="bg-gray-700 text-white">
-                            <tr>
-                                <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Nombre del Item</th>
-                                <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Cantidad</th>
-                                <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Descripción</th>
-                                <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Fecha de Creación</th>
-                                <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-gray-300">
-                            <?php if ($station_inventory_result->num_rows > 0): ?>
-                                <?php while($item = $station_inventory_result->fetch_assoc()): ?>
-                                    <tr class="hover:bg-gray-700 border-b border-gray-700">
-                                        <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($item['item_name']); ?></td>
-                                        <td class="py-3 px-4 text-center">
-                                            <div class="flex items-center justify-center">
-                                                <button type="button" onclick="updateQuantity('<?php echo $item['id']; ?>', -1)" class="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded">-</button>
-                                                <span id="quantity-<?php echo $item['id']; ?>" class="mx-2"><?php echo $item['quantity']; ?></span>
-                                                <button type="button" onclick="updateQuantity('<?php echo $item['id']; ?>', 1)" class="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded">+</button>
-                                            </div>
-                                        </td>
-                                        <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($item['description']); ?></td>
-                                        <td class="py-3 px-4 text-center"><?php echo date('d/m/Y', strtotime($item['created_at'])); ?></td>
-                                        <td class="py-3 px-4 text-center">
-                                            <button onclick="openEditItemModal(<?php echo htmlspecialchars(json_encode($item)); ?>)" class="text-blue-500 hover:text-blue-700 mr-2">Editar</button>
-                                            <a href="php/cleaning_inventory_handler.php?delete_item=<?php echo $item['id']; ?>&station_id=<?php echo $selected_station_id; ?>" onclick="return confirm('¿Estás seguro?')" class="text-red-500 hover:text-red-700">Eliminar</a>
-                                        </td>
-                                    </tr>
-                                <?php endwhile; ?>
-                            <?php else: ?>
-                                <tr><td colspan="5" class="text-center py-4">No hay items en este cuarto de faenas.</td></tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        <?php else: ?>
-            <!-- General Cleaning Inventory Management -->
-            <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mb-8">
-                <h2 class="text-2xl font-bold mb-6">Gestionar Inventario General de Faenas</h2>
-
-                <!-- Add Cleaning Item Form -->
-                <form action="php/cleaning_inventory_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
-                    <h3 class="text-xl font-semibold mb-4">Agregar Nuevo Item de Faena</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <select name="station_id" required class="p-2 border rounded bg-gray-600 text-white">
-                            <option value="">Seleccionar Cuarto</option>
-                            <?php
-                            $stations_result->data_seek(0); // Reset pointer
-                            while($station = $stations_result->fetch_assoc()): ?>
-                                <option value="<?php echo $station['id']; ?>"><?php echo htmlspecialchars($station['station_id']); ?> - <?php echo htmlspecialchars($station['station_name']); ?></option>
-                            <?php endwhile; ?>
-                        </select>
-                        <input type="text" name="item_name" placeholder="Nombre del Item" required class="p-2 border rounded bg-gray-600 text-white">
-                        <input type="number" name="quantity" placeholder="Cantidad" min="0" required class="p-2 border rounded bg-gray-600 text-white">
-                        <input type="text" name="description" placeholder="Descripción" required class="p-2 border rounded bg-gray-600 text-white">
-                    </div>
-                    <button type="submit" name="add_item" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Agregar Item</button>
-                </form>
-            </div>
-        <?php endif; ?>
 
             <!-- Cleaning Inventory Table -->
             <div class="overflow-x-auto">
