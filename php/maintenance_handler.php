@@ -19,7 +19,7 @@ if (isset($_POST['create_task'])) {
     $stmt->bind_param("sis", $room_id, $assigned_to_user_id, $task_description);
 
     if ($stmt->execute()) {
-        $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Tarea de mantenimiento creada exitosamente.'];
+        $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Faena asignada exitosamente.'];
     } else {
         $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al crear la tarea: ' . $stmt->error];
     }
@@ -37,9 +37,9 @@ if (isset($_GET['action']) && $_GET['action'] == 'complete' && isset($_GET['id']
     $stmt->bind_param("si", $status, $task_id);
 
     if ($stmt->execute()) {
-        $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Tarea marcada como completada.'];
+        $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Faena marcada como completada.'];
     } else {
-        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al actualizar la tarea.'];
+        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al actualizar la faena.'];
     }
     header("Location: ../admin_maintenance_tasks.php");
     exit();
@@ -54,9 +54,9 @@ if (isset($_GET['action']) && $_GET['action'] == 'delete' && isset($_GET['id']))
     $stmt->bind_param("i", $task_id);
 
     if ($stmt->execute()) {
-        $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Tarea de mantenimiento eliminada.'];
+        $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Faena eliminada.'];
     } else {
-        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al eliminar la tarea.'];
+        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al eliminar la faena.'];
     }
     header("Location: ../admin_maintenance_tasks.php");
     exit();

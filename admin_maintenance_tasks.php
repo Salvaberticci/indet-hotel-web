@@ -70,7 +70,7 @@ $maintenance_result = $conn->query($maintenance_sql);
         ?>
         <div class="flex justify-between items-center mb-8">
             <div class="flex items-center">
-                <h1 class="text-3xl font-bold">Tareas de Mantenimiento</h1>
+                <h1 class="text-3xl font-bold">Gestión de Faenas</h1>
             </div>
             <div>
                 <a href="admin.php" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-4">
@@ -82,9 +82,9 @@ $maintenance_result = $conn->query($maintenance_sql);
 
         <!-- Create New Task Section -->
         <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mb-8">
-            <h2 class="text-2xl font-bold mb-6">Crear Nueva Tarea de Mantenimiento</h2>
+            <h2 class="text-2xl font-bold mb-6">Crear Nueva Faena</h2>
             <form action="php/maintenance_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
-                <h3 class="text-xl font-semibold mb-4">Asignar Nueva Tarea</h3>
+                <h3 class="text-xl font-semibold mb-4">Asignar Nueva Faena</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <select name="room_id" required class="p-2 border rounded bg-gray-600 text-white">
                         <option value="">Seleccionar Habitación</option>
@@ -104,15 +104,15 @@ $maintenance_result = $conn->query($maintenance_sql);
                             <option value="<?php echo $staff['id']; ?>"><?php echo htmlspecialchars($staff['name']); ?></option>
                         <?php endwhile; ?>
                     </select>
-                    <input type="text" name="task_description" placeholder="Descripción de la tarea" required class="p-2 border rounded bg-gray-600 text-white">
+                    <input type="text" name="task_description" placeholder="Descripción de la faena" required class="p-2 border rounded bg-gray-600 text-white">
                 </div>
-                <button type="submit" name="create_task" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Crear Tarea</button>
+                <button type="submit" name="create_task" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Crear Faena</button>
             </form>
         </div>
 
         <!-- Tasks List -->
         <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mt-8">
-            <h2 class="text-2xl font-bold mb-6">Tareas de Mantenimiento</h2>
+            <h2 class="text-2xl font-bold mb-6">Lista de Faenas</h2>
             <div class="mb-4 flex justify-between items-center">
                 <div>
                     <button onclick="filterTasks('all')" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg mr-2">Todas</button>
@@ -120,7 +120,7 @@ $maintenance_result = $conn->query($maintenance_sql);
                     <button onclick="filterTasks('completed')" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg">Completadas</button>
                 </div>
                 <button onclick="generateReport()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">
-                    <i class="fas fa-file-pdf mr-2"></i>Generar Reporte
+                    <i class="fas fa-file-pdf mr-2"></i>Generar Reporte de Faenas
                 </button>
             </div>
             <div class="overflow-x-auto">
@@ -128,7 +128,7 @@ $maintenance_result = $conn->query($maintenance_sql);
                     <thead class="bg-gray-700 text-white">
                         <tr>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Habitación</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Descripción</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Faena</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Asignado a</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Estado</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Fecha de Creación</th>
@@ -170,7 +170,7 @@ $maintenance_result = $conn->query($maintenance_sql);
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="6" class="text-center py-4">No hay tareas de mantenimiento.</td>
+                                <td colspan="6" class="text-center py-4">No hay faenas asignadas.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -242,7 +242,7 @@ $maintenance_result = $conn->query($maintenance_sql);
             let content = `
                 <html>
                 <head>
-                    <title>Reporte de Tareas de Mantenimiento</title>
+                    <title>Reporte de Faenas</title>
                     <style>
                         body { font-family: Arial, sans-serif; margin: 20px; }
                         h1 { color: #333; text-align: center; }
@@ -256,7 +256,7 @@ $maintenance_result = $conn->query($maintenance_sql);
                 </head>
                 <body>
                     <div class="header">
-                        <h1>Reporte de Tareas de Mantenimiento</h1>
+                        <h1>Reporte de Faenas</h1>
                         <p>Fecha: ${currentDate}</p>
                     </div>
                     <table>
