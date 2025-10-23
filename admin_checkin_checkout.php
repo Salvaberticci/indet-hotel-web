@@ -101,14 +101,23 @@ $checkout_result = $checkout_stmt->get_result();
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Search by Cédula -->
+        <div class="mb-6">
+            <label for="cedula_search" class="block text-sm font-medium mb-2">Buscar por Cédula:</label>
+            <input type="text" id="cedula_search" placeholder="Ingresa la cédula..." class="p-2 border rounded bg-gray-700 text-white w-full md:w-1/3">
+            <button onclick="searchByCedula()" class="ml-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">
+                <i class="fas fa-search mr-2"></i>Buscar
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8" id="checkin-checkout-sections">
             <!-- Check-in Section -->
             <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl">
                 <h2 class="text-2xl font-bold mb-6 text-green-400">
                     <i class="fas fa-sign-in-alt mr-2"></i>Check-ins de Hoy
                 </h2>
                 <div class="overflow-x-auto">
-                    <table class="min-w-full bg-gray-800">
+                    <table class="min-w-full bg-gray-800" id="checkin-table">
                         <thead class="bg-gray-700 text-white">
                             <tr>
                                 <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Huésped</th>
@@ -121,7 +130,7 @@ $checkout_result = $checkout_stmt->get_result();
                         <tbody class="text-gray-300">
                             <?php if ($checkin_result->num_rows > 0): ?>
                                 <?php while($reservation = $checkin_result->fetch_assoc()): ?>
-                                    <tr class="hover:bg-gray-700 border-b border-gray-700">
+                                    <tr class="hover:bg-gray-700 border-b border-gray-700 reservation-row" data-cedula="<?php echo htmlspecialchars($reservation['cedula']); ?>">
                                         <td class="py-3 px-4 text-center">
                                             <?php echo htmlspecialchars($reservation['guest_name'] . ' ' . $reservation['guest_lastname']); ?><br>
                                             <small class="text-gray-400">Cédula: <?php echo htmlspecialchars($reservation['cedula']); ?></small>
@@ -161,7 +170,7 @@ $checkout_result = $checkout_stmt->get_result();
                     <i class="fas fa-sign-out-alt mr-2"></i>Check-outs de Hoy
                 </h2>
                 <div class="overflow-x-auto">
-                    <table class="min-w-full bg-gray-800">
+                    <table class="min-w-full bg-gray-800" id="checkout-table">
                         <thead class="bg-gray-700 text-white">
                             <tr>
                                 <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Huésped</th>
@@ -173,7 +182,7 @@ $checkout_result = $checkout_stmt->get_result();
                         <tbody class="text-gray-300">
                             <?php if ($checkout_result->num_rows > 0): ?>
                                 <?php while($reservation = $checkout_result->fetch_assoc()): ?>
-                                    <tr class="hover:bg-gray-700 border-b border-gray-700">
+                                    <tr class="hover:bg-gray-700 border-b border-gray-700 reservation-row" data-cedula="<?php echo htmlspecialchars($reservation['cedula']); ?>">
                                         <td class="py-3 px-4 text-center">
                                             <?php echo htmlspecialchars($reservation['guest_name'] . ' ' . $reservation['guest_lastname']); ?><br>
                                             <small class="text-gray-400">Cédula: <?php echo htmlspecialchars($reservation['cedula']); ?></small>
@@ -297,6 +306,28 @@ $checkout_result = $checkout_stmt->get_result();
             }
         }
 
+        function searchByCedula() {
+            const cedula = document.getElementById('cedula_search').value.trim();
+            const rows = document.querySelectorAll('.reservation-row');
+
+            if (cedula === '') {
+                // Show all rows if search is empty
+                rows.forEach(row => {
+                    row.style.display = '';
+                });
+                return;
+            }
+
+            rows.forEach(row => {
+                const rowCedula = row.getAttribute('data-cedula');
+                if (rowCedula && rowCedula.includes(cedula)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
         function printDailyReport() {
             const printWindow = window.open('', '_blank');
             const today = '<?php echo date('d/m/Y', strtotime($today)); ?>';
@@ -305,9 +336,9 @@ $checkout_result = $checkout_stmt->get_result();
             let checkoutContent = '';
 
             // Get check-in data
-            const checkinRows = document.querySelectorAll('#checkin-section tbody tr');
+            const checkinRows = document.querySelectorAll('#checkin-table tbody tr:not([style*="display: none"])');
             checkinRows.forEach(row => {
-                if (row.cells.length >= 4) {
+                if (row.cells.length >= 4 && !row.querySelector('td[colspan]')) {
                     checkinContent += `
                         <tr>
                             <td>${row.cells[0].textContent}</td>
@@ -320,9 +351,9 @@ $checkout_result = $checkout_stmt->get_result();
             });
 
             // Get check-out data
-            const checkoutRows = document.querySelectorAll('#checkout-section tbody tr');
+            const checkoutRows = document.querySelectorAll('#checkout-table tbody tr:not([style*="display: none"])');
             checkoutRows.forEach(row => {
-                if (row.cells.length >= 3) {
+                if (row.cells.length >= 3 && !row.querySelector('td[colspan]')) {
                     checkoutContent += `
                         <tr>
                             <td>${row.cells[0].textContent}</td>

@@ -78,6 +78,15 @@ $result = $conn->query($sql);
             </div>
         </div>
 
+        <!-- Search by Cédula -->
+        <div class="mb-6">
+            <label for="cedula_search" class="block text-sm font-medium mb-2">Buscar por Cédula:</label>
+            <input type="text" id="cedula_search" placeholder="Ingresa la cédula..." class="p-2 border rounded bg-gray-700 text-white w-full md:w-1/3">
+            <button onclick="searchByCedula()" class="ml-2 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">
+                <i class="fas fa-search mr-2"></i>Buscar
+            </button>
+        </div>
+
         <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mb-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold">Reservas</h2>
@@ -88,14 +97,16 @@ $result = $conn->query($sql);
                 <h3 class="text-xl font-semibold mb-4">Agregar Nueva Reserva</h3>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
-                        <label for="user_id" class="block font-semibold mb-2">Cliente</label>
-                        <select name="user_id" required class="w-full p-2 border rounded bg-gray-600 text-white">
+                        <label for="user_id" class="block font-semibold mb-2">Cliente (Buscar por Cédula)</label>
+                        <select name="user_id" id="user_select" required class="w-full p-2 border rounded bg-gray-600 text-white">
                             <option value="">Seleccionar cliente...</option>
                             <?php
-                            $users_sql = "SELECT id, name FROM users ORDER BY name ASC";
+                            $users_sql = "SELECT id, name, cedula FROM users WHERE cedula IS NOT NULL AND cedula != '' ORDER BY cedula ASC";
                             $users_result = $conn->query($users_sql);
                             while($user = $users_result->fetch_assoc()): ?>
-                                <option value="<?php echo $user['id']; ?>"><?php echo $user['name']; ?></option>
+                                <option value="<?php echo $user['id']; ?>" data-cedula="<?php echo htmlspecialchars($user['cedula']); ?>">
+                                    <?php echo htmlspecialchars($user['cedula'] . ' - ' . $user['name']); ?>
+                                </option>
                             <?php endwhile; ?>
                         </select>
                     </div>
@@ -139,10 +150,21 @@ $result = $conn->query($sql);
                     </thead>
                     <tbody class="text-gray-300">
                         <?php if ($result->num_rows > 0): ?>
-                            <?php while($row = $result->fetch_assoc()): ?>
-                                <tr class="hover:bg-gray-700 border-b border-gray-700">
+                            <?php while($row = $result->fetch_assoc()):
+                                // Get user cedula for this reservation
+                                $user_cedula_sql = "SELECT cedula FROM users WHERE id = ?";
+                                $user_cedula_stmt = $conn->prepare($user_cedula_sql);
+                                $user_cedula_stmt->bind_param("i", $row['user_id']);
+                                $user_cedula_stmt->execute();
+                                $user_cedula_result = $user_cedula_stmt->get_result();
+                                $user_cedula = $user_cedula_result->fetch_assoc()['cedula'] ?? '';
+                            ?>
+                                <tr class="hover:bg-gray-700 border-b border-gray-700 reservation-row" data-cedula="<?php echo htmlspecialchars($user_cedula); ?>">
                                     <td class="py-3 px-4 text-center"><?php echo $row['id']; ?></td>
-                                    <td class="py-3 px-4 text-center"><?php echo $row['user_name']; ?></td>
+                                    <td class="py-3 px-4 text-center">
+                                        <?php echo $row['user_name']; ?><br>
+                                        <small class="text-gray-400">Cédula: <?php echo htmlspecialchars($user_cedula); ?></small>
+                                    </td>
                                     <td class="py-3 px-4 text-center"><?php echo $row['room_type']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $row['checkin_date']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $row['checkout_date']; ?></td>
@@ -197,14 +219,16 @@ $result = $conn->query($sql);
             <form action="php/reservation_handler.php" method="POST">
                 <input type="hidden" id="editReservationId" name="id">
                 <div class="mb-4">
-                    <label for="editReservationUser" class="block font-semibold mb-2">Cliente</label>
+                    <label for="editReservationUser" class="block font-semibold mb-2">Cliente (Buscar por Cédula)</label>
                     <select id="editReservationUser" name="user_id" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                         <option value="">Seleccionar cliente...</option>
                         <?php
-                        $users_sql = "SELECT id, name FROM users ORDER BY name ASC";
+                        $users_sql = "SELECT id, name, cedula FROM users WHERE cedula IS NOT NULL AND cedula != '' ORDER BY cedula ASC";
                         $users_result = $conn->query($users_sql);
                         while($user = $users_result->fetch_assoc()): ?>
-                            <option value="<?php echo $user['id']; ?>"><?php echo $user['name']; ?></option>
+                            <option value="<?php echo $user['id']; ?>" data-cedula="<?php echo htmlspecialchars($user['cedula']); ?>">
+                                <?php echo htmlspecialchars($user['cedula'] . ' - ' . $user['name']); ?>
+                            </option>
                         <?php endwhile; ?>
                     </select>
                 </div>
@@ -288,6 +312,44 @@ $result = $conn->query($sql);
             requestAnimationFrame(animate);
         }
         animate();
+
+        function searchByCedula() {
+            const cedula = document.getElementById('cedula_search').value.trim();
+            const rows = document.querySelectorAll('.reservation-row');
+
+            if (cedula === '') {
+                // Show all rows if search is empty
+                rows.forEach(row => {
+                    row.style.display = '';
+                });
+                return;
+            }
+
+            rows.forEach(row => {
+                const rowCedula = row.getAttribute('data-cedula');
+                if (rowCedula && rowCedula.includes(cedula)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        function filterUsersByCedula() {
+            const cedula = document.getElementById('user_cedula_search').value.trim();
+            const options = document.querySelectorAll('#user_select option');
+
+            options.forEach(option => {
+                if (option.value === '') return; // Skip the "Seleccionar cliente..." option
+
+                const optionCedula = option.getAttribute('data-cedula');
+                if (cedula === '' || (optionCedula && optionCedula.includes(cedula))) {
+                    option.style.display = '';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+        }
 
         function openEditReservationModal(reservation) {
             document.getElementById('editReservationId').value = reservation.id;

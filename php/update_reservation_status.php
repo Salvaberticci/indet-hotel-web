@@ -16,7 +16,7 @@ if (isset($_GET['id']) && isset($_GET['status'])) {
     $allowed_statuses = ['confirmed', 'cancelled'];
     if (!in_array($new_status, $allowed_statuses)) {
         // Invalid status, redirect back
-        header("Location: ../admin.php");
+        header("Location: ../admin_reservations.php");
         exit();
     }
 
@@ -41,7 +41,7 @@ if (isset($_GET['id']) && isset($_GET['status'])) {
     $stmt->close();
     $conn->close();
 
-    header("Location: ../admin.php");
+    header("Location: ../admin_reservations.php");
     exit();
 
 } else {

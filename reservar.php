@@ -225,7 +225,7 @@ if (!isset($_SESSION['user_id'])) {
 
             options.forEach(option => {
                 if (option.value !== '') {
-                    if (discapacitados > 0 && option.textContent !== 'Planta Baja') {
+                    if (discapacitados === 0 && option.textContent === 'Planta Baja') {
                         option.disabled = true;
                         option.style.display = 'none';
                     } else {

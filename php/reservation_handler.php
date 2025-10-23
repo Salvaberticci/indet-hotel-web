@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al agregar la reserva.'];
         }
         $stmt->close();
-        header("Location: ../admin.php#reservations-section");
+        header("Location: ../admin_reservations.php");
         exit();
     }
 
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al actualizar la reserva.'];
         }
         $stmt->close();
-        header("Location: ../admin.php#reservations-section");
+        header("Location: ../admin_reservations.php");
         exit();
     }
 }
@@ -61,7 +61,7 @@ if (isset($_GET['delete_reservation'])) {
         $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al eliminar la reserva.'];
     }
     $stmt->close();
-    header("Location: ../admin.php#reservations-section");
+    header("Location: ../admin_reservations.php");
     exit();
 }
 
