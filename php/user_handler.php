@@ -11,6 +11,8 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 // Add User
 if (isset($_POST['add_user'])) {
     $name = $_POST['name'];
+    $cedula_type = $_POST['cedula_type'];
+    $cedula = $_POST['cedula'];
     $email = $_POST['email'];
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $role = $_POST['role'];
@@ -25,16 +27,16 @@ if (isset($_POST['add_user'])) {
     if ($result->num_rows > 0) {
         $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'El email ya está registrado.'];
     } else {
-        $sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO users (name, cedula_type, cedula, email, password, role) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssss", $name, $email, $password, $role);
+        $stmt->bind_param("ssssss", $name, $cedula_type, $cedula, $email, $password, $role);
         if ($stmt->execute()) {
             $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Usuario agregado exitosamente.'];
         } else {
             $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al agregar el usuario.'];
         }
     }
-    header("Location: ../admin.php#users-section");
+    header("Location: ../admin_users.php");
     exit();
 }
 
@@ -42,13 +44,15 @@ if (isset($_POST['add_user'])) {
 if (isset($_POST['update_user'])) {
     $id = $_POST['id'];
     $name = $_POST['name'];
+    $cedula_type = $_POST['cedula_type'];
+    $cedula = $_POST['cedula'];
     $email = $_POST['email'];
     $role = $_POST['role'];
 
     // Prevent admin from changing their own role to non-admin
     if ($id == $_SESSION['user_id'] && $role != 'admin') {
         $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'No puedes cambiar tu propio rol a no-administrador.'];
-        header("Location: ../admin.php#users-section");
+        header("Location: ../admin_users.php");
         exit();
     }
 
@@ -62,16 +66,16 @@ if (isset($_POST['update_user'])) {
     if ($result->num_rows > 0) {
         $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'El email ya está registrado por otro usuario.'];
     } else {
-        $sql = "UPDATE users SET name=?, email=?, role=? WHERE id=?";
+        $sql = "UPDATE users SET name=?, cedula_type=?, cedula=?, email=?, role=? WHERE id=?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssi", $name, $email, $role, $id);
+        $stmt->bind_param("sssssi", $name, $cedula_type, $cedula, $email, $role, $id);
         if ($stmt->execute()) {
             $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Usuario actualizado exitosamente.'];
         } else {
             $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al actualizar el usuario.'];
         }
     }
-    header("Location: ../admin.php#users-section");
+    header("Location: ../admin_users.php");
     exit();
 }
 

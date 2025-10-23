@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 }
 
 // Fetch users to display
-$users_sql = "SELECT id, name, email, role FROM users ORDER BY name ASC";
+$users_sql = "SELECT id, name, email, cedula_type, cedula, role FROM users ORDER BY name ASC";
 $users_result = $conn->query($users_sql);
 ?>
 <!DOCTYPE html>
@@ -80,8 +80,13 @@ $users_result = $conn->query($users_sql);
             <!-- Add User Form -->
             <form action="php/user_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
                 <h3 class="text-xl font-semibold mb-4">Agregar Nuevo Usuario</h3>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
                     <input type="text" name="name" placeholder="Nombre" required class="p-2 border rounded bg-gray-600 text-white">
+                    <select name="cedula_type" required class="p-2 border rounded bg-gray-600 text-white">
+                        <option value="V">V - Venezolano</option>
+                        <option value="E">E - Extranjero</option>
+                    </select>
+                    <input type="text" name="cedula" placeholder="Cédula" required class="p-2 border rounded bg-gray-600 text-white">
                     <input type="email" name="email" placeholder="Email" required class="p-2 border rounded bg-gray-600 text-white">
                     <input type="password" name="password" placeholder="Contraseña" required class="p-2 border rounded bg-gray-600 text-white">
                     <select name="role" required class="p-2 border rounded bg-gray-600 text-white">
@@ -93,11 +98,17 @@ $users_result = $conn->query($users_sql);
                 <button type="submit" name="add_user" class="mt-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Agregar Usuario</button>
             </form>
 
+            <!-- Search User -->
+            <div class="mb-6">
+                <input type="text" id="user_search" placeholder="Buscar usuario por cédula..." class="p-2 border rounded bg-gray-700 text-white w-full md:w-1/3">
+            </div>
+
             <div class="overflow-x-auto">
-                <table class="min-w-full bg-gray-800">
+                <table class="min-w-full bg-gray-800" id="users_table">
                     <thead class="bg-gray-700 text-white">
                         <tr>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Nombre</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Cédula</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Email</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Rol</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Editar</th>
@@ -107,8 +118,9 @@ $users_result = $conn->query($users_sql);
                     <tbody class="text-gray-300">
                         <?php if ($users_result->num_rows > 0): ?>
                             <?php while($user_row = $users_result->fetch_assoc()): ?>
-                                <tr class="hover:bg-gray-700 border-b border-gray-700">
+                                <tr class="hover:bg-gray-700 border-b border-gray-700 user-row" data-cedula="<?php echo htmlspecialchars($user_row['cedula']); ?>">
                                     <td class="py-3 px-4 text-center"><?php echo $user_row['name']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($user_row['cedula_type'] . '-' . $user_row['cedula']); ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $user_row['email']; ?></td>
                                     <td class="py-3 px-4 text-center">
                                         <form action="php/user_handler.php" method="POST" class="flex items-center justify-center">
@@ -133,7 +145,7 @@ $users_result = $conn->query($users_sql);
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="5" class="text-center py-4">No hay usuarios encontrados.</td>
+                                <td colspan="6" class="text-center py-4">No hay usuarios encontrados.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -151,6 +163,17 @@ $users_result = $conn->query($users_sql);
                 <div class="mb-4">
                     <label for="editUserName" class="block font-semibold mb-2">Nombre</label>
                     <input type="text" id="editUserName" name="name" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                </div>
+                <div class="mb-4">
+                    <label for="editUserCedulaType" class="block font-semibold mb-2">Tipo de Cédula</label>
+                    <select id="editUserCedulaType" name="cedula_type" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                        <option value="V">V - Venezolano</option>
+                        <option value="E">E - Extranjero</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="editUserCedula" class="block font-semibold mb-2">Cédula</label>
+                    <input type="text" id="editUserCedula" name="cedula" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                 </div>
                 <div class="mb-4">
                     <label for="editUserEmail" class="block font-semibold mb-2">Email</label>
@@ -220,10 +243,27 @@ $users_result = $conn->query($users_sql);
         function openEditUserModal(user) {
             document.getElementById('editUserId').value = user.id;
             document.getElementById('editUserName').value = user.name;
+            document.getElementById('editUserCedulaType').value = user.cedula_type;
+            document.getElementById('editUserCedula').value = user.cedula;
             document.getElementById('editUserEmail').value = user.email;
             document.getElementById('editUserRole').value = user.role;
             document.getElementById('editUserModal').classList.remove('hidden');
         }
+
+        // Search functionality
+        document.getElementById('user_search').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.user-row');
+
+            rows.forEach(row => {
+                const cedula = row.getAttribute('data-cedula').toLowerCase();
+                if (cedula.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
 
         function closeEditUserModal() {
             document.getElementById('editUserModal').classList.add('hidden');
