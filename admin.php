@@ -123,11 +123,6 @@ $is_admin = $_SESSION['user_role'] == 'admin';
                 <p>Gestionar eventos</p>
             </a>
             <?php endif; ?>
-            <a href="admin_assign_maintenance.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
-                <i class="fas fa-tools fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Asignar Mantenimiento</h3>
-                <p>Asignar tareas de mantenimiento</p>
-            </a>
             <a href="admin_maintenance_tasks.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
                 <i class="fas fa-tasks fa-3x mb-4"></i>
                 <h3 class="text-xl font-bold">Tareas de Mantenimiento</h3>
