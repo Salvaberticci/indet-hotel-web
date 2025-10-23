@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 }
 
 // Fetch reservations from the database
-$sql = "SELECT reservations.id, users.name as user_name, rooms.type as room_type, reservations.checkin_date, reservations.checkout_date, reservations.status
+$sql = "SELECT reservations.id, users.name as user_name, users.cedula as user_cedula, rooms.type as room_type, reservations.checkin_date, reservations.checkout_date, reservations.status, reservations.user_id
         FROM reservations
         JOIN users ON reservations.user_id = users.id
         JOIN rooms ON reservations.room_id = rooms.id
@@ -150,20 +150,12 @@ $result = $conn->query($sql);
                     </thead>
                     <tbody class="text-gray-300">
                         <?php if ($result->num_rows > 0): ?>
-                            <?php while($row = $result->fetch_assoc()):
-                                // Get user cedula for this reservation
-                                $user_cedula_sql = "SELECT cedula FROM users WHERE id = ?";
-                                $user_cedula_stmt = $conn->prepare($user_cedula_sql);
-                                $user_cedula_stmt->bind_param("i", $row['user_id']);
-                                $user_cedula_stmt->execute();
-                                $user_cedula_result = $user_cedula_stmt->get_result();
-                                $user_cedula = $user_cedula_result->fetch_assoc()['cedula'] ?? '';
-                            ?>
-                                <tr class="hover:bg-gray-700 border-b border-gray-700 reservation-row" data-cedula="<?php echo htmlspecialchars($user_cedula); ?>">
+                            <?php while($row = $result->fetch_assoc()): ?>
+                                <tr class="hover:bg-gray-700 border-b border-gray-700 reservation-row" data-cedula="<?php echo htmlspecialchars($row['user_cedula']); ?>">
                                     <td class="py-3 px-4 text-center"><?php echo $row['id']; ?></td>
                                     <td class="py-3 px-4 text-center">
                                         <?php echo $row['user_name']; ?><br>
-                                        <small class="text-gray-400">Cédula: <?php echo htmlspecialchars($user_cedula); ?></small>
+                                        <small class="text-gray-400">Cédula: <?php echo htmlspecialchars($row['user_cedula']); ?></small>
                                     </td>
                                     <td class="py-3 px-4 text-center"><?php echo $row['room_type']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $row['checkin_date']; ?></td>
