@@ -107,6 +107,11 @@ $is_admin = $_SESSION['user_role'] == 'admin';
                 <h3 class="text-xl font-bold">Inventario</h3>
                 <p>Gestionar inventario por habitación</p>
             </a>
+            <a href="admin_cleaning_inventory.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
+                <i class="fas fa-broom fa-3x mb-4"></i>
+                <h3 class="text-xl font-bold">Faenas</h3>
+                <p>Gestionar cuartos de faenas e inventario</p>
+            </a>
             <a href="admin_reports.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
                 <i class="fas fa-chart-bar fa-3x mb-4"></i>
                 <h3 class="text-xl font-bold">Reportes</h3>
