@@ -26,7 +26,8 @@ $reservations_sql = "SELECT r.id, r.checkin_date, r.checkout_date, r.guest_name,
                     JOIN rooms rm ON CAST(r.room_id AS CHAR) = rm.id
                     JOIN floors f ON rm.floor_id = f.id
                     WHERE r.user_id = ?
-                    ORDER BY r.checkin_date DESC";
+                    ORDER BY r.checkin_date DESC
+                    COLLATE utf8mb4_unicode_ci";
 $reservations_stmt = $conn->prepare($reservations_sql);
 $reservations_stmt->bind_param("i", $user_id);
 $reservations_stmt->execute();
