@@ -73,6 +73,19 @@ if (isset($_POST['add_floor'])) {
     $name = $_POST['name'];
     $description = $_POST['description'];
 
+    // Check if floor_number already exists
+    $check_sql = "SELECT id FROM floors WHERE floor_number = ?";
+    $check_stmt = $conn->prepare($check_sql);
+    $check_stmt->bind_param("i", $floor_number);
+    $check_stmt->execute();
+    $existing = $check_stmt->get_result();
+
+    if ($existing->num_rows > 0) {
+        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'El número de piso ya existe. Por favor, elige un número diferente.'];
+        header("Location: ../admin_floors.php");
+        exit();
+    }
+
     $sql = "INSERT INTO floors (floor_number, name, description) VALUES (?, ?, ?)";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("iss", $floor_number, $name, $description);
@@ -82,7 +95,7 @@ if (isset($_POST['add_floor'])) {
     } else {
         $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al agregar el piso: ' . $stmt->error];
     }
-    header("Location: ../admin_inventory.php");
+    header("Location: ../admin_floors.php");
     exit();
 }
 
@@ -102,7 +115,7 @@ if (isset($_POST['update_floor'])) {
 
     if ($existing->num_rows > 0) {
         $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'El número de piso ya existe. Por favor, elige un número diferente.'];
-        header("Location: ../admin_inventory.php");
+        header("Location: ../admin_floors.php");
         exit();
     }
 
@@ -115,7 +128,7 @@ if (isset($_POST['update_floor'])) {
     } else {
         $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al actualizar el piso: ' . $stmt->error];
     }
-    header("Location: ../admin_inventory.php");
+    header("Location: ../admin_floors.php");
     exit();
 }
 
@@ -147,7 +160,7 @@ if (isset($_GET['delete_floor'])) {
             $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al eliminar el piso: ' . $stmt->error];
         }
     }
-    header("Location: ../admin_inventory.php");
+    header("Location: ../admin_floors.php");
     exit();
 }
 ?>
