@@ -1,7 +1,10 @@
 <?php
-require('../fpdf/fpdf.php');
+require_once __DIR__ . '/../vendor/autoload.php'; // Incluir el autoload de Composer
+
+use FPDF; // Usar la clase FPDF directamente
 
 function generateCheckoutPDF($reservation_id) {
+    ob_start(); // Start output buffering
     global $conn;
 
     // Get reservation details
@@ -19,31 +22,33 @@ function generateCheckoutPDF($reservation_id) {
     $reservation = $result->fetch_assoc();
 
     if (!$reservation) {
+        ob_end_clean(); // Clean (delete) the output buffer and disable output buffering
         return false;
     }
 
     // Create PDF
     $pdf = new FPDF();
+    $pdf->SetFont('Helvetica', '', 10); // Set default font
     $pdf->AddPage();
 
     // Header
-    $pdf->SetFont('Arial', 'B', 16);
+    $pdf->SetFont('Helvetica', 'B', 16);
     $pdf->Cell(0, 10, 'INDET - Recibo de Check-out', 0, 1, 'C');
     $pdf->Ln(10);
 
     // Hotel Info
-    $pdf->SetFont('Arial', 'B', 12);
+    $pdf->SetFont('Helvetica', 'B', 12);
     $pdf->Cell(0, 8, 'Hotel INDET', 0, 1);
-    $pdf->SetFont('Arial', '', 10);
+    $pdf->SetFont('Helvetica', '', 10);
     $pdf->Cell(0, 6, 'Valera Edo Trujillo', 0, 1);
     $pdf->Cell(0, 6, 'Instagram: @indetrujillo', 0, 1);
     $pdf->Cell(0, 6, 'Telefono: 0412-897643', 0, 1);
     $pdf->Ln(10);
 
     // Reservation Details
-    $pdf->SetFont('Arial', 'B', 12);
+    $pdf->SetFont('Helvetica', 'B', 12);
     $pdf->Cell(0, 8, 'Detalles del Check-out', 0, 1);
-    $pdf->SetFont('Arial', '', 10);
+    $pdf->SetFont('Helvetica', '', 10);
 
     $pdf->Cell(50, 6, 'ID de Reserva:', 0, 0);
     $pdf->Cell(0, 6, $reservation['id'], 0, 1);
@@ -86,7 +91,7 @@ function generateCheckoutPDF($reservation_id) {
     $interval = $checkin_date->diff($checkout_date);
     $days = $interval->days;
 
-    $pdf->SetFont('Arial', 'B', 10);
+    $pdf->SetFont('Helvetica', 'B', 10);
     $pdf->Cell(50, 6, 'Duracion de la Estadía:', 0, 0);
     $pdf->Cell(0, 6, $days . ' noche(s)', 0, 1);
 
@@ -97,9 +102,9 @@ function generateCheckoutPDF($reservation_id) {
     $pdf->Ln(10);
 
     // Check-out checklist
-    $pdf->SetFont('Arial', 'B', 10);
+    $pdf->SetFont('Helvetica', 'B', 10);
     $pdf->Cell(0, 6, 'Lista de Verificación de Check-out:', 0, 1);
-    $pdf->SetFont('Arial', '', 8);
+    $pdf->SetFont('Helvetica', '', 8);
     $pdf->MultiCell(0, 4, '✓ Habitacion inspeccionada
 ✓ Llaves devueltas
 ✓ Minibar verificado
@@ -109,9 +114,9 @@ function generateCheckoutPDF($reservation_id) {
     $pdf->Ln(10);
 
     // Terms and conditions
-    $pdf->SetFont('Arial', 'B', 10);
+    $pdf->SetFont('Helvetica', 'B', 10);
     $pdf->Cell(0, 6, 'Notas Importantes:', 0, 1);
-    $pdf->SetFont('Arial', '', 8);
+    $pdf->SetFont('Helvetica', '', 8);
     $pdf->MultiCell(0, 4, '• La habitacion sera inspeccionada por nuestro personal de mantenimiento.
 • Cualquier cargo adicional sera notificado dentro de 24 horas.
 • Gracias por hospedarse en el Hotel INDET.
@@ -120,7 +125,7 @@ function generateCheckoutPDF($reservation_id) {
     $pdf->Ln(10);
 
     // Signature
-    $pdf->SetFont('Arial', '', 10);
+    $pdf->SetFont('Helvetica', '', 10);
     $pdf->Cell(0, 6, 'Fecha de Check-out: ' . date('d/m/Y H:i'), 0, 1);
     $pdf->Ln(20);
 
@@ -140,6 +145,7 @@ function generateCheckoutPDF($reservation_id) {
 
     $pdf->Output($filepath, 'F');
 
+    ob_end_clean(); // Clean (delete) the output buffer and disable output buffering
     return 'receipts/' . $filename;
 }
 ?>

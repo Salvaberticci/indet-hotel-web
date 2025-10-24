@@ -1,7 +1,10 @@
 <?php
-require('../fpdf/fpdf.php');
+require_once __DIR__ . '/../vendor/autoload.php'; // Incluir el autoload de Composer
+
+use FPDF; // Usar la clase FPDF directamente
 
 function generateCheckinPDF($reservation_id) {
+    ob_start(); // Start output buffering
     global $conn;
 
     // Get reservation details
@@ -19,31 +22,33 @@ function generateCheckinPDF($reservation_id) {
     $reservation = $result->fetch_assoc();
 
     if (!$reservation) {
+        ob_end_clean(); // Clean (delete) the output buffer and disable output buffering
         return false;
     }
 
     // Create PDF
     $pdf = new FPDF();
+    $pdf->SetFont('Helvetica', '', 10); // Set default font
     $pdf->AddPage();
 
     // Header
-    $pdf->SetFont('Arial', 'B', 16);
+    $pdf->SetFont('Helvetica', 'B', 16);
     $pdf->Cell(0, 10, 'INDET - Recibo de Check-in', 0, 1, 'C');
     $pdf->Ln(10);
 
     // Hotel Info
-    $pdf->SetFont('Arial', 'B', 12);
+    $pdf->SetFont('Helvetica', 'B', 12);
     $pdf->Cell(0, 8, 'Hotel INDET', 0, 1);
-    $pdf->SetFont('Arial', '', 10);
+    $pdf->SetFont('Helvetica', '', 10);
     $pdf->Cell(0, 6, 'Valera Edo Trujillo', 0, 1);
     $pdf->Cell(0, 6, 'Instagram: @indetrujillo', 0, 1);
     $pdf->Cell(0, 6, 'Telefono: 0412-897643', 0, 1);
     $pdf->Ln(10);
 
     // Reservation Details
-    $pdf->SetFont('Arial', 'B', 12);
+    $pdf->SetFont('Helvetica', 'B', 12);
     $pdf->Cell(0, 8, 'Detalles de la Reserva', 0, 1);
-    $pdf->SetFont('Arial', '', 10);
+    $pdf->SetFont('Helvetica', '', 10);
 
     $pdf->Cell(50, 6, 'ID de Reserva:', 0, 0);
     $pdf->Cell(0, 6, $reservation['id'], 0, 1);
@@ -84,9 +89,9 @@ function generateCheckinPDF($reservation_id) {
     $pdf->Ln(10);
 
     // Terms and conditions
-    $pdf->SetFont('Arial', 'B', 10);
+    $pdf->SetFont('Helvetica', 'B', 10);
     $pdf->Cell(0, 6, 'Terminos y Condiciones:', 0, 1);
-    $pdf->SetFont('Arial', '', 8);
+    $pdf->SetFont('Helvetica', '', 8);
     $pdf->MultiCell(0, 4, '1. El huesped se compromete a respetar las normas del hotel.
 2. Cualquier dano causado sera cobrado al huesped.
 3. El check-out debe realizarse antes de las 12:00 PM.
@@ -96,7 +101,7 @@ function generateCheckinPDF($reservation_id) {
     $pdf->Ln(10);
 
     // Signature
-    $pdf->SetFont('Arial', '', 10);
+    $pdf->SetFont('Helvetica', '', 10);
     $pdf->Cell(0, 6, 'Fecha de Check-in: ' . date('d/m/Y H:i'), 0, 1);
     $pdf->Ln(20);
 
@@ -116,6 +121,7 @@ function generateCheckinPDF($reservation_id) {
 
     $pdf->Output($filepath, 'F');
 
+    ob_end_clean(); // Clean (delete) the output buffer and disable output buffering
     return 'receipts/' . $filename;
 }
 ?>

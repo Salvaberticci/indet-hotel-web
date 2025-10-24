@@ -68,7 +68,11 @@ CREATE TABLE `comments` (
 --
 
 INSERT INTO `comments` (`id`, `name`, `email`, `comment`, `created_at`, `approved`) VALUES
-(1, 'Salvatore', 'salvatoreberticci19@gmail.com', 'Me gustaron mucho las habitaciones', '2025-10-08 22:51:09', 1);
+(1, 'Salvatore Berticci', 'salvatoreberticci19@gmail.com', 'Me gustaron mucho las habitaciones, muy cómodas y limpias', '2025-10-08 22:51:09', 1),
+(2, 'María López', 'maria.lopez@example.com', 'Excelente servicio y atención al cliente', '2025-10-15 14:30:00', 1),
+(3, 'Carlos Rodríguez', 'carlos.rodriguez@example.com', 'Las instalaciones están muy bien mantenidas', '2025-10-18 09:15:00', 1),
+(4, 'Ana Martínez', 'ana.martinez@example.com', 'Recomiendo este hotel para familias', '2025-10-20 16:45:00', 0),
+(5, 'Luis Sánchez', 'luis.sanchez@example.com', 'Buena ubicación y precios accesibles', '2025-10-22 11:20:00', 1);
 
 -- --------------------------------------------------------
 
@@ -157,6 +161,13 @@ CREATE TABLE `hotel_info` (
   `services` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `hotel_info`
+--
+
+INSERT INTO `hotel_info` (`id`, `name`, `location`, `contact`, `services`) VALUES
+(1, 'Hotel INDET', 'Centro de Caracas, Venezuela', '+58 212 555-0123', 'WiFi gratuito, Piscina, Gimnasio, Restaurante, Servicio de habitaciones, Estacionamiento, Lavandería');
+
 -- --------------------------------------------------------
 
 --
@@ -178,9 +189,14 @@ CREATE TABLE `maintenance_tasks` (
 --
 
 INSERT INTO `maintenance_tasks` (`id`, `room_id`, `assigned_to_user_id`, `task_description`, `status`, `created_at`, `completed_at`) VALUES
-(5, 8, 3, 'Limpieza est├índar de la habitaci├│n.', 'completed', '2025-09-21 22:06:48', NULL),
-(6, 8, 1, 'Limpieza est├índar de la habitaci├│n.', 'completed', '2025-10-09 23:13:17', NULL),
-(7, 1, 3, 'Limpieza estándar de la habitación.', 'pending', '2025-10-21 01:58:39', NULL);
+(5, '008', 3, 'Limpieza estándar de la habitación.', 'completed', '2025-09-21 22:06:48', '2025-09-21 23:30:00'),
+(6, '008', 1, 'Limpieza estándar de la habitación.', 'completed', '2025-10-09 23:13:17', '2025-10-10 08:00:00'),
+(7, '001', 3, 'Limpieza estándar de la habitación.', 'pending', '2025-10-21 01:58:39', NULL),
+(8, '002', 7, 'Reparación de grifo en baño', 'completed', '2025-10-15 10:00:00', '2025-10-15 14:30:00'),
+(9, '003', 7, 'Cambio de bombillas', 'pending', '2025-10-20 09:15:00', NULL),
+(10, '004', 3, 'Limpieza profunda de alfombras', 'completed', '2025-10-18 11:00:00', '2025-10-18 16:45:00'),
+(11, '005', 7, 'Revisión de aire acondicionado', 'pending', '2025-10-22 13:20:00', NULL),
+(12, '006', 3, 'Limpieza estándar de la habitación.', 'completed', '2025-10-23 07:30:00', '2025-10-23 09:15:00');
 
 -- --------------------------------------------------------
 
@@ -209,22 +225,29 @@ CREATE TABLE `reservations` (
 --
 
 INSERT INTO `reservations` (`id`, `user_id`, `room_id`, `checkin_date`, `checkout_date`, `guest_name`, `guest_lastname`, `guest_email`, `cedula`, `adultos`, `ninos`, `discapacitados`, `status`) VALUES
-(19, 1, 2, '2025-09-22', '2025-09-30', '', NULL, '', NULL, 0, 0, 0, 'pending'),
-(21, 1, 1, '2025-09-21', '2025-09-30', '', NULL, '', NULL, 0, 0, 0, 'confirmed'),
-(22, 1, 1, '2025-09-22', '2025-09-30', '', NULL, '', NULL, 0, 0, 0, 'pending'),
-(23, 1, 1, '2025-09-01', '2025-09-16', '', NULL, '', NULL, 0, 0, 0, 'confirmed'),
-(24, 1, 2, '2025-09-21', '2025-09-30', 'Salvatore', NULL, 'salvatoreberticci19@gmail.com', NULL, 0, 0, 0, 'pending'),
-(25, 1, 1, '2025-09-01', '2025-09-22', 'Salvatore', NULL, 'salvatoreberticci19@gmail.com', NULL, 0, 0, 0, 'pending'),
-(26, 1, 3, '2025-09-21', '2025-09-30', 'Salvatore', NULL, 'salvatoreberticci19@gmail.com', NULL, 0, 0, 0, 'pending'),
-(28, 1, 1, '2025-09-01', '2025-09-22', 'Salvatore', NULL, 'salvatoreberticci19@gmail.com', NULL, 0, 0, 0, 'pending'),
-(29, 1, 2, '2025-09-21', '2025-09-22', 'Salvatore', NULL, 'salvatoreberticci19@gmail.com', NULL, 0, 0, 0, 'pending'),
-(30, 2, 5, '2025-09-16', '2025-09-04', '', NULL, '', NULL, 0, 0, 0, 'confirmed'),
-(31, 4, 8, '2025-10-01', '2025-10-31', 'Salvatore', NULL, 'salvatoreberticci19@gmail.com', NULL, 0, 0, 0, 'pending'),
--- Sample reservations for testing (future dates)
-(32, 1, 1, '2025-11-01', '2025-11-05', 'Juan', 'Pérez', 'juan@example.com', '12345678', 2, 1, 0, 'pending'),
-(33, 1, 2, '2025-11-10', '2025-11-15', 'María', 'García', 'maria@example.com', '87654321', 1, 0, 1, 'confirmed'),
-(34, 2, 3, '2025-12-01', '2025-12-07', 'Carlos', 'Rodríguez', 'carlos@example.com', '11223344', 3, 2, 0, 'pending'),
-(35, 4, 4, '2025-12-15', '2025-12-20', 'Ana', 'López', 'ana@example.com', '44332211', 2, 0, 0, 'confirmed');
+-- Existing reservations
+(19, 1, '002', '2025-09-22', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 2, 0, 0, 'pending'),
+(21, 1, '001', '2025-09-21', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'confirmed'),
+(22, 1, '001', '2025-09-22', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'pending'),
+(23, 1, '001', '2025-09-01', '2025-09-16', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'completed'),
+(24, 1, '002', '2025-09-21', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 2, 0, 0, 'pending'),
+(25, 1, '001', '2025-09-01', '2025-09-22', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'cancelled'),
+(26, 1, '003', '2025-09-21', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 3, 0, 0, 'pending'),
+(28, 1, '001', '2025-09-01', '2025-09-22', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'completed'),
+(29, 1, '002', '2025-09-21', '2025-09-22', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 2, 0, 0, 'confirmed'),
+(30, 2, '005', '2025-09-16', '2025-09-04', 'Admin', 'User', 'admin@indet.com', '12345', 1, 0, 0, 'confirmed'),
+(31, 4, '008', '2025-10-01', '2025-10-31', 'Pedro', 'García', 'pedro@gmail.com', '44332211', 2, 1, 0, 'pending'),
+-- Additional sample reservations for testing (future dates)
+(32, 5, '001', '2025-11-01', '2025-11-05', 'María', 'López', 'maria.lopez@example.com', '55667788', 2, 1, 0, 'confirmed'),
+(33, 6, '002', '2025-11-10', '2025-11-15', 'Carlos', 'Rodríguez', 'carlos.rodriguez@example.com', '99887766', 1, 0, 1, 'pending'),
+(34, 8, '003', '2025-12-01', '2025-12-07', 'Luis', 'Sánchez', 'luis.sanchez@example.com', '77889900', 3, 2, 0, 'confirmed'),
+(35, 9, '004', '2025-12-15', '2025-12-20', 'Carmen', 'Díaz', 'carmen.diaz@example.com', '11224455', 2, 0, 0, 'pending'),
+(36, 10, '005', '2025-10-25', '2025-10-28', 'José', 'Hernández', 'jose.hernandez@example.com', '66778899', 1, 0, 0, 'confirmed'),
+(37, 5, '006', '2025-11-20', '2025-11-25', 'María', 'López', 'maria.lopez@example.com', '55667788', 2, 1, 0, 'pending'),
+(38, 6, '007', '2025-12-10', '2025-12-15', 'Carlos', 'Rodríguez', 'carlos.rodriguez@example.com', '99887766', 3, 0, 0, 'confirmed'),
+(39, 8, '008', '2025-11-05', '2025-11-10', 'Luis', 'Sánchez', 'luis.sanchez@example.com', '77889900', 2, 2, 0, 'pending'),
+(40, 9, '009', '2025-10-30', '2025-11-02', 'Carmen', 'Díaz', 'carmen.diaz@example.com', '11224455', 1, 0, 1, 'confirmed'),
+(41, 10, '010', '2025-12-20', '2025-12-25', 'José', 'Hernández', 'jose.hernandez@example.com', '66778899', 4, 1, 0, 'pending');
 
 -- --------------------------------------------------------
 
@@ -235,11 +258,25 @@ INSERT INTO `reservations` (`id`, `user_id`, `room_id`, `checkin_date`, `checkou
 CREATE TABLE `reviews` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `room_id` int(11) NOT NULL,
+  `room_id` varchar(10) NOT NULL,
   `rating` int(11) NOT NULL,
   `comment` text NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `reviews`
+--
+
+INSERT INTO `reviews` (`id`, `user_id`, `room_id`, `rating`, `comment`, `created_at`) VALUES
+(1, 1, '001', 5, 'Excelente habitación, muy cómoda y limpia', '2025-10-10 14:30:00'),
+(2, 4, '002', 4, 'Buena habitación, aunque el WiFi podría ser mejor', '2025-10-12 09:15:00'),
+(3, 5, '003', 5, 'Perfecto para familias, mucho espacio', '2025-10-15 16:45:00'),
+(4, 6, '004', 3, 'Habitación aceptable, pero necesita mantenimiento', '2025-10-18 11:20:00'),
+(5, 8, '005', 5, 'Increíble experiencia, volveré seguro', '2025-10-20 13:10:00'),
+(6, 9, '006', 4, 'Buena relación calidad-precio', '2025-10-22 10:30:00'),
+(7, 10, '007', 5, 'El personal es muy amable y atento', '2025-10-23 15:45:00'),
+(8, 1, '008', 4, 'Habitación espaciosa y bien equipada', '2025-10-24 08:20:00');
 
 -- --------------------------------------------------------
 
@@ -310,10 +347,26 @@ INSERT INTO `room_inventory` (`id`, `room_id`, `item_name`, `quantity`, `descrip
 
 CREATE TABLE `room_status` (
   `id` int(11) NOT NULL,
-  `room_id` int(11) NOT NULL,
+  `room_id` varchar(10) NOT NULL,
   `status` enum('available','occupied','cleaning') NOT NULL DEFAULT 'available',
   `date` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `room_status`
+--
+
+INSERT INTO `room_status` (`id`, `room_id`, `status`, `date`) VALUES
+(1, '001', 'available', '2025-10-24'),
+(2, '002', 'occupied', '2025-10-24'),
+(3, '003', 'cleaning', '2025-10-24'),
+(4, '004', 'available', '2025-10-24'),
+(5, '005', 'occupied', '2025-10-24'),
+(6, '006', 'available', '2025-10-24'),
+(7, '007', 'cleaning', '2025-10-24'),
+(8, '008', 'available', '2025-10-24'),
+(9, '009', 'occupied', '2025-10-24'),
+(10, '010', 'available', '2025-10-24');
 
 -- --------------------------------------------------------
 
@@ -336,10 +389,16 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `cedula`, `password`, `role`, `is_verified`) VALUES
-(1, 'Salvatore Berticci', 'salvatoreberticci19@gmail.com', '12345678', '$2y$10$8lxCyjzvMRtCx9.KoYl/SehkJRhAZ.0NE.6PxLNcMmjR29P8wgTGG', '', 1),
-(2, 'Admin', 'admin@indet.com', '87654321', '$2y$10$OO3jGfLdAwp/MX9n16IDOegda0dNj5v4zhWdWmUelxpvALymxF2sO', 'admin', 1),
+(1, 'Salvatore Berticci', 'salvatoreberticci19@gmail.com', '12345678', '$2y$10$8lxCyjzvMRtCx9.KoYl/SehkJRhAZ.0NE.6PxLNcMmjR29P8wgTGG', 'client', 1),
+(2, 'Admin', 'admin@indet.com', '12345', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 1),
 (3, 'Juan Perez', 'juanperez11@gmail.com', '11223344', '$2y$10$Qgsk4klfwiNj.NaARvWAAOmJeoTrUURmJ92tD5t4vGw/2QLem3.AG', 'maintenance', 1),
-(4, 'pedro', 'pedro@gmail.com', '44332211', '$2y$10$ELs4NU4olvDyJ6QSpaUQpOk672qhmjWQJfT7bUY3bxo2lk.kd1j52', 'client', 1);
+(4, 'Pedro García', 'pedro@gmail.com', '44332211', '$2y$10$ELs4NU4olvDyJ6QSpaUQpOk672qhmjWQJfT7bUY3bxo2lk.kd1j52', 'client', 1),
+(5, 'María López', 'maria.lopez@example.com', '55667788', '$2y$10$sample.hash.for.maria', 'client', 1),
+(6, 'Carlos Rodríguez', 'carlos.rodriguez@example.com', '99887766', '$2y$10$sample.hash.for.carlos', 'client', 1),
+(7, 'Ana Martínez', 'ana.martinez@example.com', '33445566', '$2y$10$sample.hash.for.ana', 'maintenance', 1),
+(8, 'Luis Sánchez', 'luis.sanchez@example.com', '77889900', '$2y$10$sample.hash.for.luis', 'client', 1),
+(9, 'Carmen Díaz', 'carmen.diaz@example.com', '11224455', '$2y$10$sample.hash.for.carmen', 'client', 1),
+(10, 'José Hernández', 'jose.hernandez@example.com', '66778899', '$2y$10$sample.hash.for.jose', 'client', 1);
 
 --
 -- Índices para tablas volcadas
@@ -451,7 +510,7 @@ ALTER TABLE `cleaning_inventory`
 -- AUTO_INCREMENT de la tabla `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `events`
@@ -475,25 +534,25 @@ ALTER TABLE `floor_inventory`
 -- AUTO_INCREMENT de la tabla `hotel_info`
 --
 ALTER TABLE `hotel_info`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `maintenance_tasks`
 --
 ALTER TABLE `maintenance_tasks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `reservations`
 --
 ALTER TABLE `reservations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT de la tabla `reviews`
 --
 ALTER TABLE `reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `room_inventory`
@@ -505,13 +564,13 @@ ALTER TABLE `room_inventory`
 -- AUTO_INCREMENT de la tabla `room_status`
 --
 ALTER TABLE `room_status`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Restricciones para tablas volcadas

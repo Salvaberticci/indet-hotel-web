@@ -8,49 +8,51 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
     exit();
 }
 
-header('Content-Type: application/json');
+// header('Content-Type: application/json'); // Ya no se devuelve JSON
+error_reporting(E_ALL); // Activar todos los errores para depuración
+ini_set('display_errors', 1); // Mostrar errores para depuración
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $action = $_POST['action'] ?? '';
-    $reservation_id = (int)($_POST['reservation_id'] ?? 0);
+if ($_SERVER['REQUEST_METHOD'] === 'GET') { // Cambiar a GET para la redirección simple
+    $action = $_GET['action'] ?? '';
+    $reservation_id = (int)($_GET['reservation_id'] ?? 0);
+    $redirect_url = '../admin_checkin_checkout.php';
 
     if (!$reservation_id) {
-        echo json_encode(['success' => false, 'message' => 'ID de reserva inválido.']);
+        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'ID de reserva inválido.'];
+        header("Location: $redirect_url");
         exit();
     }
 
     if ($action === 'checkin') {
-        // Confirm check-in and generate PDF receipt
         $sql = "UPDATE reservations SET status = 'confirmed' WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $reservation_id);
 
         if ($stmt->execute()) {
-            // Generate PDF receipt for check-in
+            ob_start();
             include 'generate_checkin_pdf.php';
             $pdf_url = generateCheckinPDF($reservation_id);
+            ob_end_clean();
 
-            echo json_encode([
-                'success' => true,
-                'message' => 'Check-in confirmado exitosamente.',
-                'pdf_url' => $pdf_url
-            ]);
+            $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Check-in confirmado exitosamente. Se ha generado el recibo.'];
+            if ($pdf_url) {
+                $_SESSION['flash_message']['pdf_url'] = $pdf_url; // Guardar URL del PDF para abrirlo en el frontend
+            }
         } else {
-            echo json_encode(['success' => false, 'message' => 'Error al confirmar check-in.']);
+            $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al confirmar check-in.'];
         }
+        header("Location: $redirect_url");
+        exit();
 
     } elseif ($action === 'checkout') {
-        // Process check-out and send room to maintenance
         $conn->begin_transaction();
 
         try {
-            // Update reservation status to completed
             $update_sql = "UPDATE reservations SET status = 'completed' WHERE id = ?";
             $update_stmt = $conn->prepare($update_sql);
             $update_stmt->bind_param("i", $reservation_id);
             $update_stmt->execute();
 
-            // Get room information
             $room_sql = "SELECT room_id FROM reservations WHERE id = ?";
             $room_stmt = $conn->prepare($room_sql);
             $room_stmt->bind_param("i", $reservation_id);
@@ -60,34 +62,82 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($room_data) {
                 $room_id = $room_data['room_id'];
-
-                // Schedule cleaning task 30 minutes after checkout
+                ob_start();
                 include 'maintenance_scheduler.php';
                 scheduleCleaningAfterCheckout($reservation_id);
+                ob_end_clean();
             }
 
             $conn->commit();
 
-            // Generate PDF receipt for check-out
+            ob_start();
             include 'generate_checkout_pdf.php';
             $pdf_url = generateCheckoutPDF($reservation_id);
+            ob_end_clean();
 
-            echo json_encode([
-                'success' => true,
-                'message' => 'Check-out procesado exitosamente.',
-                'pdf_url' => $pdf_url
-            ]);
+            $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Check-out procesado exitosamente. La habitación ha sido enviada a mantenimiento.'];
+            if ($pdf_url) {
+                $_SESSION['flash_message']['pdf_url'] = $pdf_url;
+            }
 
         } catch (Exception $e) {
             $conn->rollback();
-            echo json_encode(['success' => false, 'message' => 'Error al procesar check-out: ' . $e->getMessage()]);
+            $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al procesar check-out: ' . $e->getMessage()];
         }
+        header("Location: $redirect_url");
+        exit();
+
+    } elseif ($action === 'general_report') {
+        ob_start();
+        include 'generate_general_report.php';
+        $pdf_url = generateGeneralReport();
+        ob_end_clean();
+
+        $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Reporte general generado exitosamente.'];
+        if ($pdf_url) {
+            $_SESSION['flash_message']['pdf_url'] = $pdf_url;
+        }
+        header("Location: $redirect_url");
+        exit();
+
+    } elseif ($action === 'individual_report') {
+        $type = $_GET['type'] ?? ''; // Cambiar a GET
+
+        if ($type === 'checkin') {
+            ob_start();
+            include 'generate_checkin_pdf.php';
+            $pdf_url = generateCheckinPDF($reservation_id);
+            ob_end_clean();
+
+            $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Reporte de check-in generado exitosamente.'];
+            if ($pdf_url) {
+                $_SESSION['flash_message']['pdf_url'] = $pdf_url;
+            }
+        } elseif ($type === 'checkout') {
+            ob_start();
+            include 'generate_checkout_pdf.php';
+            $pdf_url = generateCheckoutPDF($reservation_id);
+            ob_end_clean();
+
+            $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Reporte de check-out generado exitosamente.'];
+            if ($pdf_url) {
+                $_SESSION['flash_message']['pdf_url'] = $pdf_url;
+            }
+        } else {
+            $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Tipo de reporte inválido.'];
+        }
+        header("Location: $redirect_url");
+        exit();
 
     } else {
-        echo json_encode(['success' => false, 'message' => 'Acción inválida.']);
+        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Acción inválida.'];
+        header("Location: $redirect_url");
+        exit();
     }
 } else {
-    echo json_encode(['success' => false, 'message' => 'Método no permitido.']);
+    $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Método no permitido.'];
+    header("Location: $redirect_url");
+    exit();
 }
 
 $conn->close();

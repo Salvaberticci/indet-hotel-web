@@ -9,35 +9,59 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
     exit();
 }
 
-// Get selected date from GET parameter or default to today
-$selected_date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
-$today = $selected_date;
+// Get selected date from GET parameter or default to show all
+$selected_date = isset($_GET['date']) ? $_GET['date'] : null;
+$selected_cedula = isset($_GET['cedula']) ? $_GET['cedula'] : null;
 
-// Fetch today's check-ins
+// Build WHERE conditions
+$where_conditions = [];
+$params = [];
+$param_types = '';
+
+if ($selected_date) {
+    $where_conditions[] = "(r.checkin_date = ? OR r.checkout_date = ?)";
+    $params[] = $selected_date;
+    $params[] = $selected_date;
+    $param_types .= 'ss';
+}
+
+if ($selected_cedula) {
+    $where_conditions[] = "r.cedula LIKE ?";
+    $params[] = '%' . $selected_cedula . '%';
+    $param_types .= 's';
+}
+
+$where_clause = !empty($where_conditions) ? 'WHERE ' . implode(' AND ', $where_conditions) : '';
+
+// Fetch all reservations for check-ins (pending or confirmed)
 $checkin_sql = "SELECT r.id, r.guest_name, r.guest_lastname, r.cedula, r.checkin_date, r.checkout_date, r.status,
                         rm.type as room_type, f.name as floor_name, u.name as user_name
                  FROM reservations r
                  JOIN rooms rm ON r.room_id = rm.id
                  JOIN floors f ON rm.floor_id = f.id
                  JOIN users u ON r.user_id = u.id
-                 WHERE r.checkin_date = ? AND r.status IN ('confirmed', 'pending')
+                 $where_clause AND r.status IN ('confirmed', 'pending')
                  ORDER BY r.checkin_date ASC";
 $checkin_stmt = $conn->prepare($checkin_sql);
-$checkin_stmt->bind_param("s", $today);
+if (!empty($params)) {
+    $checkin_stmt->bind_param($param_types, ...$params);
+}
 $checkin_stmt->execute();
 $checkin_result = $checkin_stmt->get_result();
 
-// Fetch today's check-outs
+// Fetch all reservations for check-outs (confirmed or completed)
 $checkout_sql = "SELECT r.id, r.guest_name, r.guest_lastname, r.cedula, r.checkin_date, r.checkout_date, r.status,
                          rm.type as room_type, f.name as floor_name, u.name as user_name
                   FROM reservations r
                   JOIN rooms rm ON r.room_id = rm.id
                   JOIN floors f ON rm.floor_id = f.id
                   JOIN users u ON r.user_id = u.id
-                  WHERE r.checkout_date = ? AND r.status = 'confirmed'
+                  $where_clause AND r.status IN ('confirmed', 'completed')
                   ORDER BY r.checkout_date ASC";
 $checkout_stmt = $conn->prepare($checkout_sql);
-$checkout_stmt->bind_param("s", $today);
+if (!empty($params)) {
+    $checkout_stmt->bind_param($param_types, ...$params);
+}
 $checkout_stmt->execute();
 $checkout_result = $checkout_stmt->get_result();
 ?>
@@ -74,6 +98,39 @@ $checkout_result = $checkout_stmt->get_result();
       left: 0;
       z-index: -1;
     }
+    /* Estilos para las notificaciones */
+    .notification {
+        background-color: #333;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInOut 5s forwards;
+    }
+
+    .notification.success {
+        background-color: #28a745; /* Verde para éxito */
+    }
+
+    .notification.error {
+        background-color: #dc3545; /* Rojo para error */
+    }
+
+    .notification i {
+        margin-right: 10px;
+    }
+
+    @keyframes fadeInOut {
+        0% { opacity: 0; transform: translateY(20px); }
+        10% { opacity: 1; transform: translateY(0); }
+        90% { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(20px); }
+    }
     </style>
 </head>
 <body class="bg-gray-900 text-white font-poppins">
@@ -91,11 +148,14 @@ $checkout_result = $checkout_stmt->get_result();
         ?>
         <div class="flex justify-between items-center mb-8">
             <div class="flex items-center">
-                <h1 class="text-3xl font-bold">Check-in/Check-out - <?php echo date('d/m/Y', strtotime($selected_date)); ?></h1>
+                <h1 class="text-3xl font-bold">Check-in/Check-out</h1>
             </div>
             <div>
                 <button onclick="printDailyReport()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg mr-4">
                     <i class="fas fa-print mr-2"></i>Reporte Diario
+                </button>
+                <button onclick="generateGeneralReport()" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg mr-4">
+                    <i class="fas fa-file-pdf mr-2"></i>Reporte General
                 </button>
                 <a href="admin.php" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-4">
                     <i class="fas fa-arrow-left mr-2"></i>Volver al Menú
@@ -119,9 +179,12 @@ $checkout_result = $checkout_stmt->get_result();
                 <!-- Search by Date -->
                 <div>
                     <label for="date_search" class="block text-sm font-medium mb-2">Buscar por Fecha:</label>
-                    <input type="date" id="date_search" value="<?php echo $selected_date; ?>" class="p-2 border rounded bg-gray-700 text-white w-full">
+                    <input type="date" id="date_search" value="<?php echo $selected_date ?: ''; ?>" class="p-2 border rounded bg-gray-700 text-white w-full">
                     <button onclick="searchByDate()" class="mt-2 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg w-full">
                         <i class="fas fa-calendar mr-2"></i>Buscar por Fecha
+                    </button>
+                    <button onclick="clearFilters()" class="mt-2 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg w-full">
+                        <i class="fas fa-times mr-2"></i>Limpiar Filtros
                     </button>
                 </div>
             </div>
@@ -131,7 +194,7 @@ $checkout_result = $checkout_stmt->get_result();
             <!-- Check-in Section -->
             <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl">
                 <h2 class="text-2xl font-bold mb-6 text-green-400">
-                    <i class="fas fa-sign-in-alt mr-2"></i>Check-ins de Hoy
+                    <i class="fas fa-sign-in-alt mr-2"></i>Check-ins
                 </h2>
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-gray-800" id="checkin-table">
@@ -166,16 +229,19 @@ $checkout_result = $checkout_stmt->get_result();
                                         <td class="py-3 px-4 text-center">
                                             <?php if ($reservation['status'] === 'pending'): ?>
                                                 <button onclick="confirmCheckin(<?php echo $reservation['id']; ?>)" class="text-green-500 hover:text-green-700 mr-2">
-                                                    <i class="fas fa-check"></i> Confirmar
+                                                    <i class="fas fa-sign-in-alt"></i> Procesar Check-in
                                                 </button>
-                                            <?php else: ?>
-                                                <span class="text-green-500">Check-in Completado</span>
+                                            <?php elseif ($reservation['status'] === 'confirmed'): ?>
+                                                <span class="text-gray-500">Check-in procesado</span>
                                             <?php endif; ?>
+                                            <button onclick="generateIndividualReport(<?php echo $reservation['id']; ?>, 'checkin')" class="text-blue-500 hover:text-blue-700">
+                                                <i class="fas fa-file-pdf"></i> Reporte
+                                            </button>
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>
                             <?php else: ?>
-                                <tr><td colspan="5" class="text-center py-4">No hay check-ins programados para hoy.</td></tr>
+                                <tr><td colspan="5" class="text-center py-4">No hay check-ins programados.</td></tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
@@ -185,7 +251,7 @@ $checkout_result = $checkout_stmt->get_result();
             <!-- Check-out Section -->
             <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl">
                 <h2 class="text-2xl font-bold mb-6 text-red-400">
-                    <i class="fas fa-sign-out-alt mr-2"></i>Check-outs de Hoy
+                    <i class="fas fa-sign-out-alt mr-2"></i>Check-outs
                 </h2>
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-gray-800" id="checkout-table">
@@ -212,14 +278,21 @@ $checkout_result = $checkout_stmt->get_result();
                                         </td>
                                         <td class="py-3 px-4 text-center"><?php echo date('d/m/Y', strtotime($reservation['checkin_date'])); ?></td>
                                         <td class="py-3 px-4 text-center">
-                                            <button onclick="processCheckout(<?php echo $reservation['id']; ?>)" class="text-red-500 hover:text-red-700">
-                                                <i class="fas fa-sign-out-alt"></i> Procesar Check-out
+                                            <?php if ($reservation['status'] === 'confirmed'): ?>
+                                                <button onclick="processCheckout(<?php echo $reservation['id']; ?>)" class="text-red-500 hover:text-red-700 mr-2">
+                                                    <i class="fas fa-sign-out-alt"></i> Procesar Check-out
+                                                </button>
+                                            <?php elseif ($reservation['status'] === 'completed'): ?>
+                                                <span class="text-gray-500">Check-out procesado</span>
+                                            <?php endif; ?>
+                                            <button onclick="generateIndividualReport(<?php echo $reservation['id']; ?>, 'checkout')" class="text-blue-500 hover:text-blue-700">
+                                                <i class="fas fa-file-pdf"></i> Reporte
                                             </button>
                                         </td>
                                     </tr>
                                 <?php endwhile; ?>
                             <?php else: ?>
-                                <tr><td colspan="4" class="text-center py-4">No hay check-outs programados para hoy.</td></tr>
+                                <tr><td colspan="4" class="text-center py-4">No hay check-outs programados.</td></tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
@@ -275,53 +348,13 @@ $checkout_result = $checkout_stmt->get_result();
 
         function confirmCheckin(reservationId) {
             if (confirm('¿Confirmar check-in para esta reserva?')) {
-                fetch('php/checkin_checkout_handler.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'action=checkin&reservation_id=' + reservationId
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        if (data.pdf_url) {
-                            // Open PDF in new window
-                            window.open(data.pdf_url, '_blank');
-                        }
-                        alert('Check-in confirmado exitosamente. Se ha generado el recibo.');
-                        location.reload();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+                window.location.href = 'php/checkin_checkout_handler.php?action=checkin&reservation_id=' + reservationId;
             }
         }
 
         function processCheckout(reservationId) {
             if (confirm('¿Procesar check-out para esta reserva? La habitación pasará a mantenimiento.')) {
-                fetch('php/checkin_checkout_handler.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: 'action=checkout&reservation_id=' + reservationId
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        if (data.pdf_url) {
-                            // Open PDF in new window
-                            window.open(data.pdf_url, '_blank');
-                        }
-                        alert('Check-out procesado exitosamente. La habitación ha sido enviada a mantenimiento.');
-                        location.reload();
-                    } else {
-                        alert('Error: ' + data.message);
-                    }
-                })
-                .catch(error => console.error('Error:', error));
+                window.location.href = 'php/checkin_checkout_handler.php?action=checkout&reservation_id=' + reservationId;
             }
         }
 
@@ -349,18 +382,33 @@ $checkout_result = $checkout_stmt->get_result();
 
         function searchByDate() {
             const selectedDate = document.getElementById('date_search').value;
-            if (!selectedDate) {
-                alert('Por favor selecciona una fecha.');
+            const cedula = document.getElementById('cedula_search').value.trim();
+
+            let url = 'admin_checkin_checkout.php?';
+            let params = [];
+
+            if (selectedDate) {
+                params.push('date=' + selectedDate);
+            }
+            if (cedula) {
+                params.push('cedula=' + encodeURIComponent(cedula));
+            }
+
+            if (params.length === 0) {
+                alert('Por favor selecciona una fecha o ingresa una cédula.');
                 return;
             }
 
-            // Redirect to the same page with date parameter
-            window.location.href = 'admin_checkin_checkout.php?date=' + selectedDate;
+            window.location.href = url + params.join('&');
+        }
+
+        function clearFilters() {
+            window.location.href = 'admin_checkin_checkout.php';
         }
 
         function printDailyReport() {
             const printWindow = window.open('', '_blank');
-            const today = '<?php echo date('d/m/Y', strtotime($today)); ?>';
+            const today = '<?php echo date('d/m/Y', strtotime($selected_date ?: date('Y-m-d'))); ?>';
 
             let checkinContent = '';
             let checkoutContent = '';
@@ -368,7 +416,7 @@ $checkout_result = $checkout_stmt->get_result();
             // Get check-in data
             const checkinRows = document.querySelectorAll('#checkin-table tbody tr:not([style*="display: none"])');
             checkinRows.forEach(row => {
-                if (row.cells.length >= 4 && !row.querySelector('td[colspan]')) {
+                if (row.cells.length >= 5 && !row.querySelector('td[colspan]')) {
                     checkinContent += `
                         <tr>
                             <td>${row.cells[0].textContent}</td>
@@ -383,7 +431,7 @@ $checkout_result = $checkout_stmt->get_result();
             // Get check-out data
             const checkoutRows = document.querySelectorAll('#checkout-table tbody tr:not([style*="display: none"])');
             checkoutRows.forEach(row => {
-                if (row.cells.length >= 3 && !row.querySelector('td[colspan]')) {
+                if (row.cells.length >= 4 && !row.querySelector('td[colspan]')) {
                     checkoutContent += `
                         <tr>
                             <td>${row.cells[0].textContent}</td>
@@ -415,7 +463,7 @@ $checkout_result = $checkout_stmt->get_result();
                     </div>
 
                     <div class="section">
-                        <h2>Check-ins del Día</h2>
+                        <h2>Check-ins</h2>
                         <table>
                             <thead>
                                 <tr>
@@ -432,7 +480,7 @@ $checkout_result = $checkout_stmt->get_result();
                     </div>
 
                     <div class="section">
-                        <h2>Check-outs del Día</h2>
+                        <h2>Check-outs</h2>
                         <table>
                             <thead>
                                 <tr>
@@ -453,6 +501,44 @@ $checkout_result = $checkout_stmt->get_result();
             printWindow.document.write(content);
             printWindow.document.close();
             printWindow.print();
+        }
+
+        function generateGeneralReport() {
+            fetch('php/checkin_checkout_handler.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'action=general_report'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.open(data.pdf_url, '_blank');
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        function generateIndividualReport(reservationId, type) {
+            fetch('php/checkin_checkout_handler.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'action=individual_report&reservation_id=' + reservationId + '&type=' + type
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.open(data.pdf_url, '_blank');
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
         }
     </script>
 </body>

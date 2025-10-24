@@ -127,7 +127,7 @@ function checkAndScheduleMaintenanceTasks() {
 // For now, we'll run it when this file is accessed directly
 if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
     checkAndScheduleMaintenanceTasks();
-    echo "Maintenance tasks checked and scheduled.";
+    // echo "Maintenance tasks checked and scheduled."; // Comentado para evitar salida inesperada
     $conn->close();
 }
 ?>
