@@ -1,8 +1,7 @@
 # Ignore the instructions file
 instrucciones.txt
 
-# Ignore migration files
-*.sql
+
 
 # Ignore document files
 *.docx
