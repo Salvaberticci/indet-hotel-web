@@ -88,6 +88,12 @@ $reservations_result = $reservations_stmt->get_result();
                 </div>
                 <div class="flex flex-col items-center space-y-2 justify-self-end">
                     <?php if (isset($_SESSION['user_id'])): ?>
+                        <?php if ($_SESSION['user_role'] == 'admin'): ?>
+                            <a href="admin.php" class="login-button">
+                                <span>Panel Admin</span>
+                                <i class="fas fa-cog"></i>
+                            </a>
+                        <?php endif; ?>
                         <a href="user_profile.php" class="login-button">
                             <span>Mi Perfil</span>
                             <i class="fas fa-user"></i>

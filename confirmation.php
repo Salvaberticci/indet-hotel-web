@@ -71,6 +71,12 @@ unset($_SESSION['last_reservation']);
                 <div class="flex items-center space-x-4 justify-self-end">
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <div class="flex flex-col items-center">
+                            <?php if ($_SESSION['user_role'] == 'admin'): ?>
+                                <a href="admin.php" class="login-button">
+                                    <span>Panel Admin</span>
+                                    <i class="fas fa-cog"></i>
+                                </a>
+                            <?php endif; ?>
                             <a href="php/logout.php" class="login-button">
                                 <span>Logout</span>
                                 <i class="fas fa-sign-out-alt"></i>

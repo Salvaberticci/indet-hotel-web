@@ -52,6 +52,12 @@ include 'php/db.php';
                 </div>
                 <div class="flex items-center space-x-4 justify-self-end">
                     <?php if (isset($_SESSION['user_id'])): ?>
+                        <?php if ($_SESSION['user_role'] == 'admin'): ?>
+                            <a href="admin.php" class="login-button">
+                                <span>Panel Admin</span>
+                                <i class="fas fa-cog"></i>
+                            </a>
+                        <?php endif; ?>
                         <span class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
                         <a href="php/logout.php" class="login-button">
                             <span>Logout</span>
