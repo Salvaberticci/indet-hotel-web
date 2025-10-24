@@ -84,7 +84,7 @@ $is_admin = $_SESSION['user_role'] == 'admin';
             </a>
             <a href="admin_availability.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">
                 <i class="fas fa-search fa-3x mb-4"></i>
-                <h3 class="text-xl font-bold">Disponibilidad</h3>
+                <h3 class="text-xl font-bold">Reservacion</h3>
                 <p>Ver habitaciones disponibles</p>
             </a>
             <a href="admin_users.php" class="bg-gray-800 hover:bg-gray-700 text-white p-6 rounded-xl shadow-2xl transition text-center">

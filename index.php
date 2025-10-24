@@ -66,7 +66,7 @@ $comments_result = $conn->query($comments_sql);
                     <a href="index.php" class="nav-button">Inicio</a>
                     <a href="hotel_info.php" class="nav-button">Nuestro Hotel</a>
                     <a href="#rooms" class="nav-button">Habitaciones</a>
-                    <a href="reservar.php" class="nav-button">Disponibilidad</a>
+                    <a href="reservar.php" class="nav-button">Reservacion</a>
                     <a href="events.php" class="nav-button">Eventos</a>
                     <a href="faq.php" class="nav-button">FAQ</a>
                     <a href="#footer" class="nav-button">Contactos</a>
@@ -107,11 +107,11 @@ $comments_result = $conn->query($comments_sql);
         <section id="booking" class="bg-white text-gray-800 py-12 -mt-24 relative z-30 mx-4 md:mx-auto max-w-5xl rounded-2xl shadow-2xl" data-aos="fade-up">
             <div class="container mx-auto px-6 text-center">
                 <h2 class="text-3xl font-bold mb-6">Reserva tu Estancia</h2>
-                <p class="text-lg mb-6">Verifica la disponibilidad y reserva tu habitación perfecta.</p>
+                <p class="text-lg mb-6">Verifica la reservacion y reserva tu habitación perfecta.</p>
                 <?php if (!isset($_SESSION['user_id'])): ?>
                     <a href="login.php" class="action-button inline-block">Iniciar Sesión para Reservar <i class="fas fa-arrow-right ml-2"></i></a>
                 <?php else: ?>
-                    <a href="reservar.php" class="action-button inline-block">Ver Disponibilidad <i class="fas fa-arrow-right ml-2"></i></a>
+                    <a href="reservar.php" class="action-button inline-block">Ver Reservacion <i class="fas fa-arrow-right ml-2"></i></a>
                 <?php endif; ?>
             </div>
         </section>

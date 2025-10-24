@@ -2,7 +2,7 @@
 
 ## Descripción General
 
-Este es un sistema de gestión web completo para el Instituto de Deportes del Estado Trujillo (INDET), diseñado específicamente para gestionar reservas de habitaciones en un hotel deportivo. El sistema permite a los usuarios públicos explorar información sobre el instituto, verificar disponibilidad de habitaciones y realizar reservas, mientras que proporciona a los administradores herramientas avanzadas para gestionar todos los aspectos del hotel.
+Este es un sistema de gestión web completo para el Instituto de Deportes del Estado Trujillo (INDET), diseñado específicamente para gestionar reservas de habitaciones en un hotel deportivo. El sistema permite a los usuarios públicos explorar información sobre el instituto, verificar reservacion de habitaciones y realizar reservas, mientras que proporciona a los administradores herramientas avanzadas para gestionar todos los aspectos del hotel.
 
 El proyecto está construido con tecnologías modernas y sigue las mejores prácticas de desarrollo web, incluyendo autenticación segura, gestión de sesiones, y una interfaz de usuario intuitiva.
 
@@ -25,7 +25,7 @@ El proyecto está construido con tecnologías modernas y sigue las mejores prác
 - **Página de Inicio (index.php):** Interfaz moderna con animaciones, secciones de "Sobre Nosotros", habitaciones, reservas, FAQ y reseñas
 - **Información del Hotel (hotel_info.php):** Detalles sobre las instalaciones, servicios disponibles y horarios
 - **Habitaciones:** Visualización de tipos de habitaciones con precios, capacidad y descripciones
-- **Sistema de Reservas:** Formulario interactivo para verificar disponibilidad y realizar reservas
+- **Sistema de Reservas:** Formulario interactivo para verificar reservacion y realizar reservas
 - **Flujo Post-Reserva:** Redirección automática al perfil de usuario después de completar una reserva
 - **Gestión de Reservas:** Cancelación de reservas con modal estilizado y confirmación visual
 - **Eventos (events.php):** Lista de eventos deportivos y actividades programadas
@@ -135,7 +135,7 @@ indet-hotel-web/
 │   ├── submit_review.php   # Envío de reseñas
 │   ├── update_reservation_status.php # Actualización estados
 │   ├── update_room_status.php # Actualización habitaciones
-│   ├── availability_handler.php # Verificación disponibilidad
+│   ├── availability_handler.php # Verificación reservacion
 │   └── user_management.php # Gestión usuarios (legacy)
 ├── admin.php               # Panel de administración
 ├── admin_inventory.php     # Gestión de inventario por piso
@@ -163,7 +163,7 @@ indet-hotel-web/
 ### 1. Módulo de Usuario Público
 - **Navegación:** Menú responsive con enlaces a todas las secciones
 - **Reservas:** Formulario con validación de fechas y tipos de habitación
-- **Verificación de Disponibilidad:** AJAX para mostrar habitaciones disponibles
+- **Verificación de Reservacion:** AJAX para mostrar habitaciones disponibles
 - **Sistema de Reseñas:** Calificaciones de 1-5 estrellas con comentarios
 - **Perfil de Usuario:** Acceso directo al perfil con información personal y historial de reservas
 - **Flujo Mejorado:** Redirección automática al perfil después de completar reservas

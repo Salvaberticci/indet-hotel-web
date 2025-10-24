@@ -14,7 +14,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Disponibilidad - Panel de Administración - INDET</title>
+    <title>Reservacion - Panel de Administración - INDET</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -62,7 +62,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
         ?>
         <div class="flex justify-between items-center mb-8">
             <div class="flex items-center">
-                <h1 class="text-3xl font-bold">Disponibilidad</h1>
+                <h1 class="text-3xl font-bold">Reservacion</h1>
             </div>
             <div>
                 <a href="admin.php" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-4">Volver al Menú</a>
@@ -71,7 +71,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
         </div>
 
         <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mb-8">
-            <h2 class="text-2xl font-bold mb-6">Ver Disponibilidad</h2>
+            <h2 class="text-2xl font-bold mb-6">Ver Reservacion</h2>
             <form method="GET" class="mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -83,7 +83,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
                         <input type="date" id="checkout" name="checkout" required class="w-full p-2 border rounded bg-gray-700 text-white">
                     </div>
                 </div>
-                <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Ver Disponibilidad</button>
+                <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Ver Reservacion</button>
             </form>
             <?php
             if (isset($_GET['checkin']) && isset($_GET['checkout'])) {

@@ -59,7 +59,7 @@ if (!isset($_SESSION['user_id'])) {
                     <a href="index.php" class="nav-button">Inicio</a>
                     <a href="hotel_info.php" class="nav-button">Nuestro Hotel</a>
                     <a href="index.php#rooms" class="nav-button">Habitaciones</a>
-                    <a href="reservar.php" class="nav-button">Disponibilidad</a>
+                    <a href="reservar.php" class="nav-button">Reservacion</a>
                     <a href="events.php" class="nav-button">Eventos</a>
                     <a href="faq.php" class="nav-button">FAQ</a>
                     <a href="#footer" class="nav-button">Contactos</a>

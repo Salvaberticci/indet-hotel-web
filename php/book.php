@@ -93,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         foreach ($selected_rooms as $room) {
             $room_id = $room['id'];
 
-            // Verificar disponibilidad
+            // Verificar reservacion
             $availability_query = "SELECT COUNT(*) as count FROM reservations
                                    WHERE room_id = ? AND status IN ('confirmed', 'pending')
                                    AND ((checkin_date <= ? AND checkout_date > ?) OR
