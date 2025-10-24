@@ -27,9 +27,9 @@ function generateCheckoutPDF($reservation_id) {
     }
 
     // Create PDF
-    $pdf = new FPDF();
-    $pdf->SetFont('Helvetica', '', 10); // Set default font
+    $pdf = new FPDF('P', 'mm', 'A4');
     $pdf->AddPage();
+    $pdf->SetFont('Helvetica', '', 10); // Set default font
 
     // Header
     $pdf->SetFont('Helvetica', 'B', 16);
@@ -54,7 +54,7 @@ function generateCheckoutPDF($reservation_id) {
     $pdf->Cell(0, 6, $reservation['id'], 0, 1);
 
     $pdf->Cell(50, 6, 'Huesped:', 0, 0);
-    $pdf->Cell(0, 6, $reservation['guest_name'] . ' ' . $reservation['guest_lastname'], 0, 1);
+    $pdf->Cell(0, 6, utf8_decode($reservation['guest_name'] . ' ' . $reservation['guest_lastname']), 0, 1);
 
     $pdf->Cell(50, 6, 'Cedula:', 0, 0);
     $pdf->Cell(0, 6, $reservation['cedula'], 0, 1);
@@ -63,10 +63,10 @@ function generateCheckoutPDF($reservation_id) {
     $pdf->Cell(0, 6, $reservation['guest_email'], 0, 1);
 
     $pdf->Cell(50, 6, 'Habitacion:', 0, 0);
-    $pdf->Cell(0, 6, $reservation['room_type'] . ' (' . $reservation['room_id'] . ')', 0, 1);
+    $pdf->Cell(0, 6, utf8_decode($reservation['room_type'] . ' (' . $reservation['room_id'] . ')'), 0, 1);
 
     $pdf->Cell(50, 6, 'Piso:', 0, 0);
-    $pdf->Cell(0, 6, $reservation['floor_name'], 0, 1);
+    $pdf->Cell(0, 6, utf8_decode($reservation['floor_name']), 0, 1);
 
     $pdf->Cell(50, 6, 'Fecha de Llegada:', 0, 0);
     $pdf->Cell(0, 6, date('d/m/Y', strtotime($reservation['checkin_date'])), 0, 1);
@@ -92,35 +92,35 @@ function generateCheckoutPDF($reservation_id) {
     $days = $interval->days;
 
     $pdf->SetFont('Helvetica', 'B', 10);
-    $pdf->Cell(50, 6, 'Duracion de la Estadía:', 0, 0);
+    $pdf->Cell(50, 6, utf8_decode('Duración de la Estadía:'), 0, 0);
     $pdf->Cell(0, 6, $days . ' noche(s)', 0, 1);
 
     // Room status
-    $pdf->Cell(50, 6, 'Estado de la Habitacion:', 0, 0);
-    $pdf->Cell(0, 6, 'Enviada a Mantenimiento', 0, 1);
+    $pdf->Cell(50, 6, utf8_decode('Estado de la Habitación:'), 0, 0);
+    $pdf->Cell(0, 6, utf8_decode('Enviada a Mantenimiento'), 0, 1);
 
     $pdf->Ln(10);
 
     // Check-out checklist
     $pdf->SetFont('Helvetica', 'B', 10);
-    $pdf->Cell(0, 6, 'Lista de Verificación de Check-out:', 0, 1);
+    $pdf->Cell(0, 6, utf8_decode('Lista de Verificación de Check-out:'), 0, 1);
     $pdf->SetFont('Helvetica', '', 8);
-    $pdf->MultiCell(0, 4, '✓ Habitacion inspeccionada
+    $pdf->MultiCell(0, 4, utf8_decode('✓ Habitación inspeccionada
 ✓ Llaves devueltas
 ✓ Minibar verificado
 ✓ Daños reportados (si aplica)
-✓ Habitacion enviada a mantenimiento', 0, 1);
+✓ Habitación enviada a mantenimiento'), 0, 1);
 
     $pdf->Ln(10);
 
     // Terms and conditions
     $pdf->SetFont('Helvetica', 'B', 10);
-    $pdf->Cell(0, 6, 'Notas Importantes:', 0, 1);
+    $pdf->Cell(0, 6, utf8_decode('Notas Importantes:'), 0, 1);
     $pdf->SetFont('Helvetica', '', 8);
-    $pdf->MultiCell(0, 4, '• La habitacion sera inspeccionada por nuestro personal de mantenimiento.
-• Cualquier cargo adicional sera notificado dentro de 24 horas.
+    $pdf->MultiCell(0, 4, utf8_decode('• La habitación será inspeccionada por nuestro personal de mantenimiento.
+• Cualquier cargo adicional será notificado dentro de 24 horas.
 • Gracias por hospedarse en el Hotel INDET.
-• Esperamos verle pronto nuevamente.', 0, 1);
+• Esperamos verle pronto nuevamente.'), 0, 1);
 
     $pdf->Ln(10);
 
@@ -131,8 +131,8 @@ function generateCheckoutPDF($reservation_id) {
 
     $pdf->Cell(80, 6, '_______________________________', 0, 0);
     $pdf->Cell(80, 6, '_______________________________', 0, 1);
-    $pdf->Cell(80, 6, 'Firma del Huesped', 0, 0);
-    $pdf->Cell(80, 6, 'Firma del Recepcionista', 0, 1);
+    $pdf->Cell(80, 6, utf8_decode('Firma del Huésped'), 0, 0);
+    $pdf->Cell(80, 6, utf8_decode('Firma del Recepcionista'), 0, 1);
 
     // Generate filename and save
     $filename = 'checkout_receipt_' . $reservation_id . '_' . date('Ymd_His') . '.pdf';

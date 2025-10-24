@@ -27,6 +27,47 @@ if (isset($_POST['create_task'])) {
     exit();
 }
 
+// Create Task from Checkout
+if (isset($_POST['create_checkout_task'])) {
+    $reservation_id = $_POST['reservation_id'];
+    $room_id = $_POST['room_id'];
+    $task_type = $_POST['task_type'];
+    $assigned_to_user_id = $_POST['assigned_to_user_id'];
+    $additional_description = trim($_POST['task_description']);
+
+    // Build task description
+    $task_description = $task_type;
+    if (!empty($additional_description)) {
+        $task_description .= ' - ' . $additional_description;
+    }
+
+    $conn->begin_transaction();
+
+    try {
+        // Update reservation status to completed
+        $update_sql = "UPDATE reservations SET status = 'completed' WHERE id = ?";
+        $update_stmt = $conn->prepare($update_sql);
+        $update_stmt->bind_param("i", $reservation_id);
+        $update_stmt->execute();
+
+        // Create maintenance task
+        $task_sql = "INSERT INTO maintenance_tasks (room_id, assigned_to_user_id, task_description, status) VALUES (?, ?, ?, 'pending')";
+        $task_stmt = $conn->prepare($task_sql);
+        $task_stmt->bind_param("sis", $room_id, $assigned_to_user_id, $task_description);
+        $task_stmt->execute();
+
+        $conn->commit();
+        $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Check-out procesado y tarea de mantenimiento creada exitosamente.'];
+
+    } catch (Exception $e) {
+        $conn->rollback();
+        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al procesar check-out: ' . $e->getMessage()];
+    }
+
+    header("Location: ../admin_checkin_checkout.php");
+    exit();
+}
+
 // Mark Task as Complete (from admin panel link)
 if (isset($_GET['action']) && $_GET['action'] == 'complete' && isset($_GET['id'])) {
     $task_id = $_GET['id'];

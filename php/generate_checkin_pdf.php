@@ -27,9 +27,9 @@ function generateCheckinPDF($reservation_id) {
     }
 
     // Create PDF
-    $pdf = new FPDF();
-    $pdf->SetFont('Helvetica', '', 10); // Set default font
+    $pdf = new FPDF('P', 'mm', 'A4');
     $pdf->AddPage();
+    $pdf->SetFont('Helvetica', '', 10); // Set default font
 
     // Header
     $pdf->SetFont('Helvetica', 'B', 16);
@@ -54,7 +54,7 @@ function generateCheckinPDF($reservation_id) {
     $pdf->Cell(0, 6, $reservation['id'], 0, 1);
 
     $pdf->Cell(50, 6, 'Huesped:', 0, 0);
-    $pdf->Cell(0, 6, $reservation['guest_name'] . ' ' . $reservation['guest_lastname'], 0, 1);
+    $pdf->Cell(0, 6, utf8_decode($reservation['guest_name'] . ' ' . $reservation['guest_lastname']), 0, 1);
 
     $pdf->Cell(50, 6, 'Cedula:', 0, 0);
     $pdf->Cell(0, 6, $reservation['cedula'], 0, 1);
@@ -63,10 +63,10 @@ function generateCheckinPDF($reservation_id) {
     $pdf->Cell(0, 6, $reservation['guest_email'], 0, 1);
 
     $pdf->Cell(50, 6, 'Habitacion:', 0, 0);
-    $pdf->Cell(0, 6, $reservation['room_type'] . ' (' . $reservation['room_id'] . ')', 0, 1);
+    $pdf->Cell(0, 6, utf8_decode($reservation['room_type'] . ' (' . $reservation['room_id'] . ')'), 0, 1);
 
     $pdf->Cell(50, 6, 'Piso:', 0, 0);
-    $pdf->Cell(0, 6, $reservation['floor_name'], 0, 1);
+    $pdf->Cell(0, 6, utf8_decode($reservation['floor_name']), 0, 1);
 
     $pdf->Cell(50, 6, 'Capacidad:', 0, 0);
     $pdf->Cell(0, 6, $reservation['capacity'] . ' personas', 0, 1);
@@ -92,11 +92,11 @@ function generateCheckinPDF($reservation_id) {
     $pdf->SetFont('Helvetica', 'B', 10);
     $pdf->Cell(0, 6, 'Terminos y Condiciones:', 0, 1);
     $pdf->SetFont('Helvetica', '', 8);
-    $pdf->MultiCell(0, 4, '1. El huesped se compromete a respetar las normas del hotel.
-2. Cualquier dano causado sera cobrado al huesped.
+    $pdf->MultiCell(0, 4, utf8_decode('1. El huésped se compromete a respetar las normas del hotel.
+2. Cualquier daño causado será cobrado al huésped.
 3. El check-out debe realizarse antes de las 12:00 PM.
-4. Se requiere identificacion valida para el check-in.
-5. No se permiten mascotas sin autorizacion previa.', 0, 1);
+4. Se requiere identificación válida para el check-in.
+5. No se permiten mascotas sin autorización previa.'), 0, 1);
 
     $pdf->Ln(10);
 
@@ -107,8 +107,8 @@ function generateCheckinPDF($reservation_id) {
 
     $pdf->Cell(80, 6, '_______________________________', 0, 0);
     $pdf->Cell(80, 6, '_______________________________', 0, 1);
-    $pdf->Cell(80, 6, 'Firma del Huesped', 0, 0);
-    $pdf->Cell(80, 6, 'Firma del Recepcionista', 0, 1);
+    $pdf->Cell(80, 6, utf8_decode('Firma del Huésped'), 0, 0);
+    $pdf->Cell(80, 6, utf8_decode('Firma del Recepcionista'), 0, 1);
 
     // Generate filename and save
     $filename = 'checkin_receipt_' . $reservation_id . '_' . date('Ymd_His') . '.pdf';
