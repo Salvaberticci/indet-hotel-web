@@ -2,17 +2,26 @@
 session_start();
 include 'db.php';
 
+// Check if this is an AJAX request
+$is_ajax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validaciones básicas
     $required_fields = ['cedula', 'guest_name', 'guest_lastname', 'guest_email', 'checkin', 'checkout', 'floor_id', 'room_capacity', 'selected_rooms'];
     foreach ($required_fields as $field) {
         if (!isset($_POST[$field]) || empty($_POST[$field])) {
-            $_SESSION['flash_message'] = [
-                'status' => 'error',
-                'text' => 'Por favor, complete todos los campos del formulario.'
-            ];
-            header("Location: ../reservar.php");
-            exit();
+            $error_msg = 'Por favor, complete todos los campos del formulario.';
+            if ($is_ajax) {
+                echo json_encode(['success' => false, 'message' => $error_msg]);
+                exit();
+            } else {
+                $_SESSION['flash_message'] = [
+                    'status' => 'error',
+                    'text' => $error_msg
+                ];
+                header("Location: ../reservar.php");
+                exit();
+            }
         }
     }
 
@@ -22,21 +31,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $today = date('Y-m-d');
 
     if ($checkin < $today) {
-        $_SESSION['flash_message'] = [
-            'status' => 'error',
-            'text' => 'La fecha de llegada no puede ser anterior a hoy.'
-        ];
-        header("Location: ../reservar.php");
-        exit();
+        $error_msg = 'La fecha de llegada no puede ser anterior a hoy.';
+        if ($is_ajax) {
+            echo json_encode(['success' => false, 'message' => $error_msg]);
+            exit();
+        } else {
+            $_SESSION['flash_message'] = [
+                'status' => 'error',
+                'text' => $error_msg
+            ];
+            header("Location: ../reservar.php");
+            exit();
+        }
     }
 
     if ($checkout <= $checkin) {
-        $_SESSION['flash_message'] = [
-            'status' => 'error',
-            'text' => 'La fecha de salida debe ser posterior a la fecha de llegada.'
-        ];
-        header("Location: ../reservar.php");
-        exit();
+        $error_msg = 'La fecha de salida debe ser posterior a la fecha de llegada.';
+        if ($is_ajax) {
+            echo json_encode(['success' => false, 'message' => $error_msg]);
+            exit();
+        } else {
+            $_SESSION['flash_message'] = [
+                'status' => 'error',
+                'text' => $error_msg
+            ];
+            header("Location: ../reservar.php");
+            exit();
+        }
     }
 
     $cedula = $_POST['cedula'];
@@ -51,12 +72,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $discapacitados = (int)$_POST['discapacitados'];
 
     if (!isset($_SESSION['user_id'])) {
-        $_SESSION['flash_message'] = [
-            'status' => 'error',
-            'text' => 'Debes iniciar sesión para realizar una reserva.'
-        ];
-        header("Location: ../login.php");
-        exit();
+        $error_msg = 'Debes iniciar sesión para realizar una reserva.';
+        if ($is_ajax) {
+            echo json_encode(['success' => false, 'message' => $error_msg]);
+            exit();
+        } else {
+            $_SESSION['flash_message'] = [
+                'status' => 'error',
+                'text' => $error_msg
+            ];
+            header("Location: ../login.php");
+            exit();
+        }
     }
     $user_id = $_SESSION['user_id'];
 
@@ -112,18 +139,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'text' => '¡Reserva realizada exitosamente! Puedes ver los detalles en tu perfil.'
         ];
 
-        // Redirect to user profile instead of confirmation page
-        header("Location: ../user_profile.php");
-        exit();
+        if ($is_ajax) {
+            echo json_encode(['success' => true, 'message' => 'Reserva realizada exitosamente']);
+            exit();
+        } else {
+            // Redirect to user profile instead of confirmation page
+            header("Location: ../user_profile.php");
+            exit();
+        }
 
     } catch (Exception $e) {
         $conn->rollback();
-        $_SESSION['flash_message'] = [
-            'status' => 'error',
-            'text' => $e->getMessage()
-        ];
-        header("Location: ../reservar.php");
-        exit();
+        $error_msg = $e->getMessage();
+        if ($is_ajax) {
+            echo json_encode(['success' => false, 'message' => $error_msg]);
+            exit();
+        } else {
+            $_SESSION['flash_message'] = [
+                'status' => 'error',
+                'text' => $error_msg
+            ];
+            header("Location: ../reservar.php");
+            exit();
+        }
     }
 
     $conn->close();

@@ -379,13 +379,23 @@ if (!isset($_SESSION['user_id'])) {
 
             fetch('php/book.php', {
                 method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
                 body: formData
             })
-            .then(response => response.text())
+            .then(response => response.json())
             .then(data => {
-                window.location.href = 'confirmation.php';
+                if (data.success) {
+                    window.location.href = 'user_profile.php';
+                } else {
+                    alert('Error: ' + data.message);
+                }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al procesar la reserva. Inténtalo de nuevo.');
+            });
         }
     </script>
 

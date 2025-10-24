@@ -219,7 +219,12 @@ INSERT INTO `reservations` (`id`, `user_id`, `room_id`, `checkin_date`, `checkou
 (28, 1, 1, '2025-09-01', '2025-09-22', 'Salvatore', NULL, 'salvatoreberticci19@gmail.com', NULL, 0, 0, 0, 'pending'),
 (29, 1, 2, '2025-09-21', '2025-09-22', 'Salvatore', NULL, 'salvatoreberticci19@gmail.com', NULL, 0, 0, 0, 'pending'),
 (30, 2, 5, '2025-09-16', '2025-09-04', '', NULL, '', NULL, 0, 0, 0, 'confirmed'),
-(31, 4, 8, '2025-10-01', '2025-10-31', 'Salvatore', NULL, 'salvatoreberticci19@gmail.com', NULL, 0, 0, 0, 'pending');
+(31, 4, 8, '2025-10-01', '2025-10-31', 'Salvatore', NULL, 'salvatoreberticci19@gmail.com', NULL, 0, 0, 0, 'pending'),
+-- Sample reservations for testing (future dates)
+(32, 1, 1, '2025-11-01', '2025-11-05', 'Juan', 'Pérez', 'juan@example.com', '12345678', 2, 1, 0, 'pending'),
+(33, 1, 2, '2025-11-10', '2025-11-15', 'María', 'García', 'maria@example.com', '87654321', 1, 0, 1, 'confirmed'),
+(34, 2, 3, '2025-12-01', '2025-12-07', 'Carlos', 'Rodríguez', 'carlos@example.com', '11223344', 3, 2, 0, 'pending'),
+(35, 4, 4, '2025-12-15', '2025-12-20', 'Ana', 'López', 'ana@example.com', '44332211', 2, 0, 0, 'confirmed');
 
 -- --------------------------------------------------------
 
@@ -482,7 +487,7 @@ ALTER TABLE `maintenance_tasks`
 -- AUTO_INCREMENT de la tabla `reservations`
 --
 ALTER TABLE `reservations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT de la tabla `reviews`
