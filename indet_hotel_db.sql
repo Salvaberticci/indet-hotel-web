@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 24-10-2025 a las 22:28:21
+-- Tiempo de generación: 26-10-2025 a las 04:04:59
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -197,13 +197,21 @@ INSERT INTO `maintenance_tasks` (`id`, `room_id`, `assigned_to_user_id`, `task_d
 (10, 4, 3, 'Limpieza profunda de alfombras', 'completed', '2025-10-18 11:00:00', '2025-10-18 16:45:00'),
 (11, 5, 7, 'Revisión de aire acondicionado', 'pending', '2025-10-22 13:20:00', NULL),
 (12, 6, 3, 'Limpieza estándar de la habitación.', 'completed', '2025-10-23 07:30:00', '2025-10-23 09:15:00'),
-(13, 5, 3, 'Limpieza después del check-out', 'pending', '2025-09-04 04:30:00', NULL),
-(14, 2, 3, 'Limpieza después del check-out', 'pending', '2025-09-22 04:30:00', NULL),
+(13, 5, 3, 'Limpieza después del check-out', 'completed', '2025-09-04 04:30:00', '2025-10-26 02:52:23'),
+(14, 2, 3, 'Limpieza después del check-out', 'completed', '2025-09-22 04:30:00', '2025-10-26 02:52:26'),
 (15, 2, 7, 'Limpieza estándar - limpieza de habitación', 'pending', '2025-10-24 17:37:09', NULL),
 (16, 2, 3, 'Limpieza estándar - Limpieza', 'pending', '2025-10-24 17:37:46', NULL),
 (17, 2, 7, 'Limpieza estándar', 'pending', '2025-10-24 19:11:03', NULL),
 (18, 1, 3, 'Limpieza profunda', 'pending', '2025-10-24 19:11:23', NULL),
-(19, 2, 7, 'Limpieza estándar', 'completed', '2025-10-24 19:17:30', '2025-10-24 19:17:57');
+(19, 2, 7, 'Limpieza estándar', 'completed', '2025-10-24 19:17:30', '2025-10-24 19:17:57'),
+(20, 2, 3, 'Limpieza programada antes del check-in', 'pending', '2025-10-29 12:00:00', NULL),
+(21, 2, 3, 'Limpieza programada antes del check-in', 'pending', '2025-10-31 12:00:00', NULL),
+(22, 5, 3, 'Limpieza programada antes del check-in', 'pending', '2025-11-04 12:00:00', NULL),
+(23, 5, 3, 'Limpieza programada antes del check-in', 'pending', '2025-11-09 12:00:00', NULL),
+(24, 2, 3, 'Limpieza programada antes del check-in', 'pending', '2025-12-14 12:00:00', NULL),
+(25, 2, 3, 'Limpieza programada antes del check-in', 'pending', '2025-12-29 12:00:00', NULL),
+(26, 1, 7, 'limpiar', 'pending', '2025-10-26 02:51:03', NULL),
+(27, 1, 7, 'Limpieza de habitacion por salida', 'pending', '2025-10-26 02:56:13', NULL);
 
 -- --------------------------------------------------------
 
@@ -215,6 +223,7 @@ CREATE TABLE `reservations` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `room_id` int(11) NOT NULL,
+  `floor_id` int(11) DEFAULT NULL,
   `checkin_date` date NOT NULL,
   `checkout_date` date NOT NULL,
   `guest_name` varchar(255) NOT NULL,
@@ -233,29 +242,35 @@ CREATE TABLE `reservations` (
 -- Volcado de datos para la tabla `reservations`
 --
 
-INSERT INTO `reservations` (`id`, `user_id`, `room_id`, `checkin_date`, `checkout_date`, `guest_name`, `guest_lastname`, `guest_email`, `cedula`, `adultos`, `ninos`, `discapacitados`, `status`, `checkin_time`, `checkout_time`) VALUES
-(19, 1, 2, '2025-09-22', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 2, 0, 0, 'completed', NULL, NULL),
-(21, 1, 1, '2025-09-21', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'completed', NULL, NULL),
-(22, 1, 1, '2025-09-22', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'confirmed', NULL, NULL),
-(23, 1, 1, '2025-09-01', '2025-09-16', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'completed', NULL, NULL),
-(24, 1, 2, '2025-09-21', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 2, 0, 0, 'completed', NULL, NULL),
-(25, 1, 1, '2025-09-01', '2025-09-22', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'cancelled', NULL, NULL),
-(26, 1, 3, '2025-09-21', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 3, 0, 0, 'confirmed', NULL, NULL),
-(28, 1, 1, '2025-09-01', '2025-09-22', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'completed', NULL, NULL),
-(29, 1, 2, '2025-09-21', '2025-09-22', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 2, 0, 0, 'completed', NULL, NULL),
-(30, 2, 5, '2025-09-16', '2025-09-04', 'Admin', 'User', 'admin@indet.com', '12345', 1, 0, 0, 'completed', NULL, NULL),
-(31, 4, 8, '2025-10-01', '2025-10-31', 'Pedro', 'García', 'pedro@gmail.com', '44332211', 2, 1, 0, 'confirmed', NULL, NULL),
-(32, 5, 1, '2025-11-01', '2025-11-05', 'María', 'López', 'maria.lopez@example.com', '55667788', 2, 1, 0, 'confirmed', NULL, NULL),
-(33, 6, 2, '2025-11-10', '2025-11-15', 'Carlos', 'Rodríguez', 'carlos.rodriguez@example.com', '99887766', 1, 0, 1, 'confirmed', NULL, NULL),
-(34, 8, 3, '2025-12-01', '2025-12-07', 'Luis', 'Sánchez', 'luis.sanchez@example.com', '77889900', 3, 2, 0, 'confirmed', NULL, NULL),
-(35, 9, 4, '2025-12-15', '2025-12-20', 'Carmen', 'Díaz', 'carmen.diaz@example.com', '11224455', 2, 0, 0, 'confirmed', NULL, NULL),
-(36, 10, 5, '2025-10-25', '2025-10-28', 'José', 'Hernández', 'jose.hernandez@example.com', '66778899', 1, 0, 0, 'confirmed', NULL, NULL),
-(37, 5, 6, '2025-11-20', '2025-11-25', 'María', 'López', 'maria.lopez@example.com', '55667788', 2, 1, 0, 'confirmed', NULL, NULL),
-(38, 6, 7, '2025-12-10', '2025-12-15', 'Carlos', 'Rodríguez', 'carlos.rodriguez@example.com', '99887766', 3, 0, 0, 'confirmed', NULL, NULL),
-(39, 8, 8, '2025-11-05', '2025-11-10', 'Luis', 'Sánchez', 'luis.sanchez@example.com', '77889900', 2, 2, 0, 'confirmed', NULL, NULL),
-(40, 9, 9, '2025-10-30', '2025-11-02', 'Carmen', 'Díaz', 'carmen.diaz@example.com', '11224455', 1, 0, 1, 'confirmed', NULL, NULL),
-(41, 10, 10, '2025-12-20', '2025-12-25', 'José', 'Hernández', 'jose.hernandez@example.com', '66778899', 4, 1, 0, 'confirmed', NULL, NULL),
-(42, 11, 2, '2025-10-25', '2025-10-27', 'Axel', 'Axel', 'axel@gmail.com', '9313132', 2, 2, 0, 'confirmed', '2025-10-24 19:46:14', NULL);
+INSERT INTO `reservations` (`id`, `user_id`, `room_id`, `floor_id`, `checkin_date`, `checkout_date`, `guest_name`, `guest_lastname`, `guest_email`, `cedula`, `adultos`, `ninos`, `discapacitados`, `status`, `checkin_time`, `checkout_time`) VALUES
+(19, 1, 2, NULL, '2025-09-22', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 2, 0, 0, 'completed', NULL, NULL),
+(21, 1, 1, NULL, '2025-09-21', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'completed', NULL, NULL),
+(22, 1, 1, NULL, '2025-09-22', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'completed', NULL, NULL),
+(23, 1, 1, NULL, '2025-09-01', '2025-09-16', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'completed', NULL, NULL),
+(24, 1, 2, NULL, '2025-09-21', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 2, 0, 0, 'completed', NULL, NULL),
+(25, 1, 1, NULL, '2025-09-01', '2025-09-22', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'cancelled', NULL, NULL),
+(26, 1, 3, NULL, '2025-09-21', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 3, 0, 0, 'confirmed', NULL, NULL),
+(28, 1, 1, NULL, '2025-09-01', '2025-09-22', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'completed', NULL, NULL),
+(29, 1, 2, NULL, '2025-09-21', '2025-09-22', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 2, 0, 0, 'completed', NULL, NULL),
+(30, 2, 5, NULL, '2025-09-16', '2025-09-04', 'Admin', 'User', 'admin@indet.com', '12345', 1, 0, 0, 'completed', NULL, NULL),
+(31, 4, 8, NULL, '2025-10-01', '2025-10-31', 'Pedro', 'García', 'pedro@gmail.com', '44332211', 2, 1, 0, 'confirmed', NULL, NULL),
+(32, 5, 1, NULL, '2025-11-01', '2025-11-05', 'María', 'López', 'maria.lopez@example.com', '55667788', 2, 1, 0, 'confirmed', NULL, NULL),
+(33, 6, 2, NULL, '2025-11-10', '2025-11-15', 'Carlos', 'Rodríguez', 'carlos.rodriguez@example.com', '99887766', 1, 0, 1, 'confirmed', NULL, NULL),
+(34, 8, 3, NULL, '2025-12-01', '2025-12-07', 'Luis', 'Sánchez', 'luis.sanchez@example.com', '77889900', 3, 2, 0, 'confirmed', NULL, NULL),
+(35, 9, 4, NULL, '2025-12-15', '2025-12-20', 'Carmen', 'Díaz', 'carmen.diaz@example.com', '11224455', 2, 0, 0, 'confirmed', NULL, NULL),
+(36, 10, 5, NULL, '2025-10-25', '2025-10-28', 'José', 'Hernández', 'jose.hernandez@example.com', '66778899', 1, 0, 0, 'confirmed', NULL, NULL),
+(37, 5, 6, NULL, '2025-11-20', '2025-11-25', 'María', 'López', 'maria.lopez@example.com', '55667788', 2, 1, 0, 'confirmed', NULL, NULL),
+(38, 6, 7, NULL, '2025-12-10', '2025-12-15', 'Carlos', 'Rodríguez', 'carlos.rodriguez@example.com', '99887766', 3, 0, 0, 'confirmed', NULL, NULL),
+(39, 8, 8, NULL, '2025-11-05', '2025-11-10', 'Luis', 'Sánchez', 'luis.sanchez@example.com', '77889900', 2, 2, 0, 'confirmed', NULL, NULL),
+(40, 9, 9, NULL, '2025-10-30', '2025-11-02', 'Carmen', 'Díaz', 'carmen.diaz@example.com', '11224455', 1, 0, 1, 'confirmed', NULL, NULL),
+(41, 10, 10, NULL, '2025-12-20', '2025-12-25', 'José', 'Hernández', 'jose.hernandez@example.com', '66778899', 4, 1, 0, 'confirmed', NULL, NULL),
+(42, 11, 2, NULL, '2025-10-25', '2025-10-27', 'Axel', 'Axel', 'axel@gmail.com', '9313132', 2, 2, 0, 'confirmed', '2025-10-24 19:46:14', NULL),
+(43, 1, 2, NULL, '2025-10-30', '2025-10-31', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 2, 0, 0, 'pending', NULL, NULL),
+(44, 3, 2, NULL, '2025-11-01', '2025-11-07', 'Juan Perez', '', 'juanperez11@gmail.com', '11223344', 3, 0, 0, 'pending', NULL, NULL),
+(45, 3, 5, NULL, '2025-11-05', '2025-11-08', 'Juan Perez', '', 'juanperez11@gmail.com', '11223344', 2, 1, 0, 'pending', NULL, NULL),
+(46, 9, 5, NULL, '2025-11-10', '2025-11-20', 'Carmen Díaz', '', 'carmen.diaz@example.com', '11224455', 3, 0, 0, 'pending', NULL, NULL),
+(47, 11, 2, NULL, '2025-12-15', '2025-12-17', 'Axel', '', 'axel@gmail.com', '9313132', 2, 0, 0, 'pending', NULL, NULL),
+(48, 9, 2, NULL, '2025-12-30', '2026-02-04', 'Carmen Díaz', '', 'carmen.diaz@example.com', '11224455', 2, 2, 0, 'pending', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -467,7 +482,8 @@ ALTER TABLE `maintenance_tasks`
 ALTER TABLE `reservations`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_id` (`user_id`),
-  ADD KEY `room_id` (`room_id`);
+  ADD KEY `room_id` (`room_id`),
+  ADD KEY `fk_reservations_floor` (`floor_id`);
 
 --
 -- Indices de la tabla `reviews`
@@ -550,13 +566,13 @@ ALTER TABLE `hotel_info`
 -- AUTO_INCREMENT de la tabla `maintenance_tasks`
 --
 ALTER TABLE `maintenance_tasks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT de la tabla `reservations`
 --
 ALTER TABLE `reservations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 
 --
 -- AUTO_INCREMENT de la tabla `reviews`
@@ -608,6 +624,7 @@ ALTER TABLE `maintenance_tasks`
 -- Filtros para la tabla `reservations`
 --
 ALTER TABLE `reservations`
+  ADD CONSTRAINT `fk_reservations_floor` FOREIGN KEY (`floor_id`) REFERENCES `floors` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `reservations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
 
 --

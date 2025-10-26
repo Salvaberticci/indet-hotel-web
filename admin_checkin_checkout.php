@@ -341,15 +341,8 @@ $maintenance_users_result = $conn->query($maintenance_users_sql);
                     </div>
 
                     <div class="mb-4">
-                        <label for="task_type" class="block text-sm font-medium text-gray-200 mb-2">Tipo de Tarea:</label>
-                        <select name="task_type" id="task_type" required class="w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-blue-500 focus:border-blue-500">
-                            <option value="" class="bg-gray-700">Seleccionar tipo de tarea</option>
-                            <option value="Limpieza estándar" class="bg-gray-700">Limpieza estándar</option>
-                            <option value="Limpieza profunda" class="bg-gray-700">Limpieza profunda</option>
-                            <option value="Mantenimiento general" class="bg-gray-700">Mantenimiento general</option>
-                            <option value="Reparación" class="bg-gray-700">Reparación</option>
-                            <option value="Inspección" class="bg-gray-700">Inspección</option>
-                        </select>
+                        <label for="task_description" class="block text-sm font-medium text-gray-200 mb-2">Descripción de la Tarea:</label>
+                        <textarea name="task_description" id="task_description" rows="4" required class="w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-blue-500 focus:border-blue-500" placeholder="Describe la tarea de mantenimiento..."></textarea>
                     </div>
 
                     <div class="mb-4">
@@ -360,11 +353,6 @@ $maintenance_users_result = $conn->query($maintenance_users_sql);
                                 <option value="<?php echo $user['id']; ?>" class="bg-gray-700"><?php echo htmlspecialchars($user['name']); ?></option>
                             <?php endwhile; ?>
                         </select>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="task_description" class="block text-sm font-medium text-gray-200 mb-2">Descripción adicional (opcional):</label>
-                        <textarea name="task_description" id="task_description" rows="3" class="w-full p-2 border border-gray-600 rounded-md bg-gray-700 text-white focus:ring-blue-500 focus:border-blue-500" placeholder="Detalles específicos de la tarea..."></textarea>
                     </div>
 
                     <div class="flex justify-end space-x-2">

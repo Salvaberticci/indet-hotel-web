@@ -31,15 +31,8 @@ if (isset($_POST['create_task'])) {
 if (isset($_POST['create_checkout_task'])) {
     $reservation_id = $_POST['reservation_id'];
     $room_id = $_POST['room_id'];
-    $task_type = $_POST['task_type'];
+    $task_description = trim($_POST['task_description']);
     $assigned_to_user_id = $_POST['assigned_to_user_id'];
-    $additional_description = trim($_POST['task_description']);
-
-    // Build task description
-    $task_description = $task_type;
-    if (!empty($additional_description)) {
-        $task_description .= ' - ' . $additional_description;
-    }
 
     $conn->begin_transaction();
 

@@ -10,11 +10,11 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['user_role'], ['admin', 
 }
 
 // Fetch maintenance tasks
-$maintenance_sql = "SELECT mt.id, r.type as room_type, u.name as staff_name, mt.status, mt.created_at
+$maintenance_sql = "SELECT mt.id, r.type as room_type, u.name as staff_name, mt.task_description, mt.status, mt.created_at
                     FROM maintenance_tasks mt
                     JOIN rooms r ON mt.room_id = r.id
                     JOIN users u ON mt.assigned_to_user_id = u.id
-                    ORDER BY mt.created_at DESC";
+                    ORDER BY mt.created_at ASC";
 $maintenance_result = $conn->query($maintenance_sql);
 ?>
 <!DOCTYPE html>
@@ -100,7 +100,7 @@ $maintenance_result = $conn->query($maintenance_sql);
                     <select name="assigned_to_user_id" required class="p-2 border rounded bg-gray-600 text-white">
                         <option value="">Seleccionar Personal</option>
                         <?php
-                        $staff_sql = "SELECT id, name FROM users WHERE role IN ('admin', 'maintenance') ORDER BY name ASC";
+                        $staff_sql = "SELECT id, name FROM users WHERE role IN ('maintenance') ORDER BY name ASC";
                         $staff_result = $conn->query($staff_sql);
                         while($staff = $staff_result->fetch_assoc()): ?>
                             <option value="<?php echo $staff['id']; ?>"><?php echo htmlspecialchars($staff['name']); ?></option>
@@ -128,7 +128,7 @@ $maintenance_result = $conn->query($maintenance_sql);
                     <thead class="bg-gray-700 text-white">
                         <tr>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Habitación</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Tarea</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Descripción</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Asignado a</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Estado</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Fecha de Creación</th>
@@ -140,7 +140,7 @@ $maintenance_result = $conn->query($maintenance_sql);
                             <?php while($task = $maintenance_result->fetch_assoc()): ?>
                                 <tr class="hover:bg-gray-700 border-b border-gray-700 task-row" data-status="<?php echo $task['status']; ?>">
                                     <td class="py-3 px-4 text-center"><?php echo $task['room_type']; ?></td>
-                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($task['task_description'] ?? 'Limpieza estándar de la habitación.'); ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($task['task_description']); ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $task['staff_name']; ?></td>
                                     <td class="py-3 px-4 text-center">
                                         <?php

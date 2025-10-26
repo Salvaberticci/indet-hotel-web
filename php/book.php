@@ -6,8 +6,16 @@ include 'db.php';
 $is_ajax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $is_admin_reservation = isset($_POST['add_reservation_admin']) && $_POST['add_reservation_admin'] === 'true';
+
     // Validaciones básicas
-    $required_fields = ['cedula', 'guest_name', 'guest_lastname', 'guest_email', 'checkin', 'checkout', 'floor_id', 'room_capacity', 'selected_rooms'];
+    $required_fields = ['checkin', 'checkout', 'floor_id', 'room_capacity', 'selected_rooms'];
+    if ($is_admin_reservation) {
+        $required_fields[] = 'user_id';
+    } else {
+        $required_fields = array_merge($required_fields, ['cedula', 'guest_name', 'guest_lastname', 'guest_email']);
+    }
+
     foreach ($required_fields as $field) {
         if (!isset($_POST[$field]) || empty($_POST[$field])) {
             $error_msg = 'Por favor, complete todos los campos del formulario.';
@@ -19,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     'status' => 'error',
                     'text' => $error_msg
                 ];
-                header("Location: ../reservar.php");
+                header("Location: ../" . ($is_admin_reservation ? "admin_reservations.php" : "reservar.php"));
                 exit();
             }
         }
@@ -40,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 'status' => 'error',
                 'text' => $error_msg
             ];
-            header("Location: ../reservar.php");
+            header("Location: ../" . ($is_admin_reservation ? "admin_reservations.php" : "reservar.php"));
             exit();
         }
     }
@@ -55,15 +63,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 'status' => 'error',
                 'text' => $error_msg
             ];
-            header("Location: ../reservar.php");
+            header("Location: ../" . ($is_admin_reservation ? "admin_reservations.php" : "reservar.php"));
             exit();
         }
     }
 
-    $cedula = $_POST['cedula'];
-    $guest_name = $_POST['guest_name'];
-    $guest_lastname = $_POST['guest_lastname'];
-    $guest_email = $_POST['guest_email'];
     $floor_id = $_POST['floor_id'];
     $room_capacity = $_POST['room_capacity'];
     $selected_rooms = json_decode($_POST['selected_rooms'], true);
@@ -71,21 +75,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ninos = (int)$_POST['ninos'];
     $discapacitados = (int)$_POST['discapacitados'];
 
-    if (!isset($_SESSION['user_id'])) {
-        $error_msg = 'Debes iniciar sesión para realizar una reserva.';
-        if ($is_ajax) {
-            echo json_encode(['success' => false, 'message' => $error_msg]);
-            exit();
+    $user_id = null;
+    $cedula = null;
+    $guest_name = null;
+    $guest_lastname = null;
+    $guest_email = null;
+
+    if ($is_admin_reservation) {
+        $user_id = $_POST['user_id'];
+        // Fetch user details from DB
+        $user_sql = "SELECT cedula, name, lastname, email FROM users WHERE id = ?";
+        $stmt_user = $conn->prepare($user_sql);
+        $stmt_user->bind_param("i", $user_id);
+        $stmt_user->execute();
+        $user_result = $stmt_user->get_result();
+        if ($user_result->num_rows > 0) {
+            $user_data = $user_result->fetch_assoc();
+            $cedula = $user_data['cedula'];
+            $guest_name = $user_data['name'];
+            $guest_lastname = $user_data['lastname'];
+            $guest_email = $user_data['email'];
         } else {
-            $_SESSION['flash_message'] = [
-                'status' => 'error',
-                'text' => $error_msg
-            ];
-            header("Location: ../login.php");
-            exit();
+            $error_msg = 'Usuario seleccionado no encontrado.';
+            if ($is_ajax) {
+                echo json_encode(['success' => false, 'message' => $error_msg]);
+                exit();
+            } else {
+                $_SESSION['flash_message'] = [
+                    'status' => 'error',
+                    'text' => $error_msg
+                ];
+                header("Location: ../admin_reservations.php");
+                exit();
+            }
         }
+    } else {
+        if (!isset($_SESSION['user_id'])) {
+            $error_msg = 'Debes iniciar sesión para realizar una reserva.';
+            if ($is_ajax) {
+                echo json_encode(['success' => false, 'message' => $error_msg]);
+                exit();
+            } else {
+                $_SESSION['flash_message'] = [
+                    'status' => 'error',
+                    'text' => $error_msg
+                ];
+                header("Location: ../login.php");
+                exit();
+            }
+        }
+        $user_id = $_SESSION['user_id'];
+        $cedula = $_POST['cedula'];
+        $guest_name = $_POST['guest_name'];
+        $guest_lastname = $_POST['guest_lastname'];
+        $guest_email = $_POST['guest_email'];
     }
-    $user_id = $_SESSION['user_id'];
 
     // Verificar que las habitaciones seleccionadas estén disponibles
     $conn->begin_transaction();
@@ -144,7 +188,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             exit();
         } else {
             // Redirect to user profile instead of confirmation page
-            header("Location: ../user_profile.php");
+            header("Location: ../" . ($is_admin_reservation ? "admin_reservations.php" : "user_profile.php"));
             exit();
         }
 
@@ -159,7 +203,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 'status' => 'error',
                 'text' => $error_msg
             ];
-            header("Location: ../reservar.php");
+            header("Location: ../" . ($is_admin_reservation ? "admin_reservations.php" : "reservar.php"));
             exit();
         }
     }
