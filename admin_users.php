@@ -78,15 +78,21 @@ $users_result = $conn->query($users_sql);
             <h2 class="text-2xl font-bold mb-6">Gestionar Usuarios</h2>
 
             <!-- Add User Form -->
-            <form action="php/user_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg">
+            <form action="php/user_handler.php" method="POST" class="mb-8 p-4 bg-gray-700 rounded-lg" id="addUserForm">
                 <h3 class="text-xl font-semibold mb-4">Agregar Nuevo Usuario</h3>
                 <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
-                    <input type="text" name="name" placeholder="Nombre" required class="p-2 border rounded bg-gray-600 text-white">
+                    <div>
+                        <input type="text" name="name" placeholder="Nombre" required class="p-2 border rounded bg-gray-600 text-white w-full">
+                        <span id="addNameError" class="text-red-500 text-sm hidden">Solo letras y espacios.</span>
+                    </div>
                     <select name="cedula_type" required class="p-2 border rounded bg-gray-600 text-white">
                         <option value="V">V - Venezolano</option>
                         <option value="E">E - Extranjero</option>
                     </select>
-                    <input type="text" name="cedula" placeholder="Cédula" required class="p-2 border rounded bg-gray-600 text-white">
+                    <div>
+                        <input type="text" name="cedula" placeholder="Cédula" required class="p-2 border rounded bg-gray-600 text-white w-full">
+                        <span id="addCedulaError" class="text-red-500 text-sm hidden">Solo números.</span>
+                    </div>
                     <input type="email" name="email" placeholder="Email" required class="p-2 border rounded bg-gray-600 text-white">
                     <input type="password" name="password" placeholder="Contraseña" required class="p-2 border rounded bg-gray-600 text-white">
                     <select name="role" required class="p-2 border rounded bg-gray-600 text-white">
@@ -158,11 +164,12 @@ $users_result = $conn->query($users_sql);
     <div id="editUserModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
         <div class="bg-gray-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-md">
             <h2 class="text-2xl font-bold mb-6">Editar Usuario</h2>
-            <form action="php/user_handler.php" method="POST">
+            <form action="php/user_handler.php" method="POST" id="editUserForm">
                 <input type="hidden" id="editUserId" name="id">
                 <div class="mb-4">
                     <label for="editUserName" class="block font-semibold mb-2">Nombre</label>
                     <input type="text" id="editUserName" name="name" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                    <span id="editNameError" class="text-red-500 text-sm hidden">Solo letras y espacios.</span>
                 </div>
                 <div class="mb-4">
                     <label for="editUserCedulaType" class="block font-semibold mb-2">Tipo de Cédula</label>
@@ -174,6 +181,7 @@ $users_result = $conn->query($users_sql);
                 <div class="mb-4">
                     <label for="editUserCedula" class="block font-semibold mb-2">Cédula</label>
                     <input type="text" id="editUserCedula" name="cedula" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                    <span id="editCedulaError" class="text-red-500 text-sm hidden">Solo números.</span>
                 </div>
                 <div class="mb-4">
                     <label for="editUserEmail" class="block font-semibold mb-2">Email</label>
@@ -268,6 +276,106 @@ $users_result = $conn->query($users_sql);
         function closeEditUserModal() {
             document.getElementById('editUserModal').classList.add('hidden');
         }
+
+        // Validation for add user form
+        document.getElementById('addUserForm').addEventListener('submit', function(e) {
+            const name = document.querySelector('input[name="name"]').value.trim();
+            const cedula = document.querySelector('input[name="cedula"]').value.trim();
+            let isValid = true;
+
+            // Validate name
+            const nameRegex = /^[a-zA-Z\s]+$/;
+            if (!nameRegex.test(name)) {
+                document.getElementById('addNameError').classList.remove('hidden');
+                isValid = false;
+            } else {
+                document.getElementById('addNameError').classList.add('hidden');
+            }
+
+            // Validate cedula
+            const cedulaRegex = /^[0-9]+$/;
+            if (!cedulaRegex.test(cedula)) {
+                document.getElementById('addCedulaError').classList.remove('hidden');
+                isValid = false;
+            } else {
+                document.getElementById('addCedulaError').classList.add('hidden');
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+
+        // Real-time validation for add user form
+        document.querySelector('input[name="name"]').addEventListener('input', function() {
+            const name = this.value.trim();
+            const nameRegex = /^[a-zA-Z\s]*$/;
+            if (!nameRegex.test(name)) {
+                document.getElementById('addNameError').classList.remove('hidden');
+            } else {
+                document.getElementById('addNameError').classList.add('hidden');
+            }
+        });
+
+        document.querySelector('input[name="cedula"]').addEventListener('input', function() {
+            const cedula = this.value.trim();
+            const cedulaRegex = /^[0-9]*$/;
+            if (!cedulaRegex.test(cedula)) {
+                document.getElementById('addCedulaError').classList.remove('hidden');
+            } else {
+                document.getElementById('addCedulaError').classList.add('hidden');
+            }
+        });
+
+        // Validation for edit user form
+        document.getElementById('editUserForm').addEventListener('submit', function(e) {
+            const name = document.getElementById('editUserName').value.trim();
+            const cedula = document.getElementById('editUserCedula').value.trim();
+            let isValid = true;
+
+            // Validate name
+            const nameRegex = /^[a-zA-Z\s]+$/;
+            if (!nameRegex.test(name)) {
+                document.getElementById('editNameError').classList.remove('hidden');
+                isValid = false;
+            } else {
+                document.getElementById('editNameError').classList.add('hidden');
+            }
+
+            // Validate cedula
+            const cedulaRegex = /^[0-9]+$/;
+            if (!cedulaRegex.test(cedula)) {
+                document.getElementById('editCedulaError').classList.remove('hidden');
+                isValid = false;
+            } else {
+                document.getElementById('editCedulaError').classList.add('hidden');
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+
+        // Real-time validation for edit user form
+        document.getElementById('editUserName').addEventListener('input', function() {
+            const name = this.value.trim();
+            const nameRegex = /^[a-zA-Z\s]*$/;
+            if (!nameRegex.test(name)) {
+                document.getElementById('editNameError').classList.remove('hidden');
+            } else {
+                document.getElementById('editNameError').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('editUserCedula').addEventListener('input', function() {
+            const cedula = this.value.trim();
+            const cedulaRegex = /^[0-9]*$/;
+            if (!cedulaRegex.test(cedula)) {
+                document.getElementById('editCedulaError').classList.remove('hidden');
+            } else {
+                document.getElementById('editCedulaError').classList.add('hidden');
+            }
+        });
     </script>
 </body>
 </html>

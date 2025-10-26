@@ -10,12 +10,26 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 
 // Add User
 if (isset($_POST['add_user'])) {
-    $name = $_POST['name'];
+    $name = trim($_POST['name']);
     $cedula_type = $_POST['cedula_type'];
-    $cedula = $_POST['cedula'];
-    $email = $_POST['email'];
+    $cedula = trim($_POST['cedula']);
+    $email = trim($_POST['email']);
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $role = $_POST['role'];
+
+    // Validate name: only letters and spaces
+    if (!preg_match("/^[a-zA-Z\s]+$/", $name)) {
+        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'El nombre solo puede contener letras y espacios.'];
+        header("Location: ../admin_users.php");
+        exit();
+    }
+
+    // Validate cedula: only numbers
+    if (!preg_match("/^[0-9]+$/", $cedula)) {
+        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'La cédula solo puede contener números.'];
+        header("Location: ../admin_users.php");
+        exit();
+    }
 
     // Check if email already exists
     $check_sql = "SELECT id FROM users WHERE email = ?";
@@ -43,11 +57,25 @@ if (isset($_POST['add_user'])) {
 // Update User
 if (isset($_POST['update_user'])) {
     $id = $_POST['id'];
-    $name = $_POST['name'];
+    $name = trim($_POST['name']);
     $cedula_type = $_POST['cedula_type'];
-    $cedula = $_POST['cedula'];
-    $email = $_POST['email'];
+    $cedula = trim($_POST['cedula']);
+    $email = trim($_POST['email']);
     $role = $_POST['role'];
+
+    // Validate name: only letters and spaces
+    if (!preg_match("/^[a-zA-Z\s]+$/", $name)) {
+        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'El nombre solo puede contener letras y espacios.'];
+        header("Location: ../admin_users.php");
+        exit();
+    }
+
+    // Validate cedula: only numbers
+    if (!preg_match("/^[0-9]+$/", $cedula)) {
+        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'La cédula solo puede contener números.'];
+        header("Location: ../admin_users.php");
+        exit();
+    }
 
     // Prevent admin from changing their own role to non-admin
     if ($id == $_SESSION['user_id'] && $role != 'admin') {

@@ -72,7 +72,7 @@ $comments_result = $conn->query($comments_sql);
                     <a href="#footer" class="nav-button">Contactos</a>
                 </div>
                 <div class="flex items-center space-x-4 justify-self-end">
-                    <?php if (isset($_SESSION['user_id'])): ?>
+                    <?php if (isset($_SESSION['user_id']) && isset($_SESSION['user_name'])): ?>
                         <div class="flex flex-col items-center space-y-2">
                             <?php if ($_SESSION['user_role'] == 'admin'): ?>
                                 <a href="admin.php" class="login-button">

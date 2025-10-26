@@ -3,11 +3,31 @@ session_start();
 include 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = $_POST['name'];
+    $name = trim($_POST['name']);
     $cedula_type = $_POST['cedula_type'];
-    $cedula = $_POST['cedula'];
-    $email = $_POST['email'];
+    $cedula = trim($_POST['cedula']);
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
+
+    // Validate name: only letters and spaces
+    if (!preg_match("/^[a-zA-Z\s]+$/", $name)) {
+        $_SESSION['flash_message'] = [
+            'status' => 'error',
+            'text' => 'El nombre solo puede contener letras y espacios.'
+        ];
+        header("Location: ../register.php");
+        exit();
+    }
+
+    // Validate cedula: only numbers
+    if (!preg_match("/^[0-9]+$/", $cedula)) {
+        $_SESSION['flash_message'] = [
+            'status' => 'error',
+            'text' => 'La cédula solo puede contener números.'
+        ];
+        header("Location: ../register.php");
+        exit();
+    }
 
     // Hash the password for security
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
@@ -24,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 'text' => '¡Registro exitoso! Ahora puedes iniciar sesión.'
             ];
 
-            // Redirect to the login page to show the message
+            // Redirect to the login page to show the message without logging in
             header("Location: ../login.php");
             exit();
         }

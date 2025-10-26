@@ -54,19 +54,19 @@ session_start();
                 <a href="index.php#footer" class="nav-button">Contactos</a>
             </div>
              <div class="flex items-center space-x-4">
-                <?php if (isset($_SESSION['user_id'])): ?>
-                    <span class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
-                    <a href="php/logout.php" class="login-button">
-                        <span>Logout</span>
-                        <i class="fas fa-sign-out-alt"></i>
-                    </a>
-                <?php else: ?>
-                    <a href="index.php" class="login-button">
-                        <span>Inicio</span>
-                        <i class="fas fa-home"></i>
-                    </a>
-                <?php endif; ?>
-            </div>
+               <?php if (isset($_SESSION['user_id']) && isset($_SESSION['user_name'])): ?>
+                   <span class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                   <a href="php/logout.php" class="login-button">
+                       <span>Logout</span>
+                       <i class="fas fa-sign-out-alt"></i>
+                   </a>
+               <?php else: ?>
+                   <a href="index.php" class="login-button">
+                       <span>Inicio</span>
+                       <i class="fas fa-home"></i>
+                   </a>
+               <?php endif; ?>
+           </div>
         </div>
     </nav>
 
