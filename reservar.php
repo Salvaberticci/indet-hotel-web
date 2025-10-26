@@ -291,6 +291,7 @@ if (!isset($_SESSION['user_id'])) {
                     <p>Tipo: ${room.type}</p>
                     <p>Capacidad: ${room.capacity}</p>
                     <p>Piso: ${room.floor_name}</p>
+                    <p>Descripción: ${room.description}</p>
                     <button type="button" onclick="selectRoom(${room.id}, '${room.type}', ${room.capacity})" class="bg-blue-500 text-white px-4 py-2 rounded mt-2">Seleccionar</button>
                 `;
                 container.appendChild(roomDiv);
