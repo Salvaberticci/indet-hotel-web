@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-10-2025 a las 04:04:59
+-- Tiempo de generación: 27-10-2025 a las 04:31:07
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -243,34 +243,9 @@ CREATE TABLE `reservations` (
 --
 
 INSERT INTO `reservations` (`id`, `user_id`, `room_id`, `floor_id`, `checkin_date`, `checkout_date`, `guest_name`, `guest_lastname`, `guest_email`, `cedula`, `adultos`, `ninos`, `discapacitados`, `status`, `checkin_time`, `checkout_time`) VALUES
-(19, 1, 2, NULL, '2025-09-22', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 2, 0, 0, 'completed', NULL, NULL),
-(21, 1, 1, NULL, '2025-09-21', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'completed', NULL, NULL),
-(22, 1, 1, NULL, '2025-09-22', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'completed', NULL, NULL),
-(23, 1, 1, NULL, '2025-09-01', '2025-09-16', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'completed', NULL, NULL),
-(24, 1, 2, NULL, '2025-09-21', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 2, 0, 0, 'completed', NULL, NULL),
-(25, 1, 1, NULL, '2025-09-01', '2025-09-22', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'cancelled', NULL, NULL),
 (26, 1, 3, NULL, '2025-09-21', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 3, 0, 0, 'confirmed', NULL, NULL),
-(28, 1, 1, NULL, '2025-09-01', '2025-09-22', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 1, 0, 0, 'completed', NULL, NULL),
-(29, 1, 2, NULL, '2025-09-21', '2025-09-22', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 2, 0, 0, 'completed', NULL, NULL),
-(30, 2, 5, NULL, '2025-09-16', '2025-09-04', 'Admin', 'User', 'admin@indet.com', '12345', 1, 0, 0, 'completed', NULL, NULL),
 (31, 4, 8, NULL, '2025-10-01', '2025-10-31', 'Pedro', 'García', 'pedro@gmail.com', '44332211', 2, 1, 0, 'confirmed', NULL, NULL),
-(32, 5, 1, NULL, '2025-11-01', '2025-11-05', 'María', 'López', 'maria.lopez@example.com', '55667788', 2, 1, 0, 'confirmed', NULL, NULL),
-(33, 6, 2, NULL, '2025-11-10', '2025-11-15', 'Carlos', 'Rodríguez', 'carlos.rodriguez@example.com', '99887766', 1, 0, 1, 'confirmed', NULL, NULL),
-(34, 8, 3, NULL, '2025-12-01', '2025-12-07', 'Luis', 'Sánchez', 'luis.sanchez@example.com', '77889900', 3, 2, 0, 'confirmed', NULL, NULL),
-(35, 9, 4, NULL, '2025-12-15', '2025-12-20', 'Carmen', 'Díaz', 'carmen.diaz@example.com', '11224455', 2, 0, 0, 'confirmed', NULL, NULL),
-(36, 10, 5, NULL, '2025-10-25', '2025-10-28', 'José', 'Hernández', 'jose.hernandez@example.com', '66778899', 1, 0, 0, 'confirmed', NULL, NULL),
-(37, 5, 6, NULL, '2025-11-20', '2025-11-25', 'María', 'López', 'maria.lopez@example.com', '55667788', 2, 1, 0, 'confirmed', NULL, NULL),
-(38, 6, 7, NULL, '2025-12-10', '2025-12-15', 'Carlos', 'Rodríguez', 'carlos.rodriguez@example.com', '99887766', 3, 0, 0, 'confirmed', NULL, NULL),
-(39, 8, 8, NULL, '2025-11-05', '2025-11-10', 'Luis', 'Sánchez', 'luis.sanchez@example.com', '77889900', 2, 2, 0, 'confirmed', NULL, NULL),
-(40, 9, 9, NULL, '2025-10-30', '2025-11-02', 'Carmen', 'Díaz', 'carmen.diaz@example.com', '11224455', 1, 0, 1, 'confirmed', NULL, NULL),
-(41, 10, 10, NULL, '2025-12-20', '2025-12-25', 'José', 'Hernández', 'jose.hernandez@example.com', '66778899', 4, 1, 0, 'confirmed', NULL, NULL),
-(42, 11, 2, NULL, '2025-10-25', '2025-10-27', 'Axel', 'Axel', 'axel@gmail.com', '9313132', 2, 2, 0, 'confirmed', '2025-10-24 19:46:14', NULL),
-(43, 1, 2, NULL, '2025-10-30', '2025-10-31', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 2, 0, 0, 'pending', NULL, NULL),
-(44, 3, 2, NULL, '2025-11-01', '2025-11-07', 'Juan Perez', '', 'juanperez11@gmail.com', '11223344', 3, 0, 0, 'pending', NULL, NULL),
-(45, 3, 5, NULL, '2025-11-05', '2025-11-08', 'Juan Perez', '', 'juanperez11@gmail.com', '11223344', 2, 1, 0, 'pending', NULL, NULL),
-(46, 9, 5, NULL, '2025-11-10', '2025-11-20', 'Carmen Díaz', '', 'carmen.diaz@example.com', '11224455', 3, 0, 0, 'pending', NULL, NULL),
-(47, 11, 2, NULL, '2025-12-15', '2025-12-17', 'Axel', '', 'axel@gmail.com', '9313132', 2, 0, 0, 'pending', NULL, NULL),
-(48, 9, 2, NULL, '2025-12-30', '2026-02-04', 'Carmen Díaz', '', 'carmen.diaz@example.com', '11224455', 2, 2, 0, 'pending', NULL, NULL);
+(32, 5, 1, NULL, '2025-11-01', '2025-11-05', 'María', 'López', 'maria.lopez@example.com', '55667788', 2, 1, 0, 'confirmed', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -314,6 +289,7 @@ CREATE TABLE `rooms` (
   `description` text NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `photos` text NOT NULL,
+  `videos` text DEFAULT '[]',
   `floor` int(11) NOT NULL,
   `floor_id` int(11) NOT NULL,
   `status` enum('enabled','disabled') NOT NULL DEFAULT 'enabled'
@@ -323,17 +299,18 @@ CREATE TABLE `rooms` (
 -- Volcado de datos para la tabla `rooms`
 --
 
-INSERT INTO `rooms` (`id`, `type`, `capacity`, `description`, `price`, `photos`, `floor`, `floor_id`, `status`) VALUES
-('001', 'Habitación 3 literas', 3, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', 1, 1, 'enabled'),
-('002', 'Habitación 7 literas', 7, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', 2, 2, 'enabled'),
-('003', 'Habitación 8 literas', 8, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', 3, 3, 'enabled'),
-('004', 'Habitación 3 literas', 3, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', 1, 1, 'enabled'),
-('005', 'Habitación 7 literas', 7, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', 2, 2, 'enabled'),
-('006', 'Habitación 8 literas', 8, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', 3, 3, 'enabled'),
-('007', 'Habitación 3 literas', 3, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', 1, 1, 'enabled'),
-('008', 'Habitación 7 literas', 7, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', 2, 2, 'enabled'),
-('009', 'Habitación 8 literas', 8, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', 3, 3, 'enabled'),
-('010', 'Habitación 3 literas', 3, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', 1, 1, 'enabled');
+INSERT INTO `rooms` (`id`, `type`, `capacity`, `description`, `price`, `photos`, `videos`, `floor`, `floor_id`, `status`) VALUES
+('001', 'Habitación 3 literas', 3, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 1, 1, 'enabled'),
+('002', 'Habitación 7 literas', 7, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('003', 'Habitación 8 literas', 8, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('004', 'Habitación 3 literas', 3, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 1, 1, 'enabled'),
+('005', 'Habitación 7 literas', 7, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('006', 'Habitación 8 literas', 8, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('007', 'Habitación 3 literas', 3, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 1, 1, 'enabled'),
+('008', 'Habitación 7 literas', 7, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('009', 'Habitación 8 literas', 8, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('010', 'Habitación 3 literas', 3, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 1, 1, 'enabled'),
+('123', 'individual', 1, '0', 0.00, '[\"imagen_2025-09-17_114550633.png\"]', '[]', 0, 2, 'enabled');
 
 -- --------------------------------------------------------
 
@@ -360,7 +337,10 @@ INSERT INTO `room_inventory` (`id`, `room_id`, `item_name`, `quantity`, `descrip
 (3, '001', 'Toallas', 6, 'Toallas de baño', '2025-10-21 05:41:19'),
 (4, '002', 'Almohadas', 7, 'Almohadas para habitación', '2025-10-21 05:41:19'),
 (5, '002', 'Sábanas', 7, 'Sábanas para literas', '2025-10-21 05:41:19'),
-(6, '002', 'Toallas', 14, 'Toallas de baño', '2025-10-21 05:41:19');
+(6, '002', 'Toallas', 14, 'Toallas de baño', '2025-10-21 05:41:19'),
+(7, '123', 'Almohadas', 1, 'Almohadas para habitación', '2025-10-27 03:04:28'),
+(8, '123', 'Sábanas', 1, 'Sábanas para literas', '2025-10-27 03:04:28'),
+(9, '123', 'Toallas', 2, 'Toallas de baño', '2025-10-27 03:04:28');
 
 -- --------------------------------------------------------
 
@@ -423,7 +403,10 @@ INSERT INTO `users` (`id`, `name`, `email`, `cedula`, `cedula_type`, `password`,
 (8, 'Luis Sánchez', 'luis.sanchez@example.com', '77889900', 'V', '$2y$10$sample.hash.for.luis', 'client', 1),
 (9, 'Carmen Díaz', 'carmen.diaz@example.com', '11224455', 'V', '$2y$10$sample.hash.for.carmen', 'client', 1),
 (10, 'José Hernández', 'jose.hernandez@example.com', '66778899', 'V', '$2y$10$sample.hash.for.jose', 'client', 1),
-(11, 'Axel', 'axel@gmail.com', '9313132', 'E', '$2y$10$ZJgto6EfLFRmR6YcgRpqKu0xLfBTm9rrkc9l0lrmD/BUdRj3x9eDu', 'client', 1);
+(11, 'Axel', 'axel@gmail.com', '9313132', 'E', '$2y$10$ZJgto6EfLFRmR6YcgRpqKu0xLfBTm9rrkc9l0lrmD/BUdRj3x9eDu', 'client', 1),
+(12, 'Mariana', 'mariana@gmail.com', '0934243', 'V', '$2y$10$YXSyypZCElK0uP/ZX1BHCe4gVGBvP.ODL16bRFpn3I2qOKvNpIxL6', '', 1),
+(13, 'ricardo briceno', 'ricardo@gmail.com', '11122223333', 'V', '$2y$10$xEYsW1RvjLE656benEiKJ.5fi7B/AS7ZTzPCi.JpPU90C/TbI4gFq', 'client', 1),
+(14, 'Goku', 'goku@gmail.com', '09090909', 'E', '$2y$10$3udPCbYm8JR0aAyDja8SNOOJDW68EgIRHSF8CPtkhRujjE4WsUHga', 'client', 1);
 
 --
 -- Índices para tablas volcadas
@@ -584,7 +567,7 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT de la tabla `room_inventory`
 --
 ALTER TABLE `room_inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `room_status`
@@ -596,7 +579,7 @@ ALTER TABLE `room_status`
 -- AUTO_INCREMENT de la tabla `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Restricciones para tablas volcadas
