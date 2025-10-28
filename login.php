@@ -74,10 +74,19 @@ session_start();
     <main class="relative z-30 flex items-center justify-center min-h-screen">
         <div class="bg-white text-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-md" data-aos="fade-up">
             <h2 class="text-3xl font-bold mb-6 text-center">Iniciar Sesión</h2>
-            <form action="php/login_handler.php" method="POST">
+            <form action="php/login_handler.php" method="POST" id="loginForm">
                 <div class="mb-4">
-                    <label for="cedula" class="block font-semibold mb-2">Cédula</label>
+                    <label for="cedula_type" class="block font-semibold mb-2">Tipo de Cédula</label>
+                    <select id="cedula_type" name="cedula_type" required class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="">Seleccione un tipo</option>
+                        <option value="V">Cédula Venezolana</option>
+                        <option value="E">Cédula Extranjera</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="cedula" class="block font-semibold mb-2">Número de Cédula</label>
                     <input type="text" id="cedula" name="cedula" required class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <span id="cedulaError" class="text-red-500 text-sm hidden">El número de cédula solo puede contener números.</span>
                 </div>
                 <div class="mb-4">
                     <label for="email" class="block font-semibold mb-2">Correo Electrónico</label>
@@ -106,5 +115,35 @@ session_start();
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="js/main.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const cedula = document.getElementById('cedula').value.trim();
+            let isValid = true;
+
+            // Validate cedula: only numbers
+            const cedulaRegex = /^[0-9]+$/;
+            if (!cedulaRegex.test(cedula)) {
+                document.getElementById('cedulaError').classList.remove('hidden');
+                isValid = false;
+            } else {
+                document.getElementById('cedulaError').classList.add('hidden');
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+
+        // Real-time validation for cedula
+        document.getElementById('cedula').addEventListener('input', function() {
+            const cedula = this.value.trim();
+            const cedulaRegex = /^[0-9]*$/;
+            if (!cedulaRegex.test(cedula)) {
+                document.getElementById('cedulaError').classList.remove('hidden');
+            } else {
+                document.getElementById('cedulaError').classList.add('hidden');
+            }
+        });
+    </script>
 </body>
 </html>

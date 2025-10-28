@@ -3,13 +3,24 @@ session_start();
 include 'db.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $cedula = $_POST['cedula'];
-    $email = $_POST['email'];
+    $cedula_type = $_POST['cedula_type'];
+    $cedula = trim($_POST['cedula']);
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
 
-    $sql = "SELECT id, name, password, role, is_verified FROM users WHERE email = ? AND cedula = ?";
+    // Validate cedula: only numbers
+    if (!preg_match("/^[0-9]+$/", $cedula)) {
+        $_SESSION['flash_message'] = [
+            'status' => 'error',
+            'text' => 'El número de cédula solo puede contener números.'
+        ];
+        header("Location: ../login.php");
+        exit();
+    }
+
+    $sql = "SELECT id, name, password, role, is_verified FROM users WHERE email = ? AND cedula = ? AND cedula_type = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $email, $cedula);
+    $stmt->bind_param("sss", $email, $cedula, $cedula_type);
     $stmt->execute();
     $result = $stmt->get_result();
 
