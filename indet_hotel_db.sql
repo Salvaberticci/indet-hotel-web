@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 27-10-2025 a las 04:31:07
+-- Tiempo de generación: 28-10-2025 a las 18:09:23
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -211,7 +211,8 @@ INSERT INTO `maintenance_tasks` (`id`, `room_id`, `assigned_to_user_id`, `task_d
 (24, 2, 3, 'Limpieza programada antes del check-in', 'pending', '2025-12-14 12:00:00', NULL),
 (25, 2, 3, 'Limpieza programada antes del check-in', 'pending', '2025-12-29 12:00:00', NULL),
 (26, 1, 7, 'limpiar', 'pending', '2025-10-26 02:51:03', NULL),
-(27, 1, 7, 'Limpieza de habitacion por salida', 'pending', '2025-10-26 02:56:13', NULL);
+(27, 1, 7, 'Limpieza de habitacion por salida', 'pending', '2025-10-26 02:56:13', NULL),
+(28, 104, 3, 'Limpieza programada antes del check-in', 'pending', '2025-10-28 12:00:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -243,9 +244,7 @@ CREATE TABLE `reservations` (
 --
 
 INSERT INTO `reservations` (`id`, `user_id`, `room_id`, `floor_id`, `checkin_date`, `checkout_date`, `guest_name`, `guest_lastname`, `guest_email`, `cedula`, `adultos`, `ninos`, `discapacitados`, `status`, `checkin_time`, `checkout_time`) VALUES
-(26, 1, 3, NULL, '2025-09-21', '2025-09-30', 'Salvatore', 'Berticci', 'salvatoreberticci19@gmail.com', '12345678', 3, 0, 0, 'confirmed', NULL, NULL),
-(31, 4, 8, NULL, '2025-10-01', '2025-10-31', 'Pedro', 'García', 'pedro@gmail.com', '44332211', 2, 1, 0, 'confirmed', NULL, NULL),
-(32, 5, 1, NULL, '2025-11-01', '2025-11-05', 'María', 'López', 'maria.lopez@example.com', '55667788', 2, 1, 0, 'confirmed', NULL, NULL);
+(49, 14, 104, NULL, '2025-10-29', '2025-11-01', 'Goku', '', 'goku@gmail.com', '09090909', 2, 3, 2, 'pending', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -300,17 +299,42 @@ CREATE TABLE `rooms` (
 --
 
 INSERT INTO `rooms` (`id`, `type`, `capacity`, `description`, `price`, `photos`, `videos`, `floor`, `floor_id`, `status`) VALUES
-('001', 'Habitación 3 literas', 3, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 1, 1, 'enabled'),
-('002', 'Habitación 7 literas', 7, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
-('003', 'Habitación 8 literas', 8, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
-('004', 'Habitación 3 literas', 3, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 1, 1, 'enabled'),
-('005', 'Habitación 7 literas', 7, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
-('006', 'Habitación 8 literas', 8, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
-('007', 'Habitación 3 literas', 3, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 1, 1, 'enabled'),
-('008', 'Habitación 7 literas', 7, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
-('009', 'Habitación 8 literas', 8, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
-('010', 'Habitación 3 literas', 3, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 1, 1, 'enabled'),
-('123', 'individual', 1, '0', 0.00, '[\"imagen_2025-09-17_114550633.png\"]', '[]', 0, 2, 'enabled');
+('101', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('102', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('103', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('104', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('105', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('106', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('107', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('108', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('109', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('201', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('202', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('203', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('204', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('205', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('206', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('207', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('208', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('209', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('301', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('302', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('303', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('304', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('305', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('306', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('307', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('308', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('309', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('401', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
+('402', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
+('403', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
+('404', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
+('405', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
+('406', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
+('407', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
+('408', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
+('409', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled');
 
 -- --------------------------------------------------------
 
@@ -340,7 +364,115 @@ INSERT INTO `room_inventory` (`id`, `room_id`, `item_name`, `quantity`, `descrip
 (6, '002', 'Toallas', 14, 'Toallas de baño', '2025-10-21 05:41:19'),
 (7, '123', 'Almohadas', 1, 'Almohadas para habitación', '2025-10-27 03:04:28'),
 (8, '123', 'Sábanas', 1, 'Sábanas para literas', '2025-10-27 03:04:28'),
-(9, '123', 'Toallas', 2, 'Toallas de baño', '2025-10-27 03:04:28');
+(9, '123', 'Toallas', 2, 'Toallas de baño', '2025-10-27 03:04:28'),
+(118, '101', 'Almohadas', 6, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(119, '101', 'Sábanas', 6, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(120, '101', 'Toallas', 12, 'Toallas de baño', '2025-10-28 16:55:01'),
+(121, '102', 'Almohadas', 6, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(122, '102', 'Sábanas', 6, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(123, '102', 'Toallas', 12, 'Toallas de baño', '2025-10-28 16:55:01'),
+(124, '103', 'Almohadas', 6, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(125, '103', 'Sábanas', 6, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(126, '103', 'Toallas', 12, 'Toallas de baño', '2025-10-28 16:55:01'),
+(127, '104', 'Almohadas', 14, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(128, '104', 'Sábanas', 14, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(129, '104', 'Toallas', 28, 'Toallas de baño', '2025-10-28 16:55:01'),
+(130, '105', 'Almohadas', 14, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(131, '105', 'Sábanas', 14, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(132, '105', 'Toallas', 28, 'Toallas de baño', '2025-10-28 16:55:01'),
+(133, '106', 'Almohadas', 14, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(134, '106', 'Sábanas', 14, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(135, '106', 'Toallas', 28, 'Toallas de baño', '2025-10-28 16:55:01'),
+(136, '107', 'Almohadas', 16, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(137, '107', 'Sábanas', 16, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(138, '107', 'Toallas', 32, 'Toallas de baño', '2025-10-28 16:55:01'),
+(139, '108', 'Almohadas', 16, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(140, '108', 'Sábanas', 16, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(141, '108', 'Toallas', 32, 'Toallas de baño', '2025-10-28 16:55:01'),
+(142, '109', 'Almohadas', 16, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(143, '109', 'Sábanas', 16, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(144, '109', 'Toallas', 32, 'Toallas de baño', '2025-10-28 16:55:01'),
+(145, '201', 'Almohadas', 6, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(146, '201', 'Sábanas', 6, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(147, '201', 'Toallas', 12, 'Toallas de baño', '2025-10-28 16:55:01'),
+(148, '202', 'Almohadas', 6, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(149, '202', 'Sábanas', 6, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(150, '202', 'Toallas', 12, 'Toallas de baño', '2025-10-28 16:55:01'),
+(151, '203', 'Almohadas', 6, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(152, '203', 'Sábanas', 6, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(153, '203', 'Toallas', 12, 'Toallas de baño', '2025-10-28 16:55:01'),
+(154, '204', 'Almohadas', 14, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(155, '204', 'Sábanas', 14, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(156, '204', 'Toallas', 28, 'Toallas de baño', '2025-10-28 16:55:01'),
+(157, '205', 'Almohadas', 14, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(158, '205', 'Sábanas', 14, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(159, '205', 'Toallas', 28, 'Toallas de baño', '2025-10-28 16:55:01'),
+(160, '206', 'Almohadas', 14, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(161, '206', 'Sábanas', 14, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(162, '206', 'Toallas', 28, 'Toallas de baño', '2025-10-28 16:55:01'),
+(163, '207', 'Almohadas', 16, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(164, '207', 'Sábanas', 16, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(165, '207', 'Toallas', 32, 'Toallas de baño', '2025-10-28 16:55:01'),
+(166, '208', 'Almohadas', 16, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(167, '208', 'Sábanas', 16, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(168, '208', 'Toallas', 32, 'Toallas de baño', '2025-10-28 16:55:01'),
+(169, '209', 'Almohadas', 16, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(170, '209', 'Sábanas', 16, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(171, '209', 'Toallas', 32, 'Toallas de baño', '2025-10-28 16:55:01'),
+(172, '301', 'Almohadas', 6, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(173, '301', 'Sábanas', 6, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(174, '301', 'Toallas', 12, 'Toallas de baño', '2025-10-28 16:55:01'),
+(175, '302', 'Almohadas', 6, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(176, '302', 'Sábanas', 6, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(177, '302', 'Toallas', 12, 'Toallas de baño', '2025-10-28 16:55:01'),
+(178, '303', 'Almohadas', 6, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(179, '303', 'Sábanas', 6, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(180, '303', 'Toallas', 12, 'Toallas de baño', '2025-10-28 16:55:01'),
+(181, '304', 'Almohadas', 14, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(182, '304', 'Sábanas', 14, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(183, '304', 'Toallas', 28, 'Toallas de baño', '2025-10-28 16:55:01'),
+(184, '305', 'Almohadas', 14, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(185, '305', 'Sábanas', 14, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(186, '305', 'Toallas', 28, 'Toallas de baño', '2025-10-28 16:55:01'),
+(187, '306', 'Almohadas', 14, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(188, '306', 'Sábanas', 14, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(189, '306', 'Toallas', 28, 'Toallas de baño', '2025-10-28 16:55:01'),
+(190, '307', 'Almohadas', 16, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(191, '307', 'Sábanas', 16, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(192, '307', 'Toallas', 32, 'Toallas de baño', '2025-10-28 16:55:01'),
+(193, '308', 'Almohadas', 16, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(194, '308', 'Sábanas', 16, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(195, '308', 'Toallas', 32, 'Toallas de baño', '2025-10-28 16:55:01'),
+(196, '309', 'Almohadas', 16, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(197, '309', 'Sábanas', 16, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(198, '309', 'Toallas', 32, 'Toallas de baño', '2025-10-28 16:55:01'),
+(199, '401', 'Almohadas', 6, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(200, '401', 'Sábanas', 6, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(201, '401', 'Toallas', 12, 'Toallas de baño', '2025-10-28 16:55:01'),
+(202, '402', 'Almohadas', 6, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(203, '402', 'Sábanas', 6, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(204, '402', 'Toallas', 12, 'Toallas de baño', '2025-10-28 16:55:01'),
+(205, '403', 'Almohadas', 6, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(206, '403', 'Sábanas', 6, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(207, '403', 'Toallas', 12, 'Toallas de baño', '2025-10-28 16:55:01'),
+(208, '404', 'Almohadas', 14, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(209, '404', 'Sábanas', 14, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(210, '404', 'Toallas', 28, 'Toallas de baño', '2025-10-28 16:55:01'),
+(211, '405', 'Almohadas', 14, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(212, '405', 'Sábanas', 14, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(213, '405', 'Toallas', 28, 'Toallas de baño', '2025-10-28 16:55:01'),
+(214, '406', 'Almohadas', 14, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(215, '406', 'Sábanas', 14, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(216, '406', 'Toallas', 28, 'Toallas de baño', '2025-10-28 16:55:01'),
+(217, '407', 'Almohadas', 16, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(218, '407', 'Sábanas', 16, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(219, '407', 'Toallas', 32, 'Toallas de baño', '2025-10-28 16:55:01'),
+(220, '408', 'Almohadas', 16, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(221, '408', 'Sábanas', 16, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(222, '408', 'Toallas', 32, 'Toallas de baño', '2025-10-28 16:55:01'),
+(223, '409', 'Almohadas', 16, 'Almohadas para habitación', '2025-10-28 16:55:01'),
+(224, '409', 'Sábanas', 16, 'Sábanas para literas', '2025-10-28 16:55:01'),
+(225, '409', 'Toallas', 32, 'Toallas de baño', '2025-10-28 16:55:01');
 
 -- --------------------------------------------------------
 
@@ -369,7 +501,43 @@ INSERT INTO `room_status` (`id`, `room_id`, `status`, `date`) VALUES
 (7, '007', 'cleaning', '2025-10-24'),
 (8, '008', 'available', '2025-10-24'),
 (9, '009', 'occupied', '2025-10-24'),
-(10, '010', 'available', '2025-10-24');
+(10, '010', 'available', '2025-10-24'),
+(47, '101', 'available', '2025-10-28'),
+(48, '102', 'available', '2025-10-28'),
+(49, '103', 'available', '2025-10-28'),
+(50, '104', 'available', '2025-10-28'),
+(51, '105', 'available', '2025-10-28'),
+(52, '106', 'available', '2025-10-28'),
+(53, '107', 'available', '2025-10-28'),
+(54, '108', 'available', '2025-10-28'),
+(55, '109', 'available', '2025-10-28'),
+(56, '201', 'available', '2025-10-28'),
+(57, '202', 'available', '2025-10-28'),
+(58, '203', 'available', '2025-10-28'),
+(59, '204', 'available', '2025-10-28'),
+(60, '205', 'available', '2025-10-28'),
+(61, '206', 'available', '2025-10-28'),
+(62, '207', 'available', '2025-10-28'),
+(63, '208', 'available', '2025-10-28'),
+(64, '209', 'available', '2025-10-28'),
+(65, '301', 'available', '2025-10-28'),
+(66, '302', 'available', '2025-10-28'),
+(67, '303', 'available', '2025-10-28'),
+(68, '304', 'available', '2025-10-28'),
+(69, '305', 'available', '2025-10-28'),
+(70, '306', 'available', '2025-10-28'),
+(71, '307', 'available', '2025-10-28'),
+(72, '308', 'available', '2025-10-28'),
+(73, '309', 'available', '2025-10-28'),
+(74, '401', 'available', '2025-10-28'),
+(75, '402', 'available', '2025-10-28'),
+(76, '403', 'available', '2025-10-28'),
+(77, '404', 'available', '2025-10-28'),
+(78, '405', 'available', '2025-10-28'),
+(79, '406', 'available', '2025-10-28'),
+(80, '407', 'available', '2025-10-28'),
+(81, '408', 'available', '2025-10-28'),
+(82, '409', 'available', '2025-10-28');
 
 -- --------------------------------------------------------
 
@@ -549,13 +717,13 @@ ALTER TABLE `hotel_info`
 -- AUTO_INCREMENT de la tabla `maintenance_tasks`
 --
 ALTER TABLE `maintenance_tasks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT de la tabla `reservations`
 --
 ALTER TABLE `reservations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT de la tabla `reviews`
@@ -567,13 +735,13 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT de la tabla `room_inventory`
 --
 ALTER TABLE `room_inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=226;
 
 --
 -- AUTO_INCREMENT de la tabla `room_status`
 --
 ALTER TABLE `room_status`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
 
 --
 -- AUTO_INCREMENT de la tabla `users`
