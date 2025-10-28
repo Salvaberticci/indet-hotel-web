@@ -14,6 +14,12 @@ if (empty($checkin) || empty($checkout) || empty($floor_id) || empty($capacity))
     exit();
 }
 
+// Validate that total_people can fit in the selected capacity
+if ($total_people > $capacity) {
+    echo json_encode([]);
+    exit();
+}
+
 // Query to find available rooms
 $sql = "SELECT r.id, r.type, r.capacity, r.description, r.photos, r.price, f.name as floor_name
         FROM rooms r

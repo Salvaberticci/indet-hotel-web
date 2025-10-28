@@ -161,9 +161,9 @@ $result = $conn->query($sql);
                         <label for="room_capacity" class="font-bold text-sm mb-2 block text-gray-500">CAPACIDAD DE HABITACIÓN*</label>
                         <select name="room_capacity" id="room_capacity" required class="booking-input bg-gray-700 text-white">
                             <option value="">SELECCIONA</option>
-                            <option value="3">3 Literas</option>
-                            <option value="7">7 Literas</option>
-                            <option value="8">8 Literas</option>
+                            <option value="6">3 Literas (6 personas)</option>
+                            <option value="14">7 Literas (14 personas)</option>
+                            <option value="16">8 Literas (16 personas)</option>
                         </select>
                     </div>
                 </div>
