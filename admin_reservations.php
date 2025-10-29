@@ -158,8 +158,8 @@ $result = $conn->query($sql);
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div class="form-group text-left">
-                        <label for="room_capacity" class="font-bold text-sm mb-2 block text-gray-500">CAPACIDAD DE HABITACIÓN*</label>
-                        <select name="room_capacity" id="room_capacity" required class="booking-input bg-gray-700 text-white">
+                        <label for="room_capacity" class="font-bold text-sm mb-2 block text-gray-500">CAPACIDAD DE HABITACIÓN <span id="capacity-required" class="text-red-500">*</span></label>
+                        <select name="room_capacity" id="room_capacity" class="booking-input bg-gray-700 text-white">
                             <option value="">SELECCIONA</option>
                             <option value="6">3 Literas (6 personas)</option>
                             <option value="14">7 Literas (14 personas)</option>
@@ -423,7 +423,25 @@ $result = $conn->query($sql);
             countElement.textContent = count;
             hiddenInput.value = count;
             updateFloorOptions();
+            updateCapacityRequirement();
             checkRoomSelection();
+        }
+
+        function updateCapacityRequirement() {
+            const adultos = parseInt(document.getElementById('adultos').value);
+            const ninos = parseInt(document.getElementById('ninos').value);
+            const discapacitados = parseInt(document.getElementById('discapacitados').value);
+            const totalPeople = adultos + ninos + discapacitados;
+            const capacitySelect = document.getElementById('room_capacity');
+            const capacityRequired = document.getElementById('capacity-required');
+
+            if (totalPeople > 16) {
+                capacitySelect.required = false;
+                capacityRequired.style.display = 'none';
+            } else {
+                capacitySelect.required = true;
+                capacityRequired.style.display = 'inline';
+            }
         }
 
         function updateFloorOptions() {
@@ -459,8 +477,19 @@ $result = $conn->query($sql);
             const discapacitados = parseInt(document.getElementById('discapacitados').value);
             const totalPeople = adultos + ninos + discapacitados;
 
-            if (checkin && checkout && floorId && capacity && totalPeople > 0) {
-                loadAvailableRooms(checkin, checkout, floorId, capacity, totalPeople);
+            if (checkin && checkout && floorId && totalPeople > 0) {
+                // If total people > 16, show all rooms regardless of capacity selection
+                if (totalPeople > 16) {
+                    loadAvailableRooms(checkin, checkout, floorId, '', totalPeople); // Pass empty capacity to show all
+                } else if (capacity) {
+                    loadAvailableRooms(checkin, checkout, floorId, capacity, totalPeople);
+                } else {
+                    document.getElementById('room-selection').classList.add('hidden');
+                    document.getElementById('reserve-btn').classList.add('hidden');
+                    return;
+                }
+                document.getElementById('room-selection').classList.remove('hidden');
+                document.getElementById('reserve-btn').classList.remove('hidden');
             } else {
                 document.getElementById('room-selection').classList.add('hidden');
                 document.getElementById('reserve-btn').classList.add('hidden');
@@ -543,12 +572,24 @@ $result = $conn->query($sql);
             checkinInput.addEventListener('change', checkRoomSelection);
             checkoutInput.addEventListener('change', checkRoomSelection);
             floorSelect.addEventListener('change', checkRoomSelection);
-            capacitySelect.addEventListener('change', checkRoomSelection);
+            // Only listen to capacity changes if total people <= 16
+            capacitySelect.addEventListener('change', function() {
+                const adultos = parseInt(document.getElementById('adultos').value);
+                const ninos = parseInt(document.getElementById('ninos').value);
+                const discapacitados = parseInt(document.getElementById('discapacitados').value);
+                const totalPeople = adultos + ninos + discapacitados;
+                if (totalPeople <= 16) {
+                    checkRoomSelection();
+                }
+            });
             userIdSelect.addEventListener('change', checkRoomSelection); // Add listener for user selection
 
             // Add listeners for person counters
             ['adultos', 'ninos', 'discapacitados'].forEach(type => {
-                document.getElementById(type + '-count').addEventListener('DOMSubtreeModified', checkRoomSelection);
+                document.getElementById(type + '-count').addEventListener('DOMSubtreeModified', function() {
+                    updateCapacityRequirement();
+                    checkRoomSelection();
+                });
             });
 
             document.getElementById('reserve-btn').addEventListener('click', function() {
@@ -556,6 +597,21 @@ $result = $conn->query($sql);
                     alert('Por favor selecciona al menos una habitación.');
                     return;
                 }
+
+                // Validate total capacity vs total people for groups > 14
+                const adultos = parseInt(document.getElementById('adultos').value);
+                const ninos = parseInt(document.getElementById('ninos').value);
+                const discapacitados = parseInt(document.getElementById('discapacitados').value);
+                const totalPeople = adultos + ninos + discapacitados;
+
+                if (totalPeople > 16) {
+                    const totalCapacity = selectedRooms.reduce((sum, room) => sum + room.capacity, 0);
+                    if (totalCapacity < totalPeople) {
+                        alert(`La capacidad total de las habitaciones seleccionadas (${totalCapacity}) es insuficiente para ${totalPeople} personas.`);
+                        return;
+                    }
+                }
+
                 showConfirmation();
             });
 
