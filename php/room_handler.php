@@ -57,7 +57,7 @@ if (isset($_POST['add_room'])) {
 
     $sql = "INSERT INTO rooms (id, type, capacity, floor_id, description, photos, videos, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssiiisss", $room_id, $type, $capacity, $floor_id, $description, $photos_json, $videos_json, $status);
+    $stmt->bind_param("ssiissss", $room_id, $type, $capacity, $floor_id, $description, $photos_json, $videos_json, $status);
 
     if ($stmt->execute()) {
         // Create default inventory items for the new room based on capacity
