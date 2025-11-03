@@ -66,7 +66,7 @@ El sistema utiliza las siguientes tablas principales:
 
 - **users:** Información de usuarios (id, name, email, password, role)
 - **floors:** Pisos del hotel (id, floor_number, name, description)
-- **rooms:** Detalles de habitaciones (id, type, capacity, description, photos, floor_id)
+- **rooms:** Detalles de habitaciones (id, type, description, photos, floor_id)
 - **floor_inventory:** Inventario por piso (id, floor_id, item_name, quantity, description, created_at)
 - **reservations:** Reservas (id, user_id, room_id, checkin_date, checkout_date, status)
 - **reviews:** Reseñas de usuarios (id, user_id, rating, comment, created_at)

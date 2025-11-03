@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 }
 
 // Fetch rooms for management
-$rooms_sql = "SELECT r.id, r.type, r.capacity, r.description, r.photos, r.floor_id, r.status, f.name as floor_name FROM rooms r JOIN floors f ON r.floor_id = f.id ORDER BY f.floor_number ASC, r.type ASC";
+$rooms_sql = "SELECT r.id, r.type, r.description, r.photos, r.floor_id, r.status, f.name as floor_name FROM rooms r JOIN floors f ON r.floor_id = f.id ORDER BY f.floor_number ASC, r.type ASC";
 $rooms_result = $conn->query($rooms_sql);
 if (!$rooms_result) {
     die("Query failed: " . $conn->error);
@@ -88,7 +88,6 @@ if (!$rooms_result) {
                 <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <input type="text" name="room_id" placeholder="ID (ej. 001)" required class="p-2 border rounded bg-gray-600 text-white">
                     <input type="text" name="type" placeholder="Tipo (ej. Individual)" required class="p-2 border rounded bg-gray-600 text-white">
-                    <input type="number" name="capacity" placeholder="Capacidad" required class="p-2 border rounded bg-gray-600 text-white">
                     <select name="floor_id" required class="p-2 border rounded bg-gray-600 text-white">
                         <option value="">Seleccionar Piso</option>
                         <?php
@@ -136,7 +135,6 @@ if (!$rooms_result) {
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Tipo</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Piso</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Descripción</th>
-                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Capacidad</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Estado</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Acciones</th>
                         </tr>
@@ -151,7 +149,6 @@ if (!$rooms_result) {
                                     <td class="py-3 px-4 text-center capitalize"><?php echo $room['type']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($room['floor_name']); ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $room['description']; ?></td>
-                                    <td class="py-3 px-4 text-center"><?php echo $room['capacity']; ?></td>
                                     <td class="py-3 px-4 text-center">
                                         <span class="px-2 py-1 rounded-full text-xs <?php echo ($room['status'] ?? 'enabled') === 'enabled' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'; ?>">
                                             <?php echo ($room['status'] ?? 'enabled') === 'enabled' ? 'Habilitada' : 'No Habilitada'; ?>
@@ -165,7 +162,7 @@ if (!$rooms_result) {
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
-                            <tr><td colspan="8" class="text-center py-4">No hay habitaciones para mostrar.</td></tr>
+                            <tr><td colspan="7" class="text-center py-4">No hay habitaciones para mostrar.</td></tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
@@ -182,10 +179,6 @@ if (!$rooms_result) {
                 <div class="mb-4">
                     <label class="block font-semibold">Tipo</label>
                     <input type="text" id="editRoomType" name="type" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
-                </div>
-                <div class="mb-4">
-                    <label class="block font-semibold">Capacidad</label>
-                    <input type="number" id="editRoomCapacity" name="capacity" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
                 </div>
                 <div class="mb-4">
                     <label class="block font-semibold">Piso</label>
@@ -272,7 +265,6 @@ if (!$rooms_result) {
         function openEditRoomModal(room) {
             document.getElementById('editRoomId').value = room.id;
             document.getElementById('editRoomType').value = room.type;
-            document.getElementById('editRoomCapacity').value = room.capacity;
             // Note: room.floor_id should be passed from the query result
             document.getElementById('editRoomFloor').value = room.floor_id || room.floor;
             document.getElementById('editRoomDescription').value = room.description;

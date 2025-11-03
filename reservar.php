@@ -178,15 +178,6 @@ if (!isset($_SESSION['user_id'])) {
                                 ?>
                             </select>
                         </div>
-                        <div class="form-group text-left">
-                            <label for="room_capacity" class="font-bold text-sm mb-2 block text-gray-500">CAPACIDAD DE HABITACIÓN*</label>
-                            <select name="room_capacity" id="room_capacity" required class="booking-input">
-                                <option value="">SELECCIONA</option>
-                                <option value="6">3 Literas (6 personas)</option>
-                                <option value="14">7 Literas (14 personas)</option>
-                                <option value="16">8 Literas (16 personas)</option>
-                            </select>
-                        </div>
                     </div>
                     <div id="room-selection" class="mb-6 hidden">
                         <h3 class="text-lg font-bold mb-4">Seleccionar Habitaciones</h3>
@@ -251,22 +242,21 @@ if (!isset($_SESSION['user_id'])) {
             const checkin = document.querySelector('input[name="checkin"]').value;
             const checkout = document.querySelector('input[name="checkout"]').value;
             const floorId = document.getElementById('floor_id').value;
-            const capacity = document.getElementById('room_capacity').value;
             const adultos = parseInt(document.getElementById('adultos').value);
             const ninos = parseInt(document.getElementById('ninos').value);
             const discapacitados = parseInt(document.getElementById('discapacitados').value);
             const totalPeople = adultos + ninos + discapacitados;
 
-            if (checkin && checkout && floorId && capacity && totalPeople > 0) {
-                loadAvailableRooms(checkin, checkout, floorId, capacity, totalPeople);
+            if (checkin && checkout && floorId && totalPeople > 0) {
+                loadAvailableRooms(checkin, checkout, floorId, totalPeople);
             } else {
                 document.getElementById('room-selection').classList.add('hidden');
                 document.getElementById('reserve-btn').classList.add('hidden');
             }
         }
 
-        function loadAvailableRooms(checkin, checkout, floorId, capacity, totalPeople) {
-            fetch(`php/availability_handler.php?checkin=${checkin}&checkout=${checkout}&floor_id=${floorId}&capacity=${capacity}&total_people=${totalPeople}`)
+        function loadAvailableRooms(checkin, checkout, floorId, totalPeople) {
+            fetch(`php/availability_handler.php?checkin=${checkin}&checkout=${checkout}&floor_id=${floorId}&total_people=${totalPeople}`)
                 .then(response => response.json())
                 .then(data => {
                     displayAvailableRooms(data);
@@ -289,10 +279,9 @@ if (!isset($_SESSION['user_id'])) {
                 roomDiv.innerHTML = `
                     <h4 class="font-bold">Habitación ${room.id}</h4>
                     <p>Tipo: ${room.type}</p>
-                    <p>Capacidad: ${room.capacity}</p>
                     <p>Piso: ${room.floor_name}</p>
                     <p>Descripción: ${room.description}</p>
-                    <button type="button" onclick="selectRoom(${room.id}, '${room.type}', ${room.capacity})" class="bg-blue-500 text-white px-4 py-2 rounded mt-2">Seleccionar</button>
+                    <button type="button" onclick="selectRoom(${room.id}, '${room.type}')" class="bg-blue-500 text-white px-4 py-2 rounded mt-2">Seleccionar</button>
                 `;
                 container.appendChild(roomDiv);
             });
@@ -301,12 +290,12 @@ if (!isset($_SESSION['user_id'])) {
             document.getElementById('reserve-btn').classList.remove('hidden');
         }
 
-        function selectRoom(id, type, capacity) {
+        function selectRoom(id, type) {
             if (selectedRooms.find(room => room.id === id)) {
                 alert('Esta habitación ya está seleccionada.');
                 return;
             }
-            selectedRooms.push({ id, type, capacity });
+            selectedRooms.push({ id, type });
             updateSelectedRoomsDisplay();
         }
 
@@ -315,7 +304,7 @@ if (!isset($_SESSION['user_id'])) {
             list.innerHTML = '';
             selectedRooms.forEach(room => {
                 const li = document.createElement('li');
-                li.textContent = `Habitación ${room.id} - ${room.type} (Capacidad: ${room.capacity})`;
+                li.textContent = `Habitación ${room.id} - ${room.type}`;
                 const removeBtn = document.createElement('button');
                 removeBtn.type = 'button';
                 removeBtn.className = 'ml-2 text-red-500';
@@ -335,12 +324,10 @@ if (!isset($_SESSION['user_id'])) {
             const checkinInput = document.querySelector('input[name="checkin"]');
             const checkoutInput = document.querySelector('input[name="checkout"]');
             const floorSelect = document.getElementById('floor_id');
-            const capacitySelect = document.getElementById('room_capacity');
 
             checkinInput.addEventListener('change', checkRoomSelection);
             checkoutInput.addEventListener('change', checkRoomSelection);
             floorSelect.addEventListener('change', checkRoomSelection);
-            capacitySelect.addEventListener('change', checkRoomSelection);
 
             // Add listeners for person counters
             ['adultos', 'ninos', 'discapacitados'].forEach(type => {

@@ -8,7 +8,7 @@ function generateCheckinPDF($reservation_id) {
     global $conn;
 
     // Get reservation details
-    $sql = "SELECT r.*, rm.type as room_type, rm.capacity, f.name as floor_name,
+    $sql = "SELECT r.*, rm.type as room_type, f.name as floor_name,
                    u.name as user_name, u.cedula
             FROM reservations r
             JOIN rooms rm ON r.room_id = rm.id
@@ -68,8 +68,6 @@ function generateCheckinPDF($reservation_id) {
     $pdf->Cell(50, 6, 'Piso:', 0, 0);
     $pdf->Cell(0, 6, utf8_decode($reservation['floor_name']), 0, 1);
 
-    $pdf->Cell(50, 6, 'Capacidad:', 0, 0);
-    $pdf->Cell(0, 6, $reservation['capacity'] . ' personas', 0, 1);
 
     $pdf->Cell(50, 6, 'Fecha de Llegada:', 0, 0);
     $pdf->Cell(0, 6, date('d/m/Y', strtotime($reservation['checkin_date'])), 0, 1);

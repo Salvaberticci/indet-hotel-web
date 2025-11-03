@@ -8,7 +8,7 @@ function generateCheckoutPDF($reservation_id) {
     global $conn;
 
     // Get reservation details
-    $sql = "SELECT r.*, rm.type as room_type, rm.capacity, f.name as floor_name,
+    $sql = "SELECT r.*, rm.type as room_type, f.name as floor_name,
                    u.name as user_name, u.cedula
             FROM reservations r
             JOIN rooms rm ON r.room_id = rm.id

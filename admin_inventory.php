@@ -135,13 +135,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
                     <tbody class="text-gray-300">
                         <?php
                         $floor_filter = isset($_GET['floor_id']) ? "AND r.floor_id = '" . $conn->real_escape_string($_GET['floor_id']) . "'" : "";
-                        $rooms_inventory_sql = "SELECT r.id, r.type, r.capacity, f.name as floor_name, COUNT(ri.id) as item_count
-                                               FROM rooms r
-                                               LEFT JOIN floors f ON r.floor_id = f.id
-                                               LEFT JOIN room_inventory ri ON r.id = ri.room_id
-                                               WHERE r.status = 'enabled' $floor_filter
-                                               GROUP BY r.id, r.type, r.capacity, f.name
-                                               ORDER BY f.floor_number ASC, r.id ASC";
+                        $rooms_inventory_sql = "SELECT r.id, r.type, f.name as floor_name, COUNT(ri.id) as item_count
+                                                FROM rooms r
+                                                LEFT JOIN floors f ON r.floor_id = f.id
+                                                LEFT JOIN room_inventory ri ON r.id = ri.room_id
+                                                WHERE r.status = 'enabled' $floor_filter
+                                                GROUP BY r.id, r.type, f.name
+                                                ORDER BY f.floor_number ASC, r.id ASC";
                         $rooms_inventory_result = $conn->query($rooms_inventory_sql);
                         if ($rooms_inventory_result->num_rows > 0): ?>
                             <?php while($room = $rooms_inventory_result->fetch_assoc()): ?>
@@ -174,7 +174,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
             $room_inventory_stmt->execute();
             $room_inventory_result = $room_inventory_stmt->get_result();
 
-            $room_info_sql = "SELECT type, capacity FROM rooms WHERE id = ?";
+            $room_info_sql = "SELECT type FROM rooms WHERE id = ?";
             $room_info_stmt = $conn->prepare($room_info_sql);
             $room_info_stmt->bind_param("s", $selected_room_id);
             $room_info_stmt->execute();

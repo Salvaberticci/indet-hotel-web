@@ -4,7 +4,7 @@ session_start();
 include 'php/db.php';
 
 // Fetch rooms for the new section
-$rooms_sql = "SELECT `type`, `capacity`, `description`, `photos` FROM `rooms`";
+$rooms_sql = "SELECT `type`, `description`, `photos` FROM `rooms`";
 $rooms_result = $conn->query($rooms_sql);
 
 // Fetch approved comments
@@ -154,9 +154,6 @@ $comments_result = $conn->query($comments_sql);
                                 <div class="p-6">
                                     <h3 class="text-2xl font-bold mb-2 capitalize"><?php echo htmlspecialchars($room['type']); ?></h3>
                                     <p class="text-gray-600 mb-4"><?php echo htmlspecialchars($room['description']); ?></p>
-                                    <ul class="text-left mb-4 space-y-2">
-                                        <li><i class="fas fa-users mr-2 text-green-600"></i> Capacidad: <?php echo htmlspecialchars($room['capacity']); ?> personas</li>
-                                    </ul>
                                 </div>
                             </div>
                         <?php endwhile; ?>

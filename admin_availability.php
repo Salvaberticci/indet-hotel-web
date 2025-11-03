@@ -91,7 +91,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
                 $checkout_date = $_GET['checkout'];
 
                 // Find rooms that are NOT booked during the selected dates
-                $sql = "SELECT r.id, r.type, r.capacity, r.description, r.photos
+                $sql = "SELECT r.id, r.type, r.description, r.photos
                         FROM rooms r
                         WHERE r.id NOT IN (
                             SELECT res.room_id
@@ -118,9 +118,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
                         echo '<div class="p-4">';
                         echo '<h4 class="text-lg font-bold capitalize">' . htmlspecialchars($room['type']) . '</h4>';
                         echo '<p class="text-gray-300 text-sm mb-2">' . htmlspecialchars($room['description']) . '</p>';
-                        echo '<ul class="text-sm space-y-1">';
-                        echo '<li><i class="fas fa-users mr-2 text-green-400"></i>Capacidad: ' . htmlspecialchars($room['capacity']) . '</li>';
-                        echo '</ul>';
                         echo '</div>';
                         echo '</div>';
                     }

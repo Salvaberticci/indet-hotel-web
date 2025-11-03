@@ -73,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     error_log("Database connection successful.");
 
     // Validaciones básicas para el formulario de administración
-    $required_fields = ['user_id', 'checkin', 'checkout', 'floor_id', 'room_capacity', 'selected_rooms'];
+    $required_fields = ['user_id', 'checkin', 'checkout', 'floor_id', 'selected_rooms'];
     foreach ($required_fields as $field) {
         if (!isset($_POST[$field]) || empty($_POST[$field])) {
             error_log("Missing required field: " . $field);
@@ -100,7 +100,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     error_log("Check-out date is valid.");
 
     $floor_id = $_POST['floor_id'];
-    $room_capacity = $_POST['room_capacity'] ?? '';
     $selected_rooms = json_decode($_POST['selected_rooms'], true);
     $adultos = (int)$_POST['adultos'];
     $ninos = (int)$_POST['ninos'];
@@ -108,7 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user_id = $_POST['user_id'];
     $total_people = $adultos + $ninos + $discapacitados;
 
-    error_log("Parsed form data: user_id=" . $user_id . ", checkin=" . $checkin . ", checkout=" . $checkout . ", floor_id=" . $floor_id . ", room_capacity=" . $room_capacity . ", adultos=" . $adultos . ", ninos=" . $ninos . ", discapacitados=" . $discapacitados . ", selected_rooms=" . json_encode($selected_rooms));
+    error_log("Parsed form data: user_id=" . $user_id . ", checkin=" . $checkin . ", checkout=" . $checkout . ", floor_id=" . $floor_id . ", adultos=" . $adultos . ", ninos=" . $ninos . ", discapacitados=" . $discapacitados . ", selected_rooms=" . json_encode($selected_rooms));
 
     // Fetch user details from DB for guest_name, guest_email, cedula, guest_lastname
     $user_sql = "SELECT cedula, name, email FROM users WHERE id = ?"; // Removed 'lastname'
@@ -132,16 +131,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         sendJsonResponse(false, 'Usuario seleccionado no encontrado.', $is_ajax);
     }
 
-    // Validate total capacity for groups > 16
-    if ($total_people > 16) {
-        $total_capacity = 0;
-        foreach ($selected_rooms as $room) {
-            $total_capacity += $room['capacity'];
-        }
-        if ($total_capacity < $total_people) {
-            sendJsonResponse(false, "La capacidad total de las habitaciones seleccionadas ({$total_capacity}) es insuficiente para {$total_people} personas.", $is_ajax);
-        }
-    }
 
     // Verificar que las habitaciones seleccionadas estén disponibles
     $conn->begin_transaction();

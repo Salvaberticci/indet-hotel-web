@@ -13,8 +13,7 @@ if (!isset($_GET['id'])) {
 $id = intval($_GET['id']);
 
 // Fetch reservation details
-// Adjusted to use actual DB fields: rooms.capacity as adults (assuming capacity = number of people), placeholders for missing fields
-$sql = "SELECT r.id, ro.type as room_type, ro.capacity as adults, r.checkin_date, r.checkout_date, r.status, u.name, u.email FROM reservations r JOIN users u ON r.user_id = u.id JOIN rooms ro ON r.room_id = ro.id WHERE r.id = ?";
+$sql = "SELECT r.id, ro.type as room_type, r.adultos as adults, r.checkin_date, r.checkout_date, r.status, u.name, u.email FROM reservations r JOIN users u ON r.user_id = u.id JOIN rooms ro ON r.room_id = ro.id WHERE r.id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $id);
 $stmt->execute();

@@ -12,7 +12,6 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 if (isset($_POST['add_room'])) {
     $room_id = $_POST['room_id'];
     $type = $_POST['type'];
-    $capacity = $_POST['capacity'];
     $floor_id = $_POST['floor_id'];
     $description = $_POST['description'];
     $status = $_POST['status'];
@@ -55,28 +54,12 @@ if (isset($_POST['add_room'])) {
     $photos_json = json_encode($photos);
     $videos_json = json_encode($videos);
 
-    $sql = "INSERT INTO rooms (id, type, capacity, floor_id, description, photos, videos, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO rooms (id, type, floor_id, description, photos, videos, status) VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssiissss", $room_id, $type, $capacity, $floor_id, $description, $photos_json, $videos_json, $status);
+    $stmt->bind_param("ssissss", $room_id, $type, $floor_id, $description, $photos_json, $videos_json, $status);
 
     if ($stmt->execute()) {
-        // Create default inventory items for the new room based on capacity
-        $default_items = [];
-        if ($capacity >= 1) {
-            $default_items[] = ['item_name' => 'Almohadas', 'quantity' => $capacity, 'description' => 'Almohadas para habitación'];
-            $default_items[] = ['item_name' => 'Sábanas', 'quantity' => $capacity, 'description' => 'Sábanas para literas'];
-            $default_items[] = ['item_name' => 'Toallas', 'quantity' => $capacity * 2, 'description' => 'Toallas de baño'];
-        }
-
-        // Insert default inventory items
-        foreach ($default_items as $item) {
-            $inventory_sql = "INSERT INTO room_inventory (room_id, item_name, quantity, description) VALUES (?, ?, ?, ?)";
-            $inventory_stmt = $conn->prepare($inventory_sql);
-            $inventory_stmt->bind_param("ssis", $room_id, $item['item_name'], $item['quantity'], $item['description']);
-            $inventory_stmt->execute();
-        }
-
-        $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Habitación agregada exitosamente con inventario básico.'];
+        $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Habitación agregada exitosamente.'];
     } else {
         $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al agregar la habitación: ' . $stmt->error];
     }
@@ -88,7 +71,6 @@ if (isset($_POST['add_room'])) {
 if (isset($_POST['update_room'])) {
     $id = $_POST['id'];
     $type = $_POST['type'];
-    $capacity = $_POST['capacity'];
     $floor_id = $_POST['floor_id'];
     $description = $_POST['description'];
     $status = $_POST['status'];
@@ -134,9 +116,9 @@ if (isset($_POST['update_room'])) {
     $photos_json = json_encode($photos);
     $videos_json = json_encode($videos);
 
-    $sql = "UPDATE rooms SET type = ?, capacity = ?, floor_id = ?, description = ?, photos = ?, status = ? WHERE id = ?";
+    $sql = "UPDATE rooms SET type = ?, floor_id = ?, description = ?, photos = ?, status = ? WHERE id = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("siissss", $type, $capacity, $floor_id, $description, $photos_json, $status, $id);
+    $stmt->bind_param("sissss", $type, $floor_id, $description, $photos_json, $status, $id);
 
     if ($stmt->execute()) {
         $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Habitación actualizada exitosamente.'];

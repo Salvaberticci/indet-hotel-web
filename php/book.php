@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $is_admin_reservation = isset($_POST['add_reservation_admin']) && $_POST['add_reservation_admin'] === 'true';
 
     // Validaciones básicas
-    $required_fields = ['checkin', 'checkout', 'floor_id', 'room_capacity', 'selected_rooms'];
+    $required_fields = ['checkin', 'checkout', 'floor_id', 'selected_rooms'];
     if ($is_admin_reservation) {
         $required_fields[] = 'user_id';
     } else {
@@ -69,7 +69,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $floor_id = $_POST['floor_id'];
-    $room_capacity = $_POST['room_capacity'];
     $selected_rooms = json_decode($_POST['selected_rooms'], true);
     $adultos = (int)$_POST['adultos'];
     $ninos = (int)$_POST['ninos'];

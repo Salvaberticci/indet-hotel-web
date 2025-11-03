@@ -13,7 +13,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 $selected_room_id = isset($_GET['room_id']) ? $_GET['room_id'] : null;
 
 // Fetch all rooms for dropdown
-$rooms_sql = "SELECT id, type, capacity FROM rooms WHERE status = 'enabled' ORDER BY id ASC";
+$rooms_sql = "SELECT id, type FROM rooms WHERE status = 'enabled' ORDER BY id ASC";
 $rooms_result = $conn->query($rooms_sql);
 
 // If no room selected, select the first one
@@ -31,7 +31,7 @@ $inventory_stmt->execute();
 $inventory_result = $inventory_stmt->get_result();
 
 // Get selected room info
-$room_info_sql = "SELECT type, capacity FROM rooms WHERE id = ?";
+$room_info_sql = "SELECT type FROM rooms WHERE id = ?";
 $room_info_stmt = $conn->prepare($room_info_sql);
 $room_info_stmt->bind_param("s", $selected_room_id);
 $room_info_stmt->execute();
@@ -104,7 +104,7 @@ $room_info = $room_info_result->fetch_assoc();
             <select id="room_select" onchange="changeRoom(this.value)" class="p-2 border rounded bg-gray-700 text-white">
                 <?php while($room = $rooms_result->fetch_assoc()): ?>
                     <option value="<?php echo $room['id']; ?>" <?php echo $room['id'] == $selected_room_id ? 'selected' : ''; ?>>
-                        Habitación <?php echo $room['id']; ?> - <?php echo htmlspecialchars($room['type']); ?> (Capacidad: <?php echo $room['capacity']; ?>)
+                        Habitación <?php echo $room['id']; ?> - <?php echo htmlspecialchars($room['type']); ?>
                     </option>
                 <?php endwhile; ?>
             </select>
