@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-10-2025 a las 18:09:23
+-- Tiempo de generación: 03-11-2025 a las 22:53:04
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -284,7 +284,6 @@ INSERT INTO `reviews` (`id`, `user_id`, `room_id`, `rating`, `comment`, `created
 CREATE TABLE `rooms` (
   `id` varchar(10) NOT NULL,
   `type` varchar(255) NOT NULL,
-  `capacity` int(11) NOT NULL,
   `description` text NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `photos` text NOT NULL,
@@ -298,43 +297,43 @@ CREATE TABLE `rooms` (
 -- Volcado de datos para la tabla `rooms`
 --
 
-INSERT INTO `rooms` (`id`, `type`, `capacity`, `description`, `price`, `photos`, `videos`, `floor`, `floor_id`, `status`) VALUES
-('101', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
-('102', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
-('103', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
-('104', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
-('105', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
-('106', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
-('107', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
-('108', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
-('109', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
-('201', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
-('202', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
-('203', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
-('204', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
-('205', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
-('206', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
-('207', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
-('208', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
-('209', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
-('301', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
-('302', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
-('303', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
-('304', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
-('305', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
-('306', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
-('307', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
-('308', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
-('309', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
-('401', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
-('402', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
-('403', 'Habitación 3 literas', 6, 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
-('404', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
-('405', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
-('406', 'Habitación 7 literas', 14, 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
-('407', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
-('408', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
-('409', 'Habitación 8 literas', 16, 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled');
+INSERT INTO `rooms` (`id`, `type`, `description`, `price`, `photos`, `videos`, `floor`, `floor_id`, `status`) VALUES
+('101', 'Habitación 3 literas', 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('102', 'Habitación 3 literas', 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('103', 'Habitación 3 literas', 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('104', 'Habitación 7 literas', 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('105', 'Habitación 7 literas', 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('106', 'Habitación 7 literas', 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('107', 'Habitación 8 literas', 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('108', 'Habitación 8 literas', 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('109', 'Habitación 8 literas', 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 0, 1, 'enabled'),
+('201', 'Habitación 3 literas', 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('202', 'Habitación 3 literas', 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('203', 'Habitación 3 literas', 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('204', 'Habitación 7 literas', 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('205', 'Habitación 7 literas', 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('206', 'Habitación 7 literas', 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('207', 'Habitación 8 literas', 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('208', 'Habitación 8 literas', 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('209', 'Habitación 8 literas', 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 2, 2, 'enabled'),
+('301', 'Habitación 3 literas', 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('302', 'Habitación 3 literas', 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('303', 'Habitación 3 literas', 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('304', 'Habitación 7 literas', 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('305', 'Habitación 7 literas', 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('306', 'Habitación 7 literas', 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('307', 'Habitación 8 literas', 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('308', 'Habitación 8 literas', 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('309', 'Habitación 8 literas', 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 3, 3, 'enabled'),
+('401', 'Habitación 3 literas', 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
+('402', 'Habitación 3 literas', 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
+('403', 'Habitación 3 literas', 'Habitación con 3 literas', 45.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
+('404', 'Habitación 7 literas', 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
+('405', 'Habitación 7 literas', 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
+('406', 'Habitación 7 literas', 'Habitación con 7 literas', 105.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
+('407', 'Habitación 8 literas', 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
+('408', 'Habitación 8 literas', 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled'),
+('409', 'Habitación 8 literas', 'Habitación con 8 literas', 120.00, '[\"default_room.jpg\"]', '[]', 4, 4, 'enabled');
 
 -- --------------------------------------------------------
 
@@ -472,7 +471,13 @@ INSERT INTO `room_inventory` (`id`, `room_id`, `item_name`, `quantity`, `descrip
 (222, '408', 'Toallas', 32, 'Toallas de baño', '2025-10-28 16:55:01'),
 (223, '409', 'Almohadas', 16, 'Almohadas para habitación', '2025-10-28 16:55:01'),
 (224, '409', 'Sábanas', 16, 'Sábanas para literas', '2025-10-28 16:55:01'),
-(225, '409', 'Toallas', 32, 'Toallas de baño', '2025-10-28 16:55:01');
+(225, '409', 'Toallas', 32, 'Toallas de baño', '2025-10-28 16:55:01'),
+(226, '123', 'Almohadas', 1, 'Almohadas para habitación', '2025-10-29 16:56:51'),
+(227, '123', 'Sábanas', 1, 'Sábanas para literas', '2025-10-29 16:56:51'),
+(228, '123', 'Toallas', 2, 'Toallas de baño', '2025-10-29 16:56:51'),
+(229, '123', 'Almohadas', 1, 'Almohadas para habitación', '2025-10-29 17:19:17'),
+(230, '123', 'Sábanas', 1, 'Sábanas para literas', '2025-10-29 17:19:17'),
+(231, '123', 'Toallas', 2, 'Toallas de baño', '2025-10-29 17:19:17');
 
 -- --------------------------------------------------------
 
@@ -735,7 +740,7 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT de la tabla `room_inventory`
 --
 ALTER TABLE `room_inventory`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=226;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=232;
 
 --
 -- AUTO_INCREMENT de la tabla `room_status`
