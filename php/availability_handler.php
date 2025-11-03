@@ -20,15 +20,13 @@ $sql = "SELECT r.id, r.type, r.description, r.photos, r.price, f.name as floor_n
         WHERE r.id NOT IN (
             SELECT room_id FROM reservations
             WHERE status IN ('confirmed', 'pending')
-            AND ((checkin_date <= ? AND checkout_date > ?) OR
-                 (checkin_date < ? AND checkout_date >= ?) OR
-                 (checkin_date >= ? AND checkout_date <= ?))
+            AND checkin_date < ? AND checkout_date > ?
         )
         AND r.floor_id = ?
         AND r.status = 'enabled'";
 
-$params = [$checkin, $checkin, $checkout, $checkout, $checkin, $checkout, $floor_id];
-$types = "ssssssi";
+$params = [$checkout, $checkin, $floor_id];
+$types = "ssi";
 
 
 $stmt = $conn->prepare($sql);

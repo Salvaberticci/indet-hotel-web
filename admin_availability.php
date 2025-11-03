@@ -96,13 +96,13 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
                         WHERE r.id NOT IN (
                             SELECT res.room_id
                             FROM reservations res
-                            WHERE (res.checkin_date < ? AND res.checkout_date > ?)
-                            OR (res.checkin_date >= ? AND res.checkin_date < ?)
+                            WHERE res.status IN ('confirmed', 'pending')
+                            AND res.checkin_date < ? AND res.checkout_date > ?
                         )
                         ORDER BY r.type";
 
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("ssss", $checkout_date, $checkin_date, $checkin_date, $checkout_date);
+                $stmt->bind_param("ss", $checkout_date, $checkin_date);
                 $stmt->execute();
                 $result = $stmt->get_result();
 
