@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
 }
 
 // Fetch reservations from the database
-$sql = "SELECT reservations.id, users.name as user_name, users.cedula_type as user_cedula_type, users.cedula as user_cedula, rooms.type as room_type, floors.name as floor_name, reservations.checkin_date, reservations.checkout_date, reservations.status, reservations.user_id
+$sql = "SELECT reservations.id, users.name as user_name, users.cedula_type as user_cedula_type, users.cedula as user_cedula, CONCAT('Habitación ', rooms.id, ' - ', rooms.type) as room_name, rooms.type as room_type, floors.name as floor_name, reservations.checkin_date, reservations.checkout_date, reservations.status, reservations.user_id, reservations.room_id
         FROM reservations
         JOIN users ON reservations.user_id = users.id
         JOIN rooms ON reservations.room_id = rooms.id
@@ -190,6 +190,7 @@ $result = $conn->query($sql);
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">ID</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Cliente</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Habitación</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Nombre de Habitación</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Piso</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Llegada</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Salida</th>
@@ -208,6 +209,7 @@ $result = $conn->query($sql);
                                         <small class="text-gray-400">Cédula: <?php echo htmlspecialchars($row['user_cedula_type'] . '-' . $row['user_cedula']); ?></small>
                                     </td>
                                     <td class="py-3 px-4 text-center"><?php echo $row['room_type']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($row['room_name']); ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($row['floor_name'] ?? 'N/A'); ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $row['checkin_date']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $row['checkout_date']; ?></td>
@@ -240,7 +242,7 @@ $result = $conn->query($sql);
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="9" class="text-center py-4">No hay reservas encontradas.</td>
+                                <td colspan="10" class="text-center py-4">No hay reservas encontradas.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
