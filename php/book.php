@@ -171,19 +171,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $guests = json_decode($guests_json, true);
 
             if (is_array($guests) && !empty($guests)) {
-                // Get all reservation IDs that were just created by querying the database
-                $reservation_ids = [];
+                // For multiple rooms, we need to get all reservation IDs that were created
+                // Since LAST_INSERT_ID() only gives us the last one, we need to query for recent reservations
                 $total_rooms = count($selected_rooms);
+                $user_id_for_query = $user_id;
+                $checkin_for_query = $checkin;
+                $checkout_for_query = $checkout;
 
-                // Get the last inserted ID and work backwards
-                $last_id_sql = "SELECT LAST_INSERT_ID() as id";
-                $last_id_result = $conn->query($last_id_sql);
-                $last_reservation_id = $last_id_result->fetch_assoc()['id'];
+                // Get all reservation IDs for this user and time period
+                $get_reservation_ids_sql = "SELECT id FROM reservations
+                                           WHERE user_id = ? AND checkin_date = ? AND checkout_date = ?
+                                           ORDER BY id DESC LIMIT ?";
+                $stmt_ids = $conn->prepare($get_reservation_ids_sql);
+                $stmt_ids->bind_param("issii", $user_id_for_query, $checkin_for_query, $checkout_for_query, $total_rooms);
+                $stmt_ids->execute();
+                $result_ids = $stmt_ids->get_result();
 
-                // Calculate all reservation IDs (working backwards from the last one)
-                for ($i = $total_rooms - 1; $i >= 0; $i--) {
-                    $reservation_ids[$i] = $last_reservation_id - ($total_rooms - 1 - $i);
+                $reservation_ids = [];
+                while ($row = $result_ids->fetch_assoc()) {
+                    $reservation_ids[] = $row['id'];
                 }
+                $stmt_ids->close();
+
+                // Reverse the array so it matches the order of selected_rooms
+                $reservation_ids = array_reverse($reservation_ids);
 
                 // Save guests for each reservation
                 foreach ($guests as $index => $guest) {
