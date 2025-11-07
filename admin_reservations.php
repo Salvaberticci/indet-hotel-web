@@ -54,6 +54,26 @@ $result = $conn->query($sql);
       left: 0;
       z-index: -1;
     }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+      border-radius: 5px;
+      color: white;
+      font-weight: bold;
+      z-index: 1000;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .notification.success {
+      background-color: #10b981;
+    }
+
+    .notification.error {
+      background-color: #ef4444;
+    }
     </style>
 </head>
 <body class="bg-gray-900 text-white font-poppins">
@@ -286,6 +306,32 @@ $result = $conn->query($sql);
             <div class="flex justify-end mt-6">
                 <button type="button" onclick="closeViewGuestsModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg">Cerrar</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Edit Guest Modal -->
+    <div id="editGuestModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-gray-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-6">Editar Huésped</h2>
+            <form id="editGuestForm">
+                <input type="hidden" id="editGuestId" name="guest_id">
+                <div class="mb-4">
+                    <label for="editGuestName" class="block text-sm font-medium mb-2">Nombre *</label>
+                    <input type="text" id="editGuestName" name="guest_name" required class="w-full p-3 border rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label for="editGuestLastname" class="block text-sm font-medium mb-2">Apellido</label>
+                    <input type="text" id="editGuestLastname" name="guest_lastname" class="w-full p-3 border rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="mb-6">
+                    <label for="editGuestPhone" class="block text-sm font-medium mb-2">Teléfono</label>
+                    <input type="tel" id="editGuestPhone" name="guest_phone" class="w-full p-3 border rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="closeEditGuestModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg">Cancelar</button>
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Guardar Cambios</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -807,6 +853,9 @@ $result = $conn->query($sql);
         }
 
         function viewGuests(reservationId) {
+            // Store reservation ID for later use
+            document.getElementById('viewGuestsModal').setAttribute('data-reservation-id', reservationId);
+
             fetch(`php/get_guests.php?reservation_id=${reservationId}`)
                 .then(response => response.json())
                 .then(data => {
@@ -820,10 +869,15 @@ $result = $conn->query($sql);
                     } else {
                         data.forEach(guest => {
                             const guestDiv = document.createElement('div');
-                            guestDiv.className = 'bg-gray-700 p-4 rounded-lg';
+                            guestDiv.className = 'bg-gray-700 p-4 rounded-lg flex justify-between items-start';
                             guestDiv.innerHTML = `
-                                <h4 class="font-bold">${guest.guest_name} ${guest.guest_lastname || ''}</h4>
-                                <p class="text-gray-300">Teléfono: ${guest.guest_phone || 'No especificado'}</p>
+                                <div>
+                                    <h4 class="font-bold">${guest.guest_name} ${guest.guest_lastname || ''}</h4>
+                                    <p class="text-gray-300">Teléfono: ${guest.guest_phone || 'No especificado'}</p>
+                                </div>
+                                <button onclick="editGuest(${guest.id}, '${guest.guest_name.replace(/'/g, "\\'")}', '${(guest.guest_lastname || '').replace(/'/g, "\\'")}', '${(guest.guest_phone || '').replace(/'/g, "\\'")}')" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                                    <i class="fas fa-edit"></i> Editar
+                                </button>
                             `;
                             guestsList.appendChild(guestDiv);
                         });
@@ -841,6 +895,64 @@ $result = $conn->query($sql);
 
         function closeViewGuestsModal() {
             document.getElementById('viewGuestsModal').classList.add('hidden');
+        }
+
+        function editGuest(guestId, name, lastname, phone) {
+            document.getElementById('editGuestId').value = guestId;
+            document.getElementById('editGuestName').value = name;
+            document.getElementById('editGuestLastname').value = lastname || '';
+            document.getElementById('editGuestPhone').value = phone || '';
+
+            document.getElementById('editGuestModal').classList.remove('hidden');
+        }
+
+        function closeEditGuestModal() {
+            document.getElementById('editGuestModal').classList.add('hidden');
+            document.getElementById('editGuestForm').reset();
+        }
+
+        // Handle edit guest form submission
+        document.getElementById('editGuestForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            fetch('php/update_guest.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Close modal and refresh guests list
+                    closeEditGuestModal();
+                    // Refresh the current guests modal
+                    const reservationId = document.querySelector('#viewGuestsModal').getAttribute('data-reservation-id');
+                    if (reservationId) {
+                        viewGuests(reservationId);
+                    }
+                    // Show success message
+                    showNotification('Huésped actualizado correctamente', 'success');
+                } else {
+                    showNotification('Error: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error al actualizar huésped', 'error');
+            });
+        });
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-times-circle'}"></i> ${message}`;
+            document.body.appendChild(notification);
+
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
         }
     </script>
 </body>

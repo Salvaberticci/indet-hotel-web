@@ -20,7 +20,7 @@ if ($_SESSION['user_role'] != 'admin') {
 if (isset($_GET['reservation_id'])) {
     $reservation_id = (int)$_GET['reservation_id'];
 
-    $sql = "SELECT guest_name, guest_lastname, guest_phone FROM reservation_guests WHERE reservation_id = ?";
+    $sql = "SELECT id, guest_name, guest_lastname, guest_phone FROM reservation_guests WHERE reservation_id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $reservation_id);
     $stmt->execute();
