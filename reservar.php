@@ -216,26 +216,15 @@ if (!isset($_SESSION['user_id'])) {
         }
 
         function updateFloorOptions() {
-            const discapacitados = parseInt(document.getElementById('discapacitados').value);
             const floorSelect = document.getElementById('floor_id');
             const options = floorSelect.querySelectorAll('option');
 
             options.forEach(option => {
                 if (option.value !== '') {
-                    if (discapacitados === 0 && option.textContent === 'Planta Baja') {
-                        option.disabled = true;
-                        option.style.display = 'none';
-                    } else {
-                        option.disabled = false;
-                        option.style.display = 'block';
-                    }
+                    option.disabled = false;
+                    option.style.display = 'block';
                 }
             });
-
-            // Reset selection if current floor is disabled
-            if (floorSelect.selectedOptions[0] && floorSelect.selectedOptions[0].disabled) {
-                floorSelect.selectedIndex = 0;
-            }
         }
 
         function checkRoomSelection() {
