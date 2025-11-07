@@ -183,7 +183,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                            WHERE user_id = ? AND checkin_date = ? AND checkout_date = ?
                                            ORDER BY id DESC LIMIT ?";
                 $stmt_ids = $conn->prepare($get_reservation_ids_sql);
-                $stmt_ids->bind_param("issii", $user_id_for_query, $checkin_for_query, $checkout_for_query, $total_rooms);
+                $stmt_ids->bind_param("issi", $user_id_for_query, $checkin_for_query, $checkout_for_query, $total_rooms);
                 $stmt_ids->execute();
                 $result_ids = $stmt_ids->get_result();
 
