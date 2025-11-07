@@ -641,27 +641,82 @@ $result = $conn->query($sql);
             const guestForms = document.getElementById('guest-forms');
             guestForms.innerHTML = '';
 
-            for (let i = 1; i <= totalGuests; i++) {
-                const guestDiv = document.createElement('div');
-                guestDiv.className = 'bg-gray-700 p-4 rounded-lg';
-                guestDiv.innerHTML = `
-                    <h4 class="text-lg font-bold mb-4">Huésped ${i}</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            // Group guests by room
+            let guestIndex = 0;
+            selectedRooms.forEach((room, roomIndex) => {
+                const roomDiv = document.createElement('div');
+                roomDiv.className = 'bg-gray-600 p-4 rounded-lg mb-4';
+                roomDiv.innerHTML = `<h3 class="text-xl font-bold mb-4 text-center">Habitación ${room.id} - ${room.type}</h3>`;
+
+                // Calculate how many guests can fit in this room based on type
+                let maxGuests = 1; // Default
+                if (room.type.includes('3 literas')) maxGuests = 3;
+                else if (room.type.includes('7 literas')) maxGuests = 7;
+                else if (room.type.includes('8 literas')) maxGuests = 8;
+
+                for (let i = 0; i < maxGuests && guestIndex < totalGuests; i++) {
+                    guestIndex++;
+                    const guestDiv = document.createElement('div');
+                    guestDiv.className = 'bg-gray-700 p-3 rounded mb-3';
+                    guestDiv.innerHTML = `
+                        <h4 class="text-md font-bold mb-2">Huésped ${guestIndex}</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Nombre</label>
+                                <input type="text" name="guests[${guestIndex}][name]" class="w-full p-2 border rounded bg-gray-600 text-white" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Apellido</label>
+                                <input type="text" name="guests[${guestIndex}][lastname]" class="w-full p-2 border rounded bg-gray-600 text-white">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Teléfono</label>
+                                <input type="tel" name="guests[${guestIndex}][phone]" class="w-full p-2 border rounded bg-gray-600 text-white">
+                            </div>
+                        </div>
+                        <input type="hidden" name="guests[${guestIndex}][room_id]" value="${room.id}">
+                    `;
+                    roomDiv.appendChild(guestDiv);
+                }
+
+                if (roomDiv.children.length > 1) { // Has more than just the title
+                    guestForms.appendChild(roomDiv);
+                }
+            });
+
+            // If there are remaining guests, add them to the last room or create additional sections
+            while (guestIndex < totalGuests) {
+                guestIndex++;
+                const remainingGuestDiv = document.createElement('div');
+                remainingGuestDiv.className = 'bg-gray-700 p-3 rounded mb-3';
+                remainingGuestDiv.innerHTML = `
+                    <h4 class="text-md font-bold mb-2">Huésped ${guestIndex} (Sin habitación asignada)</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <div>
-                            <label class="block text-sm font-medium mb-2">Nombre</label>
-                            <input type="text" name="guests[${i}][name]" class="w-full p-2 border rounded bg-gray-600 text-white" required>
+                            <label class="block text-sm font-medium mb-1">Nombre</label>
+                            <input type="text" name="guests[${guestIndex}][name]" class="w-full p-2 border rounded bg-gray-600 text-white" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-2">Apellido</label>
-                            <input type="text" name="guests[${i}][lastname]" class="w-full p-2 border rounded bg-gray-600 text-white">
+                            <label class="block text-sm font-medium mb-1">Apellido</label>
+                            <input type="text" name="guests[${guestIndex}][lastname]" class="w-full p-2 border rounded bg-gray-600 text-white">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-2">Teléfono</label>
-                            <input type="tel" name="guests[${i}][phone]" class="w-full p-2 border rounded bg-gray-600 text-white">
+                            <label class="block text-sm font-medium mb-1">Teléfono</label>
+                            <input type="tel" name="guests[${guestIndex}][phone]" class="w-full p-2 border rounded bg-gray-600 text-white">
                         </div>
                     </div>
+                    <input type="hidden" name="guests[${guestIndex}][room_id]" value="">
                 `;
-                guestForms.appendChild(guestDiv);
+
+                if (guestForms.lastChild && guestForms.lastChild.classList.contains('bg-gray-600')) {
+                    guestForms.lastChild.appendChild(remainingGuestDiv);
+                } else {
+                    const extraRoomDiv = document.createElement('div');
+                    extraRoomDiv.className = 'bg-gray-600 p-4 rounded-lg mb-4';
+                    extraRoomDiv.innerHTML = '<h3 class="text-xl font-bold mb-4 text-center">Huéspedes Adicionales</h3>';
+                    extraRoomDiv.appendChild(remainingGuestDiv);
+                    guestForms.appendChild(extraRoomDiv);
+                }
             }
 
             document.getElementById('guestModal').classList.remove('hidden');
