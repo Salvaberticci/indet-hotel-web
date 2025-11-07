@@ -40,11 +40,6 @@ while ($guest = $guests_result->fetch_assoc()) {
 $checkin = new DateTime($reservation['checkin_date']);
 $checkout = new DateTime($reservation['checkout_date']);
 $nights = $checkin->diff($checkout)->days;
-$price_per_night = 0; // Price removed
-$subtotal = $nights * $price_per_night;
-$tax_rate = 0.10; // Assuming 10% tax
-$taxes = $subtotal * $tax_rate;
-$total = $subtotal + $taxes;
 
 // Create PDF
 $pdf = new FPDF();
@@ -145,26 +140,6 @@ if (!empty($guests)) {
     $pdf->Ln(5);
 }
 
-// Payment Summary Section
-$pdf->SetFont('Arial', 'B', 14);
-$pdf->SetTextColor(0, 51, 102);
-$pdf->Cell(0, 10, utf8_decode('Resumen de Pago'), 0, 1, 'L');
-$pdf->Ln(5);
-
-$pdf->SetFont('Arial', '', 12);
-$pdf->SetTextColor(0, 0, 0);
-$pdf->Cell(50, 8, utf8_decode('Subtotal:'), 0, 0);
-$pdf->Cell(0, 8, utf8_decode('$' . number_format($subtotal, 2)), 0, 1);
-$pdf->Cell(50, 8, utf8_decode('Impuestos:'), 0, 0);
-$pdf->Cell(0, 8, utf8_decode('$' . number_format($taxes, 2)), 0, 1);
-$pdf->Cell(50, 8, utf8_decode('Costo Total:'), 0, 0, 'B'); // Bold for total
-$pdf->SetFont('Arial', 'B', 12);
-$pdf->Cell(0, 8, utf8_decode('$' . number_format($total, 2)), 0, 1);
-$pdf->SetFont('Arial', '', 12);
-$pdf->Cell(50, 8, utf8_decode('Método de Pago:'), 0, 0);
-$pdf->Cell(0, 8, utf8_decode('No especificado'), 0, 1); // Payment method not in DB, placeholder
-
-$pdf->Ln(10);
 
 // Footer Section
 $pdf->SetDrawColor(200, 200, 200);

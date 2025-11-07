@@ -202,6 +202,17 @@ $result = $conn->query($sql);
         <div class="bg-gray-800 text-white p-6 rounded-xl shadow-2xl mb-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-2xl font-bold">Reservas</h2>
+                <div class="flex space-x-2">
+                    <a href="generate_daily_report.php" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">
+                        <i class="fas fa-calendar-day mr-2"></i>Reporte Diario
+                    </a>
+                    <a href="generate_weekly_report.php" target="_blank" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">
+                        <i class="fas fa-calendar-week mr-2"></i>Reporte Semanal
+                    </a>
+                    <a href="generate_monthly_report.php" target="_blank" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg">
+                        <i class="fas fa-calendar-alt mr-2"></i>Reporte Mensual
+                    </a>
+                </div>
             </div>
 
             <div class="overflow-x-auto">
