@@ -255,6 +255,14 @@ $comments_result = $conn->query($comments_sql);
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Include Chatbot -->
+    <?php include 'templates/chatbot.php'; ?>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/main.js"></script>
+    <script src="assets/js/chatbot.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="js/main.js"></script>
 </body>

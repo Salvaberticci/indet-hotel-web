@@ -167,6 +167,19 @@ include 'php/db.php';
         <div class="container mx-auto text-center">
             <p>&copy; 2025 Hotel Indet. Todos los derechos reservados.</p>
         </div>
+    <!-- Include Chatbot -->
+    <?php include 'templates/chatbot.php'; ?>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/main.js"></script>
+    <script src="assets/js/chatbot.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true,
+        });
+    </script>
     </footer>
 
     <!-- Scripts -->

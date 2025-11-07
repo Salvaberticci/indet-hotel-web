@@ -1,0 +1,108 @@
+{
+    "conv_1762477356846_l5afpobkyn7": [
+        {
+            "timestamp": "2025-11-07 02:02:41",
+            "type": "user",
+            "message": "hola",
+            "response": "\u00a1Hola! \u00bfC\u00f3mo est\u00e1s hoy? \ud83d\ude0a Me da mucho gusto saludarte. \u00bfEn qu\u00e9 puedo ayudarte hoy con respecto al Hotel INDET o el Instituto de Deportes del Estado Trujillo? \u00bfQuiz\u00e1s quieres saber algo sobre nuestras instalaciones deportivas, las habitaciones del hotel, o alguna otra cosa? \u00a1Estoy a tu disposici\u00f3n!"
+        },
+        {
+            "timestamp": "2025-11-07 02:02:56",
+            "type": "user",
+            "message": "qu ehabitaciones hay disponibles?",
+            "response": "\u00a1Hola! \u00bfC\u00f3mo est\u00e1s hoy? \ud83d\ude0a\n\nCon gusto te ayudo con la disponibilidad de habitaciones en el Hotel INDET. Tenemos habitaciones individuales, dobles y suites familiares, todas dise\u00f1adas pensando en el confort y la recuperaci\u00f3n de los atletas. \n\nPara darte informaci\u00f3n precisa sobre la disponibilidad, necesitar\u00eda saber:\n\n*   \u00bfQu\u00e9 fechas tienes en mente para tu estad\u00eda? (Fecha de llegada y salida)\n*   \u00bfCu\u00e1ntas personas se hospedar\u00edan? (Adultos, ni\u00f1os, personas con discapacidad)\n*   \u00bfTienes alguna preferencia de piso? (La planta baja es ideal para personas con discapacidad)\n\nCon esta informaci\u00f3n, puedo verificar la disponibilidad y ofrecerte las mejores opciones. \u00a1Espero tu respuesta! \ud83d\ude09"
+        },
+        {
+            "timestamp": "2025-11-07 02:03:49",
+            "type": "user",
+            "message": "pienso llegar el 7 de noviembre e irme el 9 de noviembre somos 3 personas",
+            "response": "\u00a1Saludos! Estoy para servirte en todo lo relacionado con el Hotel INDET. \u00bfTienes alguna pregunta sobre nuestras instalaciones deportivas o reservas?"
+        }
+    ],
+    "conv_1762477622404_xtbn7ismw8p": [
+        {
+            "timestamp": "2025-11-07 02:07:15",
+            "type": "user",
+            "message": "quiero reservar que habitaciones estan disponibles",
+            "response": "\u00a1Hola! Claro, con gusto te ayudo con tu reserva. Para verificar la disponibilidad de habitaciones, necesito un poco m\u00e1s de informaci\u00f3n. \u00bfTienes en mente alguna fecha espec\u00edfica para tu llegada y salida? Tambi\u00e9n, \u00bfcu\u00e1ntas personas ser\u00edan (adultos, ni\u00f1os, o personas con alguna discapacidad)?\n\nCon esa informaci\u00f3n, puedo revisar qu\u00e9 opciones tenemos disponibles y recomendarte las habitaciones que mejor se adapten a tus necesidades. \u00a1Estoy aqu\u00ed para ayudarte a que tu estad\u00eda en el Hotel Deportivo INDET sea perfecta! \ud83d\ude0a"
+        },
+        {
+            "timestamp": "2025-11-07 02:09:48",
+            "type": "user",
+            "message": "pienso llegar el 7 de noviembre e irme el 9 de noviembre somos 3 personas",
+            "response": "\u00a1Hola! Qu\u00e9 gusto verte por aqu\u00ed. Soy el asistente del Hotel INDET y puedo ayudarte con informaci\u00f3n sobre habitaciones, reservas y servicios deportivos."
+        }
+    ],
+    "8828efc9796468938c51e116bc62a7ac": [
+        {
+            "timestamp": "2025-11-07 02:13:45",
+            "type": "user",
+            "message": "quiero reservar que habitaciones estan disponibles",
+            "response": "\u00a1Hola! Claro que s\u00ed, con gusto te ayudo con tu reserva. Para poder darte la informaci\u00f3n m\u00e1s precisa sobre las habitaciones disponibles, necesito saber un poco m\u00e1s:\n\n*   \u00bfEn qu\u00e9 fechas te gustar\u00eda hospedarte? (Fecha de llegada y salida)\n*   \u00bfCu\u00e1ntas personas ser\u00edan? (Adultos, ni\u00f1os y si alguno necesita acceso para discapacitados)\n*   \u00bfTienes alguna preferencia por el piso? (Recuerda que la planta baja es ideal para personas con discapacidades).\n\nUna vez que me des estos detalles, puedo verificar la disponibilidad y mostrarte las opciones que mejor se adapten a tus necesidades. \u00a1Estoy aqu\u00ed para ayudarte en lo que necesites!"
+        },
+        {
+            "timestamp": "2025-11-07 02:13:52",
+            "type": "user",
+            "message": "pienso llegar el 7 de noviembre e irme el 9 de noviembre somos 3 personas",
+            "response": "\u00a1Hola! \u00bfC\u00f3mo est\u00e1s? Soy el asistente virtual del Hotel INDET. Puedo ayudarte con informaci\u00f3n sobre reservas, habitaciones, servicios e instalaciones deportivas."
+        },
+        {
+            "timestamp": "2025-11-07 02:20:44",
+            "type": "user",
+            "message": "si guiame",
+            "response": "\u00a1Claro! Recuerdo que estamos hablando de tu reserva para las fechas del 7 de noviembre al 9 de noviembre para 3 personas.\n\n\ud83c\udfe8 **Gu\u00eda para Hacer tu Reserva**\n\nSigue estos pasos:\n\n1\ufe0f\u20e3 **Ve a la p\u00e1gina de Reservaciones**\n   \u2022 Desde el men\u00fa principal o haz clic en 'Reservar'\n\n2\ufe0f\u20e3 **Selecciona las fechas**\n   \u2022 Ya tienes las fechas: 7 de noviembre - 9 de noviembre\n\n3\ufe0f\u20e3 **Elige el piso**\n   \u2022 Planta Baja (accesible para discapacitados)\n   \u2022 Pisos superiores (habitaciones est\u00e1ndar)\n\n4\ufe0f\u20e3 **Indica el n\u00famero de personas**\n   \u2022 Ya mencionaste: 3 personas\n\n5\ufe0f\u20e3 **Selecciona habitaciones disponibles**\n   \u2022 El sistema te mostrar\u00e1 las opciones\n   \u2022 Elige las que necesites\n\n6\ufe0f\u20e3 **Confirma y reserva**\n   \u2022 Revisa todos los detalles\n   \u2022 Haz clic en 'Reservar'\n\n\ud83d\udca1 **Informaci\u00f3n importante:**\n\u2022 Check-in: A partir de las 15:00\n\u2022 Check-out: Hasta las 12:00\n\u2022 Cancelaci\u00f3n gratuita hasta 24h antes\n\n\u00bfTe ayudo con alg\u00fan paso espec\u00edfico o tienes alguna pregunta?"
+        }
+    ],
+    "conv_1762478247945_rq98x2kylzs": [
+        {
+            "timestamp": "2025-11-07 02:17:37",
+            "type": "user",
+            "message": "quiero reservar",
+            "response": "\u00a1Claro! \u00a1Hola! \u00bfC\u00f3mo est\u00e1s hoy? \ud83d\ude0a\n\n\u00a1Genial que quieras reservar! Para ayudarte con la reserva, necesito algunos detalles. \u00bfTienes en mente las fechas de llegada y salida? Tambi\u00e9n, \u00bfpara cu\u00e1ntas personas ser\u00eda la reserva (adultos, ni\u00f1os, personas con discapacidad)? Y si tienes alguna preferencia de piso (quiz\u00e1s por accesibilidad), \u00a1d\u00edmelo!\n\nCon esa informaci\u00f3n, puedo verificar la disponibilidad de habitaciones y ayudarte a completar el proceso. \u00a1Estoy aqu\u00ed para lo que necesites! \ud83d\ude09"
+        },
+        {
+            "timestamp": "2025-11-07 02:18:17",
+            "type": "user",
+            "message": "somos 3 personas, quiero llegar el 3 de diciembre y salir el 6 de diciembre que habitaciones hay disponibles?",
+            "response": "\u00a1Perfecto! Bas\u00e1ndome en lo que me has contado anteriormente, te ayudo con la disponibilidad de habitaciones.\n\n\ud83c\udfe8 **Informaci\u00f3n de Habitaciones Disponibles**\n\n\ud83d\udcca **Total de habitaciones:** 36\n\n\ud83c\udfe0 **Tipos de habitaciones:**\n\u2022 Habitaci\u00f3n 3 literas: 12\n\u2022 Habitaci\u00f3n 7 literas: 12\n\u2022 Habitaci\u00f3n 8 literas: 12\n\n\ud83d\udca1 **Para verificar disponibilidad espec\u00edfica:**\n\u2022 Ve a la p\u00e1gina de Reservaciones\n\u2022 Selecciona las fechas que mencionaste\n\u2022 Elige el n\u00famero de personas\n\u2022 El sistema mostrar\u00e1 habitaciones disponibles autom\u00e1ticamente\n\n\u00bfTe gustar\u00eda que te gu\u00ede para hacer la reserva ahora?"
+        },
+        {
+            "timestamp": "2025-11-07 02:18:48",
+            "type": "user",
+            "message": "si guiame",
+            "response": "\u00a1Hola! Soy el asistente del Hotel INDET. \u00bfEn qu\u00e9 puedo ayudarte hoy? Puedo informarte sobre habitaciones, reservas, servicios e instalaciones deportivas."
+        }
+    ],
+    "conv_1762478545383_fjek60rauf": [
+        {
+            "timestamp": "2025-11-07 02:22:29",
+            "type": "user",
+            "message": "hola",
+            "response": "\u00a1Hola! \u00bfC\u00f3mo est\u00e1s hoy? \ud83d\ude0a Me da mucho gusto saludarte. \u00bfEn qu\u00e9 puedo ayudarte hoy con respecto al Hotel INDET o el Instituto de Deportes del Estado Trujillo? \u00bfQuiz\u00e1s quieres saber algo sobre nuestras instalaciones deportivas, las habitaciones del hotel, o alguna otra cosa? \u00a1Estoy a tu disposici\u00f3n!"
+        },
+        {
+            "timestamp": "2025-11-07 02:22:46",
+            "type": "user",
+            "message": "quiero saber que habitas hay para reservar",
+            "response": "\u00a1Hola! \u00bfC\u00f3mo est\u00e1s hoy? \ud83d\ude0a\n\nClaro, con gusto te ayudo a ver qu\u00e9 habitaciones tenemos disponibles para reservar. Para poder darte informaci\u00f3n precisa, \u00bfpodr\u00edas decirme las fechas en las que te gustar\u00eda hospedarte y cu\u00e1ntas personas ser\u00edan (adultos, ni\u00f1os, y si hay personas con discapacidad)? Tambi\u00e9n, \u00bftienes alguna preferencia de piso, como por ejemplo, si necesitas acceso para personas con discapacidad?\n\nCon esa informaci\u00f3n, puedo revisar la disponibilidad y mostrarte las opciones que tenemos. \u00a1Espero tu respuesta! \ud83d\ude0a"
+        },
+        {
+            "timestamp": "2025-11-07 02:23:54",
+            "type": "user",
+            "message": "somos 4 personas, querempos reservar desde el 12 de noviembre hasta el 24",
+            "response": "\u00a1Claro! Recuerdo que estamos hablando de tu reserva.\n\n\ud83c\udfe8 **Gu\u00eda para Hacer tu Reserva**\n\nSigue estos pasos:\n\n1\ufe0f\u20e3 **Ve a la p\u00e1gina de Reservaciones**\n   \u2022 Desde el men\u00fa principal o haz clic en 'Reservar'\n\n2\ufe0f\u20e3 **Selecciona las fechas**\n   \u2022 Fecha de llegada (check-in)\n   \u2022 Fecha de salida (check-out)\n\n3\ufe0f\u20e3 **Elige el piso**\n   \u2022 Planta Baja (accesible para discapacitados)\n   \u2022 Pisos superiores (habitaciones est\u00e1ndar)\n\n4\ufe0f\u20e3 **Indica el n\u00famero de personas**\n   \u2022 Adultos, ni\u00f1os, personas con discapacidad\n\n5\ufe0f\u20e3 **Selecciona habitaciones disponibles**\n   \u2022 El sistema te mostrar\u00e1 las opciones\n   \u2022 Elige las que necesites\n\n6\ufe0f\u20e3 **Confirma y reserva**\n   \u2022 Revisa todos los detalles\n   \u2022 Haz clic en 'Reservar'\n\n\ud83d\udca1 **Informaci\u00f3n importante:**\n\u2022 Check-in: A partir de las 15:00\n\u2022 Check-out: Hasta las 12:00\n\u2022 Cancelaci\u00f3n gratuita hasta 24h antes\n\n\u00bfTe ayudo con alg\u00fan paso espec\u00edfico o tienes alguna pregunta?"
+        },
+        {
+            "timestamp": "2025-11-07 02:24:22",
+            "type": "user",
+            "message": "dime que habitaciones hay disponibles para esas fechas que te pase",
+            "response": "\u00a1Perfecto! Bas\u00e1ndome en lo que me has contado anteriormente sobre las fechas del 12 de noviembre para 4 personas, te ayudo con la disponibilidad de habitaciones.\n\n\ud83c\udfe8 **Informaci\u00f3n de Habitaciones Disponibles**\n\n\ud83d\udcca **Total de habitaciones:** 36\n\n\ud83c\udfe0 **Tipos de habitaciones:**\n\u2022 Habitaci\u00f3n 3 literas: 12\n\u2022 Habitaci\u00f3n 7 literas: 12\n\u2022 Habitaci\u00f3n 8 literas: 12\n\n\ud83d\udca1 **Para verificar disponibilidad espec\u00edfica:**\n\u2022 Ve a la p\u00e1gina de Reservaciones\n\u2022 Selecciona las fechas que mencionaste\n\u2022 Elige el n\u00famero de personas\n\u2022 El sistema mostrar\u00e1 habitaciones disponibles autom\u00e1ticamente\n\n\u00bfTe gustar\u00eda que te gu\u00ede para hacer la reserva ahora?"
+        },
+        {
+            "timestamp": "2025-11-07 02:24:48",
+            "type": "user",
+            "message": "que mas puedes hacer?",
+            "response": "\u00a1Hola! \ud83d\ude0a \u00a1Qu\u00e9 bueno que sigues por aqu\u00ed!\n\nAdem\u00e1s de ayudarte a encontrar la habitaci\u00f3n perfecta para ti y tus 3 acompa\u00f1antes desde el 12 al 24 de noviembre, puedo contarte sobre los servicios que ofrece el Hotel INDET, como el restaurante, la piscina, el gimnasio y el Wi-Fi gratuito. \n\nTambi\u00e9n puedo darte informaci\u00f3n sobre las instalaciones deportivas del Instituto de Deportes del Estado Trujillo, como las canchas de baloncesto, voleibol, el campo de f\u00fatbol y la pista de atletismo. \u00a1Quiz\u00e1s les interese usar alguna durante su estad\u00eda!\n\n\u00bfHay algo m\u00e1s espec\u00edfico en lo que te pueda ayudar? \u00bfQuieres saber algo sobre los precios de las habitaciones, o tal vez sobre las actividades deportivas que se realizan en el Instituto? \u00a1Dime y con gusto te ayudo! \ud83d\ude09"
+        }
+    ]
+}

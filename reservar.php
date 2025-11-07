@@ -414,5 +414,11 @@ if (!isset($_SESSION['user_id'])) {
         </div>
     </footer>
 
+    <!-- Include Chatbot -->
+    <?php include 'templates/chatbot.php'; ?>
+
+    <!-- Scripts -->
+    <script src="assets/js/chatbot.js"></script>
+
 </body>
 </html>

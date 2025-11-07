@@ -1,0 +1,113 @@
+[2025-11-07 01:28:26] [::1] [ERROR] Mensaje no proporcionado
+[2025-11-07 01:28:47] [::1] [ERROR] Mensaje no proporcionado. Input: 
+[2025-11-07 01:29:03] [::1] [ERROR] Mensaje no proporcionado. Raw input: '{message:Hola, ¿qué servicios ofrecen?}'
+[2025-11-07 01:29:20] [::1] [ERROR] Mensaje no proporcionado. Raw input: '{message:Hola, ¿qué servicios ofrecen?}'
+[2025-11-07 01:29:39] [::1] [ERROR] Mensaje no proporcionado. Raw input: '{message:Hola, ¿qué servicios ofrecen?}'
+[2025-11-07 01:29:56] [::1] [ERROR] Mensaje no proporcionado. Raw input: '{message:Hola, ¿qué servicios ofrecen?}'
+[2025-11-07 01:30:14] [::1] [ERROR] Mensaje no proporcionado. Raw input: '{message:Hola, ¿qué servicios ofrecen?}'
+[2025-11-07 01:30:30] [::1] [ERROR] Mensaje no proporcionado. Raw input: '{message:Hola, ¿qué servicios ofrecen?}'
+[2025-11-07 01:30:49] [::1] [ERROR] Mensaje no proporcionado. Raw input: '{message:Hola, ¿qué servicios ofrecen?}'
+[2025-11-07 01:31:29] [::1] [ERROR] Mensaje no proporcionado. Raw input: '{message:Hola, ¿qué servicios ofrecen?}'
+[2025-11-07 01:31:54] [::1] [REQUEST] Hola
+[2025-11-07 01:31:54] [::1] [RESPONSE] Lo siento, solo puedo ayudarte con información relacionada al Hotel INDET, sus servicios, reservas e instalaciones deportivas. Para otras consultas, te recomiendo contactar directamente a la administ...
+[2025-11-07 01:32:19] [::1] [REQUEST] Hola
+[2025-11-07 01:32:19] [::1] [RESPONSE] Lo siento, solo puedo ayudarte con información relacionada al Hotel INDET, sus servicios, reservas e instalaciones deportivas. Para otras consultas, te recomiendo contactar directamente a la administ...
+[2025-11-07 01:40:41] [::1] [REQUEST] hola
+[2025-11-07 01:40:41] [::1] [RESPONSE] Lo siento, solo puedo ayudarte con información relacionada al Hotel INDET, sus servicios, reservas e instalaciones deportivas. Para otras consultas, te recomiendo contactar directamente a la administ...
+[2025-11-07 01:44:41] [::1] [REQUEST] hola
+[2025-11-07 01:44:43] [::1] [RESPONSE] ¡Hola! ¿Cómo estás hoy? 😊 Me da mucho gusto saludarte. ¿En qué puedo ayudarte hoy con respecto al Hotel INDET o el Instituto de Deportes del Estado Trujillo? ¿Quizás quieres saber algo sobr...
+[2025-11-07 01:44:55] [::1] [REQUEST] que puedes hacer?
+[2025-11-07 01:44:55] [::1] [RESPONSE] ¡Hola! Soy el asistente del Hotel INDET. ¿En qué puedo ayudarte hoy? Puedo informarte sobre habitaciones, reservas, servicios e instalaciones deportivas.
+[2025-11-07 01:45:14] [::1] [REQUEST] cuantas habitaciones hay?
+[2025-11-07 01:45:16] [::1] [RESPONSE] ¡Hola! Un gusto saludarte. ¿En qué puedo ayudarte hoy con el Hotel INDET o el Instituto de Deportes del Estado Trujillo?
+
+En cuanto a tu pregunta sobre el número de habitaciones, esa información ...
+[2025-11-07 01:52:11] [::1] [REQUEST] hola
+[2025-11-07 01:52:11] [::1] [RESPONSE] ¡Hola! Qué gusto verte por aquí. Soy el asistente del Hotel INDET. ¿En qué puedo ayudarte? Puedo informarte sobre habitaciones, reservas, servicios e instalaciones deportivas.
+[2025-11-07 01:52:19] [::1] [REQUEST] que puedes hacer?
+[2025-11-07 01:52:19] [::1] [RESPONSE] ¡Hola! ¿Cómo estás? Soy el asistente virtual del Hotel INDET. Puedo ayudarte con información sobre reservas, habitaciones, servicios e instalaciones deportivas.
+[2025-11-07 01:52:41] [::1] [REQUEST] que reservas puedo hacer?
+[2025-11-07 01:52:44] [::1] [RESPONSE] ¡Hola! ¿Cómo estás hoy? 😊
+
+En el Hotel INDET, puedes realizar reservaciones de habitaciones de acuerdo a tus necesidades. El sistema te permite:
+
+*   Seleccionar las fechas de llegada y salida....
+[2025-11-07 01:53:09] [::1] [REQUEST] dame el paso a paso par registrarme
+[2025-11-07 01:53:09] [::1] [RESPONSE] ¡Hola! ¿Cómo estás? Soy el asistente virtual del Hotel INDET. Puedo ayudarte con información sobre reservas, habitaciones, servicios e instalaciones deportivas.
+[2025-11-07 01:57:48] [::1] [REQUEST] hola
+[2025-11-07 01:57:48] [::1] [RESPONSE] ¡Hola! ¿Cómo estás hoy? 😊 Me da mucho gusto saludarte. ¿En qué puedo ayudarte hoy con respecto al Hotel INDET o el Instituto de Deportes del Estado Trujillo? ¿Quizás quieres saber algo sobr...
+[2025-11-07 01:57:58] [::1] [REQUEST] como puedo reservar?
+[2025-11-07 01:57:58] [::1] [RESPONSE] 🏨 **Guía para Hacer una Reserva en el Hotel INDET**
+
+Proceso paso a paso:
+
+1️⃣ **Inicia sesión**
+   • Debes tener una cuenta registrada
+
+2️⃣ **Ve a 'Reservación'**
+   • Desde el men�...
+[2025-11-07 01:58:25] [::1] [REQUEST] si ayudame
+[2025-11-07 01:58:26] [::1] [RESPONSE] ¡Hola! ¡Claro que sí! ¿En qué puedo ayudarte hoy con respecto al Hotel INDET o el Instituto de Deportes del Estado Trujillo? 😊
+[2025-11-07 02:02:41] [::1] [REQUEST] hola
+[2025-11-07 02:02:41] [::1] [RESPONSE] ¡Hola! ¿Cómo estás hoy? 😊 Me da mucho gusto saludarte. ¿En qué puedo ayudarte hoy con respecto al Hotel INDET o el Instituto de Deportes del Estado Trujillo? ¿Quizás quieres saber algo sobr...
+[2025-11-07 02:02:53] [::1] [REQUEST] qu ehabitaciones hay disponibles?
+[2025-11-07 02:02:56] [::1] [RESPONSE] ¡Hola! ¿Cómo estás hoy? 😊
+
+Con gusto te ayudo con la disponibilidad de habitaciones en el Hotel INDET. Tenemos habitaciones individuales, dobles y suites familiares, todas diseñadas pensando e...
+[2025-11-07 02:03:49] [::1] [REQUEST] pienso llegar el 7 de noviembre e irme el 9 de noviembre somos 3 personas
+[2025-11-07 02:03:49] [::1] [RESPONSE] ¡Saludos! Estoy para servirte en todo lo relacionado con el Hotel INDET. ¿Tienes alguna pregunta sobre nuestras instalaciones deportivas o reservas?
+[2025-11-07 02:07:13] [::1] [REQUEST] quiero reservar que habitaciones estan disponibles
+[2025-11-07 02:07:15] [::1] [RESPONSE] ¡Hola! Claro, con gusto te ayudo con tu reserva. Para verificar la disponibilidad de habitaciones, necesito un poco más de información. ¿Tienes en mente alguna fecha específica para tu llegada y ...
+[2025-11-07 02:09:48] [::1] [REQUEST] pienso llegar el 7 de noviembre e irme el 9 de noviembre somos 3 personas
+[2025-11-07 02:09:48] [::1] [RESPONSE] ¡Hola! Qué gusto verte por aquí. Soy el asistente del Hotel INDET y puedo ayudarte con información sobre habitaciones, reservas y servicios deportivos.
+[2025-11-07 02:13:43] [::1] [REQUEST] quiero reservar que habitaciones estan disponibles
+[2025-11-07 02:13:45] [::1] [RESPONSE] ¡Hola! Claro que sí, con gusto te ayudo con tu reserva. Para poder darte la información más precisa sobre las habitaciones disponibles, necesito saber un poco más:
+
+*   ¿En qué fechas te gustar...
+[2025-11-07 02:13:52] [::1] [REQUEST] pienso llegar el 7 de noviembre e irme el 9 de noviembre somos 3 personas
+[2025-11-07 02:13:52] [::1] [RESPONSE] ¡Hola! ¿Cómo estás? Soy el asistente virtual del Hotel INDET. Puedo ayudarte con información sobre reservas, habitaciones, servicios e instalaciones deportivas.
+[2025-11-07 02:17:34] [::1] [REQUEST] quiero reservar
+[2025-11-07 02:17:37] [::1] [RESPONSE] ¡Claro! ¡Hola! ¿Cómo estás hoy? 😊
+
+¡Genial que quieras reservar! Para ayudarte con la reserva, necesito algunos detalles. ¿Tienes en mente las fechas de llegada y salida? También, ¿para cu...
+[2025-11-07 02:18:17] [::1] [REQUEST] somos 3 personas, quiero llegar el 3 de diciembre y salir el 6 de diciembre que habitaciones hay disponibles?
+[2025-11-07 02:18:17] [::1] [RESPONSE] ¡Perfecto! Basándome en lo que me has contado anteriormente, te ayudo con la disponibilidad de habitaciones.
+
+🏨 **Información de Habitaciones Disponibles**
+
+📊 **Total de habitaciones:** 36
+
+�...
+[2025-11-07 02:18:48] [::1] [REQUEST] si guiame
+[2025-11-07 02:18:48] [::1] [RESPONSE] ¡Hola! Soy el asistente del Hotel INDET. ¿En qué puedo ayudarte hoy? Puedo informarte sobre habitaciones, reservas, servicios e instalaciones deportivas.
+[2025-11-07 02:20:44] [::1] [REQUEST] si guiame
+[2025-11-07 02:20:44] [::1] [RESPONSE] ¡Claro! Recuerdo que estamos hablando de tu reserva para las fechas del 7 de noviembre al 9 de noviembre para 3 personas.
+
+🏨 **Guía para Hacer tu Reserva**
+
+Sigue estos pasos:
+
+1️⃣ **Ve a la ...
+[2025-11-07 02:22:29] [::1] [REQUEST] hola
+[2025-11-07 02:22:29] [::1] [RESPONSE] ¡Hola! ¿Cómo estás hoy? 😊 Me da mucho gusto saludarte. ¿En qué puedo ayudarte hoy con respecto al Hotel INDET o el Instituto de Deportes del Estado Trujillo? ¿Quizás quieres saber algo sobr...
+[2025-11-07 02:22:45] [::1] [REQUEST] quiero saber que habitas hay para reservar
+[2025-11-07 02:22:46] [::1] [RESPONSE] ¡Hola! ¿Cómo estás hoy? 😊
+
+Claro, con gusto te ayudo a ver qué habitaciones tenemos disponibles para reservar. Para poder darte información precisa, ¿podrías decirme las fechas en las que t...
+[2025-11-07 02:23:54] [::1] [REQUEST] somos 4 personas, querempos reservar desde el 12 de noviembre hasta el 24
+[2025-11-07 02:23:54] [::1] [RESPONSE] ¡Claro! Recuerdo que estamos hablando de tu reserva.
+
+🏨 **Guía para Hacer tu Reserva**
+
+Sigue estos pasos:
+
+1️⃣ **Ve a la página de Reservaciones**
+   • Desde el menú principal o haz clic...
+[2025-11-07 02:24:22] [::1] [REQUEST] dime que habitaciones hay disponibles para esas fechas que te pase
+[2025-11-07 02:24:22] [::1] [RESPONSE] ¡Perfecto! Basándome en lo que me has contado anteriormente sobre las fechas del 12 de noviembre para 4 personas, te ayudo con la disponibilidad de habitaciones.
+
+🏨 **Información de Habitaciones...
+[2025-11-07 02:24:45] [::1] [REQUEST] que mas puedes hacer?
+[2025-11-07 02:24:48] [::1] [RESPONSE] ¡Hola! 😊 ¡Qué bueno que sigues por aquí!
+
+Además de ayudarte a encontrar la habitación perfecta para ti y tus 3 acompañantes desde el 12 al 24 de noviembre, puedo contarte sobre los servicio...
