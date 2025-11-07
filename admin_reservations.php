@@ -164,6 +164,7 @@ $result = $conn->query($sql);
                         <ul id="selected-list" class="list-disc pl-5"></ul>
                     </div>
                 </div>
+                <button type="button" id="guest-modal-btn" class="action-button w-full hidden bg-blue-500 hover:bg-blue-600">Ingresar Datos de Huéspedes <i class="fas fa-users"></i></button>
                 <button type="button" id="reserve-btn" class="action-button w-full hidden bg-green-500 hover:bg-green-600">Agregar Reserva <i class="fas fa-plus"></i></button>
             </form>
             <div id="availability-results" class="mt-8"></div>
@@ -195,8 +196,10 @@ $result = $conn->query($sql);
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Llegada</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Salida</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Estado</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Ver Huéspedes</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Editar</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Eliminar</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">PDF</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-300">
@@ -233,20 +236,55 @@ $result = $conn->query($sql);
                                         </span>
                                     </td>
                                     <td class="py-3 px-4 text-center">
+                                        <button onclick="viewGuests(<?php echo $row['id']; ?>)" class="text-green-500 hover:text-green-700">Ver Huéspedes</button>
+                                    </td>
+                                    <td class="py-3 px-4 text-center">
                                         <button onclick="openEditReservationModal(<?php echo htmlspecialchars(json_encode($row)); ?>)" class="text-blue-500 hover:text-blue-700">Editar</button>
                                     </td>
                                     <td class="py-3 px-4 text-center">
                                         <a href="php/reservation_handler.php?delete_reservation=<?php echo $row['id']; ?>" onclick="return confirm('¿Estás seguro de eliminar esta reserva?')" class="text-red-500 hover:text-red-700">Eliminar</a>
                                     </td>
+                                    <td class="py-3 px-4 text-center">
+                                        <a href="generate_pdf.php?id=<?php echo $row['id']; ?>" target="_blank" class="text-blue-500 hover:text-blue-700">
+                                            <i class="fas fa-file-pdf"></i> PDF
+                                        </a>
+                                    </td>
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="10" class="text-center py-4">No hay reservas encontradas.</td>
+                                <td colspan="11" class="text-center py-4">No hay reservas encontradas.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guest Details Modal -->
+    <div id="guestModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-gray-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-4xl max-h-screen overflow-y-auto">
+            <h2 class="text-2xl font-bold mb-6">Datos de los Huéspedes</h2>
+            <div id="guest-forms" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Guest forms will be dynamically added here -->
+            </div>
+            <div class="flex justify-end mt-6">
+                <button type="button" onclick="closeGuestModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-2">Cerrar</button>
+                <button type="button" onclick="saveGuestsAndReserve()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Guardar y Reservar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Guests Modal -->
+    <div id="viewGuestsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-gray-800 text-white p-8 rounded-lg shadow-2xl w-full max-w-2xl">
+            <h2 class="text-2xl font-bold mb-6">Huéspedes de la Reserva</h2>
+            <div id="guests-list" class="space-y-4">
+                <!-- Guests will be loaded here -->
+            </div>
+            <div class="flex justify-end mt-6">
+                <button type="button" onclick="closeViewGuestsModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg">Cerrar</button>
             </div>
         </div>
     </div>
@@ -538,8 +576,11 @@ $result = $conn->query($sql);
                     return;
                 }
 
+                openGuestModal();
+            });
 
-                showConfirmation();
+            document.getElementById('guest-modal-btn').addEventListener('click', function() {
+                openGuestModal();
             });
 
             // Filter users by cedula in the add reservation form
@@ -591,10 +632,100 @@ $result = $conn->query($sql);
             document.body.appendChild(confirmationDiv);
         }
 
+        function openGuestModal() {
+            const adultos = parseInt(document.getElementById('adultos').value);
+            const ninos = parseInt(document.getElementById('ninos').value);
+            const discapacitados = parseInt(document.getElementById('discapacitados').value);
+            const totalGuests = adultos + ninos + discapacitados;
+
+            const guestForms = document.getElementById('guest-forms');
+            guestForms.innerHTML = '';
+
+            for (let i = 1; i <= totalGuests; i++) {
+                const guestDiv = document.createElement('div');
+                guestDiv.className = 'bg-gray-700 p-4 rounded-lg';
+                guestDiv.innerHTML = `
+                    <h4 class="text-lg font-bold mb-4">Huésped ${i}</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Nombre</label>
+                            <input type="text" name="guests[${i}][name]" class="w-full p-2 border rounded bg-gray-600 text-white" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Apellido</label>
+                            <input type="text" name="guests[${i}][lastname]" class="w-full p-2 border rounded bg-gray-600 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Teléfono</label>
+                            <input type="tel" name="guests[${i}][phone]" class="w-full p-2 border rounded bg-gray-600 text-white">
+                        </div>
+                    </div>
+                `;
+                guestForms.appendChild(guestDiv);
+            }
+
+            document.getElementById('guestModal').classList.remove('hidden');
+        }
+
+        function closeGuestModal() {
+            document.getElementById('guestModal').classList.add('hidden');
+        }
+
+        let currentGuests = [];
+
+        function saveGuestsAndReserve() {
+            const guestForm = document.createElement('form');
+            const guestInputs = document.querySelectorAll('#guest-forms input');
+            currentGuests = [];
+
+            for (let i = 0; i < guestInputs.length; i += 3) {
+                const name = guestInputs[i].value;
+                const lastname = guestInputs[i + 1].value;
+                const phone = guestInputs[i + 2].value;
+                if (name.trim() !== '') {
+                    currentGuests.push({ name, lastname, phone });
+                }
+            }
+
+            if (currentGuests.length === 0) {
+                alert('Por favor ingresa al menos un huésped.');
+                return;
+            }
+
+            closeGuestModal();
+            showConfirmation();
+        }
+
+        function showConfirmation() {
+            const form = document.getElementById('reservationForm');
+            const confirmationDiv = document.createElement('div');
+            confirmationDiv.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            confirmationDiv.innerHTML = `
+                <div class="bg-gray-800 text-white p-8 rounded-lg max-w-md w-full mx-4">
+                    <h3 class="text-xl font-bold mb-4">Confirmar Reserva</h3>
+                    <p class="mb-4">¿Estás seguro de que quieres proceder con esta reserva?</p>
+                    <div class="mb-4">
+                        <h4 class="font-bold">Detalles de la reserva:</h4>
+                        <p>Cliente: ${document.getElementById('user_id').selectedOptions[0].textContent}</p>
+                        <p>Check-in: ${document.querySelector('form#reservationForm input[name="checkin"]').value}</p>
+                        <p>Check-out: ${document.querySelector('form#reservationForm input[name="checkout"]').value}</p>
+                        <p>Habitaciones seleccionadas: ${selectedRooms.length}</p>
+                        <p>Huéspedes: ${currentGuests.length}</p>
+                    </div>
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" onclick="this.closest('.fixed').remove()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Volver</button>
+                        <button type="button" onclick="submitReservation()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">Confirmar</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(confirmationDiv);
+        }
+
         function submitReservation() {
             const form = document.getElementById('reservationForm');
             const formData = new FormData(form);
             formData.append('selected_rooms', JSON.stringify(selectedRooms));
+            formData.append('guests', JSON.stringify(currentGuests));
             formData.append('add_reservation_admin', 'true'); // Indicate this is an admin reservation
 
             fetch('php/admin_book_reservation.php', {
@@ -617,6 +748,43 @@ $result = $conn->query($sql);
                 console.error('Error:', error);
                 alert('Error al procesar la reserva. Inténtalo de nuevo.');
             });
+        }
+
+        function viewGuests(reservationId) {
+            fetch(`php/get_guests.php?reservation_id=${reservationId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const guestsList = document.getElementById('guests-list');
+                    guestsList.innerHTML = '';
+
+                    if (data.error) {
+                        guestsList.innerHTML = '<p class="text-red-400">Error: ' + data.error + '</p>';
+                    } else if (data.length === 0) {
+                        guestsList.innerHTML = '<p class="text-gray-400">No hay huéspedes registrados para esta reserva.</p>';
+                    } else {
+                        data.forEach(guest => {
+                            const guestDiv = document.createElement('div');
+                            guestDiv.className = 'bg-gray-700 p-4 rounded-lg';
+                            guestDiv.innerHTML = `
+                                <h4 class="font-bold">${guest.guest_name} ${guest.guest_lastname || ''}</h4>
+                                <p class="text-gray-300">Teléfono: ${guest.guest_phone || 'No especificado'}</p>
+                            `;
+                            guestsList.appendChild(guestDiv);
+                        });
+                    }
+
+                    document.getElementById('viewGuestsModal').classList.remove('hidden');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const guestsList = document.getElementById('guests-list');
+                    guestsList.innerHTML = '<p class="text-red-400">Error al cargar los huéspedes. Verifica tu conexión.</p>';
+                    document.getElementById('viewGuestsModal').classList.remove('hidden');
+                });
+        }
+
+        function closeViewGuestsModal() {
+            document.getElementById('viewGuestsModal').classList.add('hidden');
         }
     </script>
 </body>

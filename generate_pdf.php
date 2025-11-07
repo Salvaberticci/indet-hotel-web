@@ -13,7 +13,7 @@ if (!isset($_GET['id'])) {
 $id = intval($_GET['id']);
 
 // Fetch reservation details
-$sql = "SELECT r.id, ro.type as room_type, r.adultos as adults, r.checkin_date, r.checkout_date, r.status, u.name, u.email FROM reservations r JOIN users u ON r.user_id = u.id JOIN rooms ro ON r.room_id = ro.id WHERE r.id = ?";
+$sql = "SELECT r.id, ro.type as room_type, r.adultos as adults, r.ninos, r.discapacitados, r.checkin_date, r.checkout_date, r.status, u.name, u.email, u.cedula, r.guest_name, r.guest_lastname, r.cedula as guest_cedula FROM reservations r JOIN users u ON r.user_id = u.id JOIN rooms ro ON r.room_id = ro.id WHERE r.id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $id);
 $stmt->execute();
@@ -24,6 +24,17 @@ if ($result->num_rows == 0) {
 }
 
 $reservation = $result->fetch_assoc();
+
+// Fetch guest details
+$guests_sql = "SELECT guest_name, guest_lastname, guest_phone FROM reservation_guests WHERE reservation_id = ?";
+$guests_stmt = $conn->prepare($guests_sql);
+$guests_stmt->bind_param("i", $id);
+$guests_stmt->execute();
+$guests_result = $guests_stmt->get_result();
+$guests = [];
+while ($guest = $guests_result->fetch_assoc()) {
+    $guests[] = $guest;
+}
 
 // Calculate additional details
 $checkin = new DateTime($reservation['checkin_date']);
@@ -101,12 +112,38 @@ $pdf->Cell(50, 8, utf8_decode('Fecha de Check-out:'), 0, 0);
 $pdf->Cell(0, 8, utf8_decode($reservation['checkout_date']), 0, 1);
 $pdf->Cell(50, 8, utf8_decode('Tipo de Habitación:'), 0, 0);
 $pdf->Cell(0, 8, utf8_decode($reservation['room_type']), 0, 1);
-$pdf->Cell(50, 8, utf8_decode('Número de Personas:'), 0, 0);
+$pdf->Cell(50, 8, utf8_decode('Adultos:'), 0, 0);
 $pdf->Cell(0, 8, utf8_decode($reservation['adults']), 0, 1);
+$pdf->Cell(50, 8, utf8_decode('Niños:'), 0, 0);
+$pdf->Cell(0, 8, utf8_decode($reservation['ninos']), 0, 1);
+$pdf->Cell(50, 8, utf8_decode('Discapacitados:'), 0, 0);
+$pdf->Cell(0, 8, utf8_decode($reservation['discapacitados']), 0, 1);
 $pdf->Cell(50, 8, utf8_decode('Número de Noches:'), 0, 0);
 $pdf->Cell(0, 8, utf8_decode($nights), 0, 1);
 
 $pdf->Ln(5);
+
+// Guest Details Section
+if (!empty($guests)) {
+    $pdf->SetFont('Arial', 'B', 14);
+    $pdf->SetTextColor(0, 51, 102);
+    $pdf->Cell(0, 10, utf8_decode('Detalles de los Huéspedes'), 0, 1, 'L');
+    $pdf->Ln(5);
+
+    $pdf->SetFont('Arial', '', 12);
+    $pdf->SetTextColor(0, 0, 0);
+    foreach ($guests as $index => $guest) {
+        $pdf->Cell(50, 8, utf8_decode('Huésped ' . ($index + 1) . ':'), 0, 0);
+        $pdf->Cell(0, 8, utf8_decode($guest['guest_name'] . ' ' . $guest['guest_lastname']), 0, 1);
+        if (!empty($guest['guest_phone'])) {
+            $pdf->Cell(50, 8, utf8_decode('Teléfono:'), 0, 0);
+            $pdf->Cell(0, 8, utf8_decode($guest['guest_phone']), 0, 1);
+        }
+        $pdf->Ln(2);
+    }
+
+    $pdf->Ln(5);
+}
 
 // Payment Summary Section
 $pdf->SetFont('Arial', 'B', 14);

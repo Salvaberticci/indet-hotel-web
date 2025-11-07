@@ -165,6 +165,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $conn->commit();
 
+        // Save guest details if provided - AFTER scheduling maintenance
+        if (isset($_POST['guests'])) {
+            $guests_json = $_POST['guests'];
+            $guests = json_decode($guests_json, true);
+
+            if (is_array($guests) && !empty($guests)) {
+                // Get all reservation IDs that were just created by querying the database
+                $reservation_ids = [];
+                $total_rooms = count($selected_rooms);
+
+                // Get the last inserted ID and work backwards
+                $last_id_sql = "SELECT LAST_INSERT_ID() as id";
+                $last_id_result = $conn->query($last_id_sql);
+                $last_reservation_id = $last_id_result->fetch_assoc()['id'];
+
+                // Calculate all reservation IDs (working backwards from the last one)
+                for ($i = $total_rooms - 1; $i >= 0; $i--) {
+                    $reservation_ids[$i] = $last_reservation_id - ($total_rooms - 1 - $i);
+                }
+
+                // Save guests for each reservation
+                foreach ($guests as $index => $guest) {
+                    if (!empty($guest['name']) && isset($reservation_ids[$index])) {
+                        $res_id = $reservation_ids[$index];
+
+                        $guest_sql = "INSERT INTO reservation_guests (reservation_id, guest_name, guest_lastname, guest_phone) VALUES (?, ?, ?, ?)";
+                        $stmt_guest = $conn->prepare($guest_sql);
+                        $stmt_guest->bind_param("isss", $res_id, $guest['name'], $guest['lastname'], $guest['phone']);
+                        if (!$stmt_guest->execute()) {
+                            throw new Exception("Error al guardar huésped: " . $stmt_guest->error);
+                        }
+                        $stmt_guest->close();
+                    }
+                }
+            }
+        }
+
         // Schedule maintenance tasks for each reservation
         include 'maintenance_scheduler.php';
         foreach ($selected_rooms as $room) {
