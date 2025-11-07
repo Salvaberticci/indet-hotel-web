@@ -475,12 +475,13 @@ if (!isset($_SESSION['user_id'])) {
             const guestInputs = document.querySelectorAll('#guest-forms input');
             currentGuests = [];
 
-            for (let i = 0; i < guestInputs.length; i += 3) {
+            for (let i = 0; i < guestInputs.length; i += 4) { // Now 4 inputs per guest (name, lastname, phone, room_id)
                 const name = guestInputs[i].value;
                 const lastname = guestInputs[i + 1].value;
                 const phone = guestInputs[i + 2].value;
+                const roomId = guestInputs[i + 3].value;
                 if (name.trim() !== '') {
-                    currentGuests.push({ name, lastname, phone });
+                    currentGuests.push({ name, lastname, phone, room_id: roomId });
                 }
             }
 

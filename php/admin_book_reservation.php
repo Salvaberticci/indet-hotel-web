@@ -228,25 +228,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 error_log("Found reservation IDs: " . implode(', ', $reservation_ids));
 
-                // Save guests for each reservation
-                foreach ($guests as $index => $guest) {
-                    if (!empty($guest['name']) && isset($reservation_ids[$index])) {
-                        $res_id = $reservation_ids[$index];
-                        error_log("Saving guest for reservation ID: $res_id");
+                // Save guests for each reservation - group by room_id
+                $guests_by_room = [];
+                foreach ($guests as $guest) {
+                    $room_id = $guest['room_id'] ?? '';
+                    if (!isset($guests_by_room[$room_id])) {
+                        $guests_by_room[$room_id] = [];
+                    }
+                    $guests_by_room[$room_id][] = $guest;
+                }
 
-                        $guest_sql = "INSERT INTO reservation_guests (reservation_id, guest_name, guest_lastname, guest_phone) VALUES (?, ?, ?, ?)";
-                        $stmt_guest = $conn->prepare($guest_sql);
-                        if (!$stmt_guest) {
-                            error_log('Error al preparar la consulta de inserción de huésped: ' . $conn->error);
-                            throw new Exception('Error al preparar la consulta de inserción de huésped: ' . $conn->error);
+                // Assign guests to reservations based on room_id
+                foreach ($reservation_ids as $res_index => $res_id) {
+                    $room_id = $selected_rooms[$res_index]['id'];
+                    if (isset($guests_by_room[$room_id])) {
+                        foreach ($guests_by_room[$room_id] as $guest) {
+                            if (!empty($guest['name'])) {
+                                error_log("Saving guest for reservation ID: $res_id, room: $room_id");
+
+                                $guest_sql = "INSERT INTO reservation_guests (reservation_id, guest_name, guest_lastname, guest_phone) VALUES (?, ?, ?, ?)";
+                                $stmt_guest = $conn->prepare($guest_sql);
+                                if (!$stmt_guest) {
+                                    error_log('Error al preparar la consulta de inserción de huésped: ' . $conn->error);
+                                    throw new Exception('Error al preparar la consulta de inserción de huésped: ' . $conn->error);
+                                }
+                                $stmt_guest->bind_param("isss", $res_id, $guest['name'], $guest['lastname'], $guest['phone']);
+                                if (!$stmt_guest->execute()) {
+                                    error_log("Error al guardar huésped: " . $stmt_guest->error);
+                                    throw new Exception("Error al guardar huésped: " . $stmt_guest->error);
+                                }
+                                $stmt_guest->close();
+                                error_log("Guest saved for reservation $res_id: " . $guest['name']);
+                            }
                         }
-                        $stmt_guest->bind_param("isss", $res_id, $guest['name'], $guest['lastname'], $guest['phone']);
-                        if (!$stmt_guest->execute()) {
-                            error_log("Error al guardar huésped: " . $stmt_guest->error);
-                            throw new Exception("Error al guardar huésped: " . $stmt_guest->error);
-                        }
-                        $stmt_guest->close();
-                        error_log("Guest saved for reservation $res_id: " . $guest['name']);
                     }
                 }
             }
