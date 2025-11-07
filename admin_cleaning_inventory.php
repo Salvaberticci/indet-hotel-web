@@ -92,6 +92,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
                 <table class="min-w-full bg-gray-800" id="cleaning-inventory-table">
                     <thead class="bg-gray-700 text-white">
                         <tr>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">ID</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Nombre del Producto</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Cantidad</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Descripción</th>
@@ -106,6 +107,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
                         if ($cleaning_inventory_result->num_rows > 0): ?>
                             <?php while($item = $cleaning_inventory_result->fetch_assoc()): ?>
                                 <tr class="hover:bg-gray-700 border-b border-gray-700">
+                                    <td class="py-3 px-4 text-center"><?php echo $item['id']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($item['item_name']); ?></td>
                                     <td class="py-3 px-4 text-center">
                                         <div class="flex items-center justify-center">

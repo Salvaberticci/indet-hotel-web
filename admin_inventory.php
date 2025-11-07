@@ -125,20 +125,24 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
                 <table class="min-w-full bg-gray-800">
                     <thead class="bg-gray-700 text-white">
                         <tr>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">ID</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Habitación</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Tipo</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Piso</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Items en Inventario</th>
+                            <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Tareas de Mantenimiento</th>
                             <th class="py-3 px-4 uppercase font-semibold text-sm text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-300">
                         <?php
                         $floor_filter = isset($_GET['floor_id']) ? "AND r.floor_id = '" . $conn->real_escape_string($_GET['floor_id']) . "'" : "";
-                        $rooms_inventory_sql = "SELECT r.id, r.type, f.name as floor_name, COUNT(ri.id) as item_count
+                        $rooms_inventory_sql = "SELECT r.id, r.type, f.name as floor_name, COUNT(ri.id) as item_count,
+                                                GROUP_CONCAT(mt.id ORDER BY mt.id ASC) as maintenance_task_ids
                                                 FROM rooms r
                                                 LEFT JOIN floors f ON r.floor_id = f.id
                                                 LEFT JOIN room_inventory ri ON r.id = ri.room_id
+                                                LEFT JOIN maintenance_tasks mt ON r.id = mt.room_id
                                                 WHERE r.status = 'enabled' $floor_filter
                                                 GROUP BY r.id, r.type, f.name
                                                 ORDER BY f.floor_number ASC, r.id ASC";
@@ -147,9 +151,11 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] != 'admin') {
                             <?php while($room = $rooms_inventory_result->fetch_assoc()): ?>
                                 <tr class="hover:bg-gray-700 border-b border-gray-700">
                                     <td class="py-3 px-4 text-center"><?php echo $room['id']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo $room['id']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($room['type']); ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo htmlspecialchars($room['floor_name']); ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $room['item_count']; ?> items</td>
+                                    <td class="py-3 px-4 text-center"><?php echo $room['maintenance_task_ids'] ? $room['maintenance_task_ids'] : 'Ninguna'; ?></td>
                                     <td class="py-3 px-4 text-center">
                                         <a href="admin_room_inventory.php?room_id=<?php echo $room['id']; ?>" class="text-blue-500 hover:text-blue-700 mr-2">Ver/Editar Inventario</a>
                                         <a href="admin_rooms.php" class="text-green-500 hover:text-green-700">Gestionar Habitación</a>
