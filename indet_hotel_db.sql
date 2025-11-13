@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 03-11-2025 a las 22:53:04
+-- Tiempo de generación: 13-11-2025 a las 22:20:03
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -212,7 +212,14 @@ INSERT INTO `maintenance_tasks` (`id`, `room_id`, `assigned_to_user_id`, `task_d
 (25, 2, 3, 'Limpieza programada antes del check-in', 'pending', '2025-12-29 12:00:00', NULL),
 (26, 1, 7, 'limpiar', 'pending', '2025-10-26 02:51:03', NULL),
 (27, 1, 7, 'Limpieza de habitacion por salida', 'pending', '2025-10-26 02:56:13', NULL),
-(28, 104, 3, 'Limpieza programada antes del check-in', 'pending', '2025-10-28 12:00:00', NULL);
+(28, 104, 3, 'Limpieza programada antes del check-in', 'pending', '2025-10-28 12:00:00', NULL),
+(29, 201, 3, 'Limpieza programada antes del check-in', 'pending', '2025-11-06 12:00:00', NULL),
+(30, 101, 3, 'Limpieza programada antes del check-in', 'pending', '2025-11-06 12:00:00', NULL),
+(31, 109, 3, 'Limpieza programada antes del check-in', 'pending', '2025-11-06 12:00:00', NULL),
+(32, 208, 3, 'Limpieza programada antes del check-in', 'pending', '2025-11-26 12:00:00', NULL),
+(33, 206, 3, 'Limpieza programada antes del check-in', 'pending', '2025-11-26 12:00:00', NULL),
+(34, 102, 3, 'Limpieza programada antes del check-in', 'pending', '2025-11-06 12:00:00', NULL),
+(35, 204, 3, 'Limpieza programada antes del check-in', 'pending', '2025-12-03 12:00:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -244,7 +251,46 @@ CREATE TABLE `reservations` (
 --
 
 INSERT INTO `reservations` (`id`, `user_id`, `room_id`, `floor_id`, `checkin_date`, `checkout_date`, `guest_name`, `guest_lastname`, `guest_email`, `cedula`, `adultos`, `ninos`, `discapacitados`, `status`, `checkin_time`, `checkout_time`) VALUES
-(49, 14, 104, NULL, '2025-10-29', '2025-11-01', 'Goku', '', 'goku@gmail.com', '09090909', 2, 3, 2, 'pending', NULL, NULL);
+(74, 14, 101, NULL, '2025-11-07', '2025-11-14', 'Goku', '', 'goku@gmail.com', '09090909', 3, 3, 0, 'pending', NULL, NULL),
+(75, 14, 102, NULL, '2025-11-07', '2025-11-14', 'Goku', '', 'goku@gmail.com', '09090909', 3, 3, 0, 'pending', NULL, NULL),
+(76, 13, 201, NULL, '2025-12-04', '2025-12-11', 'ricardo briceno', '', 'ricardo@gmail.com', '11122223333', 5, 5, 0, 'pending', NULL, NULL),
+(77, 13, 204, NULL, '2025-12-04', '2025-12-11', 'ricardo briceno', '', 'ricardo@gmail.com', '11122223333', 5, 5, 0, 'pending', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `reservation_guests`
+--
+
+CREATE TABLE `reservation_guests` (
+  `id` int(11) NOT NULL,
+  `reservation_id` int(11) NOT NULL,
+  `guest_name` varchar(255) NOT NULL,
+  `guest_lastname` varchar(255) DEFAULT NULL,
+  `guest_phone` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `reservation_guests`
+--
+
+INSERT INTO `reservation_guests` (`id`, `reservation_id`, `guest_name`, `guest_lastname`, `guest_phone`) VALUES
+(19, 74, 'pedro', 'Berticci', '04121731842'),
+(20, 74, 'Francisco', 'Berticci', '04121731842'),
+(21, 74, 'rodrigo', 'Berticci', '04121731842'),
+(22, 75, 'Juanas', 'Berticci', '04121731842'),
+(23, 75, 'rodrigo', 'Berticci', '04121731842'),
+(24, 75, 'Jesus', 'Berticci', '04121731842'),
+(25, 76, 'Salvatore', 'Berticci', '04121731842'),
+(26, 76, 'Juanas', 'Berticci', '04121731842'),
+(27, 76, 'Juanas', 'Berticci', '04121731842'),
+(28, 77, 'Salvatore', 'Berticci', '04121731842'),
+(29, 77, 'Maria', 'Berticci', '04121731842'),
+(30, 77, 'Salvatore', 'Berticci', '04121731842'),
+(31, 77, 'Juanas', 'Berticci', '04121731842'),
+(32, 77, 'Maria', 'Berticci', '04121731842'),
+(33, 77, 'Salvatore', 'Berticci', '04121731842'),
+(34, 77, 'Paula', 'Berticci', '04121731842');
 
 -- --------------------------------------------------------
 
@@ -642,6 +688,13 @@ ALTER TABLE `reservations`
   ADD KEY `fk_reservations_floor` (`floor_id`);
 
 --
+-- Indices de la tabla `reservation_guests`
+--
+ALTER TABLE `reservation_guests`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `reservation_id` (`reservation_id`);
+
+--
 -- Indices de la tabla `reviews`
 --
 ALTER TABLE `reviews`
@@ -722,13 +775,19 @@ ALTER TABLE `hotel_info`
 -- AUTO_INCREMENT de la tabla `maintenance_tasks`
 --
 ALTER TABLE `maintenance_tasks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT de la tabla `reservations`
 --
 ALTER TABLE `reservations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
+
+--
+-- AUTO_INCREMENT de la tabla `reservation_guests`
+--
+ALTER TABLE `reservation_guests`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT de la tabla `reviews`
@@ -782,6 +841,12 @@ ALTER TABLE `maintenance_tasks`
 ALTER TABLE `reservations`
   ADD CONSTRAINT `fk_reservations_floor` FOREIGN KEY (`floor_id`) REFERENCES `floors` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `reservations_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
+
+--
+-- Filtros para la tabla `reservation_guests`
+--
+ALTER TABLE `reservation_guests`
+  ADD CONSTRAINT `reservation_guests_ibfk_1` FOREIGN KEY (`reservation_id`) REFERENCES `reservations` (`id`) ON DELETE CASCADE;
 
 --
 -- Filtros para la tabla `reviews`
