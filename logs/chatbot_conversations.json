@@ -51,6 +51,12 @@
             "type": "user",
             "message": "si guiame",
             "response": "\u00a1Claro! Recuerdo que estamos hablando de tu reserva para las fechas del 7 de noviembre al 9 de noviembre para 3 personas.\n\n\ud83c\udfe8 **Gu\u00eda para Hacer tu Reserva**\n\nSigue estos pasos:\n\n1\ufe0f\u20e3 **Ve a la p\u00e1gina de Reservaciones**\n   \u2022 Desde el men\u00fa principal o haz clic en 'Reservar'\n\n2\ufe0f\u20e3 **Selecciona las fechas**\n   \u2022 Ya tienes las fechas: 7 de noviembre - 9 de noviembre\n\n3\ufe0f\u20e3 **Elige el piso**\n   \u2022 Planta Baja (accesible para discapacitados)\n   \u2022 Pisos superiores (habitaciones est\u00e1ndar)\n\n4\ufe0f\u20e3 **Indica el n\u00famero de personas**\n   \u2022 Ya mencionaste: 3 personas\n\n5\ufe0f\u20e3 **Selecciona habitaciones disponibles**\n   \u2022 El sistema te mostrar\u00e1 las opciones\n   \u2022 Elige las que necesites\n\n6\ufe0f\u20e3 **Confirma y reserva**\n   \u2022 Revisa todos los detalles\n   \u2022 Haz clic en 'Reservar'\n\n\ud83d\udca1 **Informaci\u00f3n importante:**\n\u2022 Check-in: A partir de las 15:00\n\u2022 Check-out: Hasta las 12:00\n\u2022 Cancelaci\u00f3n gratuita hasta 24h antes\n\n\u00bfTe ayudo con alg\u00fan paso espec\u00edfico o tienes alguna pregunta?"
+        },
+        {
+            "timestamp": "2025-11-26 17:07:42",
+            "type": "user",
+            "message": "test",
+            "response": "\u00a1Hola! Soy el asistente del Hotel INDET. \u00bfEn qu\u00e9 puedo ayudarte hoy? Puedo informarte sobre habitaciones, reservas, servicios e instalaciones deportivas."
         }
     ],
     "conv_1762478247945_rq98x2kylzs": [
@@ -103,6 +109,34 @@
             "type": "user",
             "message": "que mas puedes hacer?",
             "response": "\u00a1Hola! \ud83d\ude0a \u00a1Qu\u00e9 bueno que sigues por aqu\u00ed!\n\nAdem\u00e1s de ayudarte a encontrar la habitaci\u00f3n perfecta para ti y tus 3 acompa\u00f1antes desde el 12 al 24 de noviembre, puedo contarte sobre los servicios que ofrece el Hotel INDET, como el restaurante, la piscina, el gimnasio y el Wi-Fi gratuito. \n\nTambi\u00e9n puedo darte informaci\u00f3n sobre las instalaciones deportivas del Instituto de Deportes del Estado Trujillo, como las canchas de baloncesto, voleibol, el campo de f\u00fatbol y la pista de atletismo. \u00a1Quiz\u00e1s les interese usar alguna durante su estad\u00eda!\n\n\u00bfHay algo m\u00e1s espec\u00edfico en lo que te pueda ayudar? \u00bfQuieres saber algo sobre los precios de las habitaciones, o tal vez sobre las actividades deportivas que se realizan en el Instituto? \u00a1Dime y con gusto te ayudo! \ud83d\ude09"
+        }
+    ],
+    "conv_1764173689903_yumovfqvd4": [
+        {
+            "timestamp": "2025-11-26 17:14:54",
+            "type": "user",
+            "message": "hola",
+            "response": "\u00a1Hola! Qu\u00e9 gusto verte por aqu\u00ed. Soy el asistente del Hotel INDET. \u00bfEn qu\u00e9 puedo ayudarte? Puedo informarte sobre habitaciones, reservas, servicios e instalaciones deportivas."
+        },
+        {
+            "timestamp": "2025-11-26 17:15:06",
+            "type": "user",
+            "message": "que puedes hacer",
+            "response": "\u00a1Hola! Qu\u00e9 bueno saludarte de nuevo. Pues, como asistente virtual especializado en el Hotel INDET y el Instituto de Deportes del Estado Trujillo, puedo ayudarte con informaci\u00f3n sobre:\n\n*   El Hotel INDET: Puedo darte detalles sobre nuestras habitaciones, servicios (como restaurante, piscina, etc.), precios y ayudarte con reservas.\n*   El Instituto de Deportes: Puedo informarte sobre las instalaciones deportivas disponibles (canchas, gimnasio, etc.), eventos deportivos que se realicen y programas de entrenamiento.\n\nB\u00e1sicamente, todo lo que necesites saber sobre el hotel y el mundo deportivo del instituto, \u00a1aqu\u00ed estoy para ayudarte! \u00bfEn qu\u00e9 te puedo ser \u00fatil hoy? \ud83d\ude0a"
+        },
+        {
+            "timestamp": "2025-11-26 17:15:18",
+            "type": "user",
+            "message": "que habitaciones estan disponibles?",
+            "response": "\u00a1Perfecto! Bas\u00e1ndome en lo que me has contado anteriormente, te ayudo con la disponibilidad de habitaciones.\n\n\ud83c\udfe8 **Informaci\u00f3n de Habitaciones Disponibles**\n\n\ud83d\udcca **Total de habitaciones:** 36\n\n\ud83c\udfe0 **Tipos de habitaciones:**\n\u2022 Habitaci\u00f3n 3 literas: 12\n\u2022 Habitaci\u00f3n 7 literas: 12\n\u2022 Habitaci\u00f3n 8 literas: 12\n\n\ud83d\udca1 **Para verificar disponibilidad espec\u00edfica:**\n\u2022 Ve a la p\u00e1gina de Reservaciones\n\u2022 Selecciona las fechas que mencionaste\n\u2022 Elige el n\u00famero de personas\n\u2022 El sistema mostrar\u00e1 habitaciones disponibles autom\u00e1ticamente\n\n\u00bfTe gustar\u00eda que te gu\u00ede para hacer la reserva ahora?"
+        }
+    ],
+    "conv_1764173839059_elxxg6mt1x": [
+        {
+            "timestamp": "2025-11-26 17:17:30",
+            "type": "user",
+            "message": "que puedes hacer?",
+            "response": "\u00a1Hola! \ud83d\ude0a Muy bien, gracias por preguntar. \u00bfY t\u00fa qu\u00e9 tal?\n\nPues, como asistente virtual especializado en el Hotel INDET y el Instituto de Deportes del Estado Trujillo, puedo ayudarte con informaci\u00f3n sobre:\n\n*   El Hotel INDET: Reservas, tipos de habitaciones, servicios (restaurante, piscina, etc.), precios, ubicaci\u00f3n, etc.\n*   El Instituto de Deportes: Informaci\u00f3n sobre las instalaciones deportivas disponibles (canchas, gimnasio, piscina ol\u00edmpica, etc.), eventos deportivos, programas de entrenamiento, contacto con entrenadores, etc.\n\nEn resumen, todo lo relacionado con el hotel y las actividades deportivas del instituto. \u00bfEn qu\u00e9 te puedo ayudar hoy? \ud83d\ude09"
         }
     ]
 }

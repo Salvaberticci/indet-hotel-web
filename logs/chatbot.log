@@ -111,3 +111,23 @@ Sigue estos pasos:
 [2025-11-07 02:24:48] [::1] [RESPONSE] ¡Hola! 😊 ¡Qué bueno que sigues por aquí!
 
 Además de ayudarte a encontrar la habitación perfecta para ti y tus 3 acompañantes desde el 12 al 24 de noviembre, puedo contarte sobre los servicio...
+[2025-11-26 17:07:42] [::1] [REQUEST] test
+[2025-11-26 17:07:42] [::1] [RESPONSE] ¡Hola! Soy el asistente del Hotel INDET. ¿En qué puedo ayudarte hoy? Puedo informarte sobre habitaciones, reservas, servicios e instalaciones deportivas.
+[2025-11-26 17:14:54] [::1] [REQUEST] hola
+[2025-11-26 17:14:54] [::1] [RESPONSE] ¡Hola! Qué gusto verte por aquí. Soy el asistente del Hotel INDET. ¿En qué puedo ayudarte? Puedo informarte sobre habitaciones, reservas, servicios e instalaciones deportivas.
+[2025-11-26 17:15:03] [::1] [REQUEST] que puedes hacer
+[2025-11-26 17:15:06] [::1] [RESPONSE] ¡Hola! Qué bueno saludarte de nuevo. Pues, como asistente virtual especializado en el Hotel INDET y el Instituto de Deportes del Estado Trujillo, puedo ayudarte con información sobre:
+
+*   El Hotel...
+[2025-11-26 17:15:18] [::1] [REQUEST] que habitaciones estan disponibles?
+[2025-11-26 17:15:18] [::1] [RESPONSE] ¡Perfecto! Basándome en lo que me has contado anteriormente, te ayudo con la disponibilidad de habitaciones.
+
+🏨 **Información de Habitaciones Disponibles**
+
+📊 **Total de habitaciones:** 36
+
+�...
+[2025-11-26 17:17:28] [::1] [REQUEST] que puedes hacer?
+[2025-11-26 17:17:30] [::1] [RESPONSE] ¡Hola! 😊 Muy bien, gracias por preguntar. ¿Y tú qué tal?
+
+Pues, como asistente virtual especializado en el Hotel INDET y el Instituto de Deportes del Estado Trujillo, puedo ayudarte con informa...
