@@ -29,7 +29,7 @@ $comments_result = $conn->query($comments_sql);
     <link rel="stylesheet" href="assets/css/aos.css">
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="assets/font-awesome/css/all.min.css" />
+    <link rel="stylesheet" href="assets/font-awesome/fontawesome-free-6.4.0-web/css/all.min.css" />
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
@@ -257,6 +257,6 @@ $comments_result = $conn->query($comments_sql);
     <script src="js/main.js"></script>
     <!-- Include Chatbot -->
     <?php include 'templates/chatbot.php'; ?>
-    <script src="assets/js/chatbot.js"></script>
+    <script src="assets/js/chatbot.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>

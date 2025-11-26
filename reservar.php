@@ -571,7 +571,7 @@ if (!isset($_SESSION['user_id'])) {
     <?php include 'templates/chatbot.php'; ?>
 
     <!-- Scripts -->
-    <script src="assets/js/chatbot.js"></script>
+    <script src="assets/js/chatbot.js?v=<?php echo time(); ?>"></script>
 
 </body>
 </html>

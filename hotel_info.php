@@ -173,7 +173,7 @@ include 'php/db.php';
     <!-- Scripts -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="js/main.js"></script>
-    <script src="assets/js/chatbot.js"></script>
+    <script src="assets/js/chatbot.js?v=<?php echo time(); ?>"></script>
     <script>
         AOS.init({
             duration: 1000,

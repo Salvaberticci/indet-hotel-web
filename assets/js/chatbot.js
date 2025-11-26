@@ -1,6 +1,6 @@
 class ChatbotManager {
     constructor() {
-        this.apiUrl = 'http://localhost:8000/api/chatbot.php';
+        this.apiUrl = 'http://localhost/indet-hotel-web/api/chatbot.php';
         this.isOpen = false;
         this.isTyping = false;
         this.conversationId = this.generateConversationId();
@@ -183,6 +183,7 @@ class ChatbotManager {
 
     async callAPI(message) {
         console.log('Sending message to API:', message);
+        console.log('API URL:', this.apiUrl);
         const requestData = {
             message: message,
             conversation_id: this.conversationId,
@@ -190,27 +191,43 @@ class ChatbotManager {
         };
         console.log('Request data:', requestData);
 
-        const response = await fetch(this.apiUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify(requestData)
-        });
+        try {
+            const response = await fetch(this.apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(requestData)
+            });
 
-        console.log('Response status:', response.status);
-        console.log('Response headers:', response.headers);
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            console.log('Response ok:', response.ok);
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error('Response error text:', errorText);
-            throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Response error text:', errorText);
+                console.error('Full error details:', {
+                    status: response.status,
+                    statusText: response.statusText,
+                    url: response.url,
+                    headers: Object.fromEntries(response.headers.entries())
+                });
+                throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+            }
+
+            const data = await response.json();
+            console.log('Response data:', data);
+            return data;
+        } catch (fetchError) {
+            console.error('Fetch error details:', {
+                error: fetchError.message,
+                stack: fetchError.stack,
+                apiUrl: this.apiUrl
+            });
+            throw fetchError;
         }
-
-        const data = await response.json();
-        console.log('Response data:', data);
-        return data;
     }
 
     addMessage(text, sender, isError = false) {

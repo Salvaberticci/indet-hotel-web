@@ -46,7 +46,7 @@ $reservations_result = $reservations_stmt->get_result();
     <link rel="stylesheet" href="assets/css/google-fonts.css">
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="assets/font-awesome/css/all.min.css" />
+    <link rel="stylesheet" href="assets/font-awesome/fontawesome-free-6.4.0-web/css/all.min.css" />
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
