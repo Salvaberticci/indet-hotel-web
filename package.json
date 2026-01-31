@@ -1,0 +1,23 @@
+{
+  "name": "indet-hotel-web",
+  "version": "1.0.0",
+  "description": "Este es un sistema de gestión web completo para el Instituto de Deportes del Estado Trujillo (INDET), diseñado específicamente para gestionar reservas de habitaciones en un hotel deportivo. El sistema permite a los usuarios públicos explorar información sobre el instituto, verificar reservacion de habitaciones y realizar reservas, mientras que proporciona a los administradores herramientas avanzadas para gestionar todos los aspectos del hotel.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "npx tailwindcss -i ./src/input.css -o ./assets/css/tailwind-output.css --watch",
+    "build": "npx tailwindcss -i ./src/input.css -o ./assets/css/tailwind-output.css",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tailwindcss": "^4.1.18"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.18"
+  }
+}

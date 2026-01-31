@@ -20,7 +20,7 @@ $chart_result = $conn->query($chart_sql);
 $room_types = [];
 $reservation_counts = [];
 if ($chart_result->num_rows > 0) {
-    while($row = $chart_result->fetch_assoc()) {
+    while ($row = $chart_result->fetch_assoc()) {
         $room_types[] = ucfirst($row['type']);
         $reservation_counts[] = $row['reservation_count'];
     }
@@ -51,18 +51,21 @@ while ($row = $reservation_trend_result->fetch_assoc()) {
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reportes Avanzados - INDET</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (Local Build) -->
+    <link rel="stylesheet" href="assets/css/tailwind-output.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600;700&display=swap"
+        rel="stylesheet">
 
     <!-- AOS (Animate on Scroll) -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -77,25 +80,28 @@ while ($row = $reservation_trend_result->fetch_assoc()) {
     <link rel="stylesheet" href="css/styles.css">
 
     <style>
-    body {
-      background: #111;
-      overflow-x: hidden;
-    }
+        body {
+            background: #111;
+            overflow-x: hidden;
+        }
 
-    #networkCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: -1;
-    }
+        #networkCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
     </style>
 </head>
+
 <body class="bg-gray-900 text-white font-poppins">
     <canvas id="networkCanvas"></canvas>
     <div class="container mx-auto p-8">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold">Reportes Avanzados</h1>
-            <a href="admin.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-transform hover:scale-105">Volver al Panel</a>
+            <a href="admin.php"
+                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition-transform hover:scale-105">Volver
+                al Panel</a>
         </div>
 
         <!-- Reservations per Room Type -->
@@ -125,16 +131,16 @@ while ($row = $reservation_trend_result->fetch_assoc()) {
                         </tr>
                     </thead>
                     <tbody class="text-gray-300">
-                        <?php 
+                        <?php
                         $client_names = [];
                         $reservation_counts = [];
                         if ($client_analysis_result->num_rows > 0):
                             // Reset pointer to re-iterate for the table
-                            $client_analysis_result->data_seek(0); 
-                            while($row = $client_analysis_result->fetch_assoc()): 
+                            $client_analysis_result->data_seek(0);
+                            while ($row = $client_analysis_result->fetch_assoc()):
                                 $client_names[] = $row['name'];
                                 $reservation_counts[] = $row['reservation_count'];
-                        ?>
+                                ?>
                                 <tr class="hover:bg-gray-700 border-b border-gray-700">
                                     <td class="py-3 px-4 text-center"><?php echo $row['name']; ?></td>
                                     <td class="py-3 px-4 text-center"><?php echo $row['email']; ?></td>
@@ -205,100 +211,101 @@ while ($row = $reservation_trend_result->fetch_assoc()) {
         }
         animate();
 
-    document.addEventListener('DOMContentLoaded', () => {
-        // Reservations per Room Type Chart
-        console.log(<?php echo json_encode($room_types); ?>, <?php echo json_encode($reservation_counts); ?>);
-        const roomChartCtx = document.getElementById('roomStatusChart').getContext('2d');
-        const roomChart = new Chart(roomChartCtx, {
-            type: 'bar',
-            data: {
-                labels: <?php echo json_encode($room_types); ?>,
-                datasets: [{
-                    label: '# de Reservas',
-                    data: <?php echo json_encode($reservation_counts); ?>,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-
-        // Client Reservations Chart
-        const clientCtx = document.getElementById('clientReservationsChart').getContext('2d');
-        const clientReservationsChart = new Chart(clientCtx, {
-            type: 'bar',
-            data: {
-                labels: <?php echo json_encode($client_names); ?>,
-                datasets: [{
-                    label: '# de Reservas',
-                    data: <?php echo json_encode($reservation_counts); ?>,
-                    backgroundColor: 'rgba(0, 100, 0, 0.6)',
-                    borderColor: 'rgba(0, 100, 0, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
+        document.addEventListener('DOMContentLoaded', () => {
+            // Reservations per Room Type Chart
+            console.log(<?php echo json_encode($room_types); ?>, <?php echo json_encode($reservation_counts); ?>);
+            const roomChartCtx = document.getElementById('roomStatusChart').getContext('2d');
+            const roomChart = new Chart(roomChartCtx, {
+                type: 'bar',
+                data: {
+                    labels: <?php echo json_encode($room_types); ?>,
+                    datasets: [{
+                        label: '# de Reservas',
+                        data: <?php echo json_encode($reservation_counts); ?>,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
                         }
                     }
+                }
+            });
+
+            // Client Reservations Chart
+            const clientCtx = document.getElementById('clientReservationsChart').getContext('2d');
+            const clientReservationsChart = new Chart(clientCtx, {
+                type: 'bar',
+                data: {
+                    labels: <?php echo json_encode($client_names); ?>,
+                    datasets: [{
+                        label: '# de Reservas',
+                        data: <?php echo json_encode($reservation_counts); ?>,
+                        backgroundColor: 'rgba(0, 100, 0, 0.6)',
+                        borderColor: 'rgba(0, 100, 0, 1)',
+                        borderWidth: 1
+                    }]
                 },
-                plugins: {
-                    legend: {
-                        display: false
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
                     },
-                    title: {
-                        display: true,
-                        text: 'Número de Reservas por Cliente'
-                    }
-                }
-            }
-        });
-
-        // Reservation Trend Chart
-        const trendCtx = document.getElementById('reservationTrendChart').getContext('2d');
-        const reservationTrendChart = new Chart(trendCtx, {
-            type: 'line',
-            data: {
-                labels: <?php echo json_encode($trend_dates); ?>,
-                datasets: [{
-                    label: 'Reservas por Día',
-                    data: <?php echo json_encode($trend_counts); ?>,
-                    backgroundColor: 'rgba(220, 38, 38, 0.2)',
-                    borderColor: 'rgba(220, 38, 38, 1)',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            stepSize: 1
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Número de Reservas por Cliente'
                         }
                     }
+                }
+            });
+
+            // Reservation Trend Chart
+            const trendCtx = document.getElementById('reservationTrendChart').getContext('2d');
+            const reservationTrendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: <?php echo json_encode($trend_dates); ?>,
+                    datasets: [{
+                        label: 'Reservas por Día',
+                        data: <?php echo json_encode($trend_counts); ?>,
+                        backgroundColor: 'rgba(220, 38, 38, 0.2)',
+                        borderColor: 'rgba(220, 38, 38, 1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
                 },
-                plugins: {
-                    legend: {
-                        display: false
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
                     }
                 }
-            }
+            });
         });
-    });
     </script>
 </body>
+
 </html>
 <?php $conn->close(); ?>

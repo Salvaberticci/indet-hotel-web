@@ -4,18 +4,21 @@ session_start();
 ?>
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Información de Registro - INDET</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (Local Build) -->
+    <link rel="stylesheet" href="assets/css/tailwind-output.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600;700&display=swap"
+        rel="stylesheet">
 
     <!-- AOS (Animate on Scroll) -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -26,6 +29,7 @@ session_start();
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body class="bg-gray-900 text-white font-poppins">
 
     <?php
@@ -40,7 +44,8 @@ session_start();
     ?>
 
     <!-- Background Elements -->
-    <div class="fixed top-0 left-0 w-full h-full bg-cover bg-center z-0" style="background-image: url('images/hero-bg.jpg');"></div>
+    <div class="fixed top-0 left-0 w-full h-full bg-cover bg-center z-0"
+        style="background-image: url('images/hero-bg.jpg');"></div>
     <div class="fixed top-0 left-0 w-full h-full bg-black/60 z-10"></div>
     <div id="three-canvas" class="fixed top-0 left-0 w-full h-full z-20"></div>
 
@@ -53,7 +58,7 @@ session_start();
                 <a href="index.php#gallery" class="nav-button">Instalaciones</a>
                 <a href="index.php#footer" class="nav-button">Contactos</a>
             </div>
-             <div class="flex items-center space-x-4">
+            <div class="flex items-center space-x-4">
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <span class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
                     <a href="php/logout.php" class="login-button">
@@ -75,7 +80,8 @@ session_start();
         <div class="bg-white text-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-md" data-aos="fade-up">
             <h2 class="text-3xl font-bold mb-6 text-center">Registro de Cuentas</h2>
             <p class="text-center">Para crear una cuenta, debe comunicarse con el administrador.</p>
-            <p class="text-center mt-4">¿Ya tienes una cuenta? <a href="login.php" class="text-green-600 hover:underline">Inicia sesión aquí</a></p>
+            <p class="text-center mt-4">¿Ya tienes una cuenta? <a href="login.php"
+                    class="text-green-600 hover:underline">Inicia sesión aquí</a></p>
         </div>
     </main>
 
@@ -93,4 +99,5 @@ session_start();
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="js/main.js"></script>
 </body>
+
 </html>

@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['user_role'], ['admin', 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['task_id'])) {
     $task_id = intval($_POST['task_id']);
     $completed_at = date('Y-m-d H:i:s');
-    
+
     $stmt = $conn->prepare("UPDATE maintenance_tasks SET status = 'completed', completed_at = ? WHERE id = ?");
     $stmt->bind_param("si", $completed_at, $task_id);
     $stmt->execute();
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['task_id'])) {
     $room_id_query->bind_param("i", $task_id);
     $room_id_query->execute();
     $result = $room_id_query->get_result();
-    if($result->num_rows > 0) {
+    if ($result->num_rows > 0) {
         $room_id = $result->fetch_assoc()['room_id'];
         $current_date = date('Y-m-d');
         $update_room_stmt = $conn->prepare("UPDATE room_status SET status = 'available', date = ? WHERE room_id = ?");
@@ -64,18 +64,21 @@ $tasks_result = $stmt->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Mantenimiento - INDET</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (Local Build) -->
+    <link rel="stylesheet" href="assets/css/tailwind-output.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body class="bg-gray-100 text-gray-800 font-poppins">
     <div class="container mx-auto p-8">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-3xl font-bold">Tareas de Mantenimiento Pendientes</h1>
-            <a href="php/logout.php" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Cerrar Sesión</a>
+            <a href="php/logout.php"
+                class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Cerrar Sesión</a>
         </div>
 
         <div class="bg-white p-6 rounded-xl shadow-2xl">
@@ -93,7 +96,7 @@ $tasks_result = $stmt->get_result();
                     </thead>
                     <tbody class="text-gray-700">
                         <?php if ($tasks_result->num_rows > 0): ?>
-                            <?php while($task = $tasks_result->fetch_assoc()): ?>
+                            <?php while ($task = $tasks_result->fetch_assoc()): ?>
                                 <tr class="hover:bg-gray-100">
                                     <td class="py-3 px-4 capitalize"><?php echo $task['room_type']; ?></td>
                                     <?php if ($user_role === 'admin'): ?>
@@ -103,14 +106,17 @@ $tasks_result = $stmt->get_result();
                                     <td class="py-3 px-4">
                                         <form action="maintenance.php" method="POST">
                                             <input type="hidden" name="task_id" value="<?php echo $task['id']; ?>">
-                                            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Marcar como Completada</button>
+                                            <button type="submit"
+                                                class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Marcar
+                                                como Completada</button>
                                         </form>
                                     </td>
                                 </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="<?php echo $user_role === 'admin' ? '4' : '3'; ?>" class="text-center py-4">No hay tareas pendientes.</td>
+                                <td colspan="<?php echo $user_role === 'admin' ? '4' : '3'; ?>" class="text-center py-4">No
+                                    hay tareas pendientes.</td>
                             </tr>
                         <?php endif; ?>
                     </tbody>
@@ -119,5 +125,7 @@ $tasks_result = $stmt->get_result();
         </div>
     </div>
 </body>
+
 </html>
-<?php $stmt->close(); $conn->close(); ?>
+<?php $stmt->close();
+$conn->close(); ?>

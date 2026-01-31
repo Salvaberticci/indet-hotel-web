@@ -4,18 +4,21 @@ session_start();
 ?>
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - INDET</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (Local Build) -->
+    <link rel="stylesheet" href="assets/css/tailwind-output.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600;700&display=swap"
+        rel="stylesheet">
 
     <!-- AOS (Animate on Scroll) -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -26,6 +29,7 @@ session_start();
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body class="bg-gray-900 text-white font-poppins">
 
     <?php
@@ -40,7 +44,8 @@ session_start();
     ?>
 
     <!-- Background Elements -->
-    <div class="fixed top-0 left-0 w-full h-full bg-cover bg-center z-0" style="background-image: url('images/hero-bg.jpg');"></div>
+    <div class="fixed top-0 left-0 w-full h-full bg-cover bg-center z-0"
+        style="background-image: url('images/hero-bg.jpg');"></div>
     <div class="fixed top-0 left-0 w-full h-full bg-black/60 z-10"></div>
     <div id="three-canvas" class="fixed top-0 left-0 w-full h-full z-20"></div>
 
@@ -53,20 +58,20 @@ session_start();
                 <a href="index.php#gallery" class="nav-button">Instalaciones</a>
                 <a href="index.php#footer" class="nav-button">Contactos</a>
             </div>
-             <div class="flex items-center space-x-4">
-               <?php if (isset($_SESSION['user_id']) && isset($_SESSION['user_name'])): ?>
-                   <span class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
-                   <a href="php/logout.php" class="login-button">
-                       <span>Logout</span>
-                       <i class="fas fa-sign-out-alt"></i>
-                   </a>
-               <?php else: ?>
-                   <a href="index.php" class="login-button">
-                       <span>Inicio</span>
-                       <i class="fas fa-home"></i>
-                   </a>
-               <?php endif; ?>
-           </div>
+            <div class="flex items-center space-x-4">
+                <?php if (isset($_SESSION['user_id']) && isset($_SESSION['user_name'])): ?>
+                    <span class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                    <a href="php/logout.php" class="login-button">
+                        <span>Logout</span>
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                <?php else: ?>
+                    <a href="index.php" class="login-button">
+                        <span>Inicio</span>
+                        <i class="fas fa-home"></i>
+                    </a>
+                <?php endif; ?>
+            </div>
         </div>
     </nav>
 
@@ -77,7 +82,8 @@ session_start();
             <form action="php/login_handler.php" method="POST" id="loginForm">
                 <div class="mb-4">
                     <label for="cedula_type" class="block font-semibold mb-2">Tipo de Cédula</label>
-                    <select id="cedula_type" name="cedula_type" required class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <select id="cedula_type" name="cedula_type" required
+                        class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
                         <option value="">Seleccione un tipo</option>
                         <option value="V">Cédula Venezolana</option>
                         <option value="E">Cédula Extranjera</option>
@@ -85,20 +91,26 @@ session_start();
                 </div>
                 <div class="mb-4">
                     <label for="cedula" class="block font-semibold mb-2">Número de Cédula</label>
-                    <input type="text" id="cedula" name="cedula" required class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <span id="cedulaError" class="text-red-500 text-sm hidden">El número de cédula solo puede contener números.</span>
+                    <input type="text" id="cedula" name="cedula" required
+                        class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <span id="cedulaError" class="text-red-500 text-sm hidden">El número de cédula solo puede contener
+                        números.</span>
                 </div>
                 <div class="mb-4">
                     <label for="email" class="block font-semibold mb-2">Correo Electrónico</label>
-                    <input type="email" id="email" name="email" required class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <input type="email" id="email" name="email" required
+                        class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
                 </div>
                 <div class="mb-6">
                     <label for="password" class="block font-semibold mb-2">Contraseña</label>
-                    <input type="password" id="password" name="password" required class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    <input type="password" id="password" name="password" required
+                        class="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
                 </div>
-                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg w-full transition-transform hover:scale-105 shadow-lg">Entrar</button>
+                <button type="submit"
+                    class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg w-full transition-transform hover:scale-105 shadow-lg">Entrar</button>
             </form>
-            <p class="text-center mt-4">¿No tienes una cuenta? <a href="register.php" class="text-green-600 hover:underline">Regístrate aquí</a></p>
+            <p class="text-center mt-4">¿No tienes una cuenta? <a href="register.php"
+                    class="text-green-600 hover:underline">Regístrate aquí</a></p>
         </div>
     </main>
 
@@ -116,7 +128,7 @@ session_start();
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="js/main.js"></script>
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
             const cedula = document.getElementById('cedula').value.trim();
             let isValid = true;
 
@@ -135,7 +147,7 @@ session_start();
         });
 
         // Real-time validation for cedula
-        document.getElementById('cedula').addEventListener('input', function() {
+        document.getElementById('cedula').addEventListener('input', function () {
             const cedula = this.value.trim();
             const cedulaRegex = /^[0-9]*$/;
             if (!cedulaRegex.test(cedula)) {
@@ -146,4 +158,5 @@ session_start();
         });
     </script>
 </body>
+
 </html>

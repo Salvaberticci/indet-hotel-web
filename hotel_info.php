@@ -5,18 +5,21 @@ include 'php/db.php';
 ?>
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INDET - Nuestro Hotel</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (Local Build) -->
+    <link rel="stylesheet" href="assets/css/tailwind-output.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600;700&display=swap"
+        rel="stylesheet">
 
     <!-- AOS (Animate on Scroll) -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -27,10 +30,12 @@ include 'php/db.php';
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body class="bg-gray-900 text-white">
 
     <!-- Background Elements -->
-    <div class="fixed top-0 left-0 w-full h-full bg-cover bg-center z-0" style="background-image: url('images/hero-bg.jpg');"></div>
+    <div class="fixed top-0 left-0 w-full h-full bg-cover bg-center z-0"
+        style="background-image: url('images/hero-bg.jpg');"></div>
     <div class="fixed top-0 left-0 w-full h-full bg-black/60 z-10"></div>
 
     <!-- Header -->
@@ -58,7 +63,8 @@ include 'php/db.php';
                                 <i class="fas fa-cog"></i>
                             </a>
                         <?php endif; ?>
-                        <span class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                        <span
+                            class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
                         <a href="php/logout.php" class="login-button">
                             <span>Logout</span>
                             <i class="fas fa-sign-out-alt"></i>
@@ -85,7 +91,9 @@ include 'php/db.php';
             <div class="container mx-auto px-6 text-center">
                 <h2 class="text-5xl md:text-6xl font-montserrat font-black" data-aos="fade-up">Nuestro Hotel</h2>
                 <p class="max-w-3xl mx-auto mt-6 text-lg text-gray-600" data-aos="fade-up" data-aos-delay="100">
-                    Ubicado en el corazón de la ciudad, el Hotel Indet ofrece una experiencia de lujo y confort. Nuestras instalaciones están diseñadas para satisfacer tanto a viajeros de negocios como a turistas. Disfrute de nuestras modernas habitaciones, gastronomía de clase mundial y un servicio impecable.
+                    Ubicado en el corazón de la ciudad, el Hotel Indet ofrece una experiencia de lujo y confort.
+                    Nuestras instalaciones están diseñadas para satisfacer tanto a viajeros de negocios como a turistas.
+                    Disfrute de nuestras modernas habitaciones, gastronomía de clase mundial y un servicio impecable.
                 </p>
             </div>
         </section>
@@ -93,19 +101,24 @@ include 'php/db.php';
         <!-- Gallery Section -->
         <section id="gallery" class="py-24 bg-gray-100 text-gray-800">
             <div class="container mx-auto px-6">
-                <h2 class="text-5xl md:text-6xl font-montserrat font-black text-center" data-aos="fade-up">Nuestras Instalaciones</h2>
+                <h2 class="text-5xl md:text-6xl font-montserrat font-black text-center" data-aos="fade-up">Nuestras
+                    Instalaciones</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
                     <div class="gallery-item" data-aos="fade-up">
-                        <img src="images/hero-bg.jpg" alt="Instalación 1" class="rounded-lg shadow-lg w-full h-64 object-cover">
+                        <img src="images/hero-bg.jpg" alt="Instalación 1"
+                            class="rounded-lg shadow-lg w-full h-64 object-cover">
                     </div>
                     <div class="gallery-item" data-aos="fade-up" data-aos-delay="100">
-                        <img src="images/equipo-futbol.jpg" alt="Instalación 2" class="rounded-lg shadow-lg w-full h-64 object-cover">
+                        <img src="images/equipo-futbol.jpg" alt="Instalación 2"
+                            class="rounded-lg shadow-lg w-full h-64 object-cover">
                     </div>
                     <div class="gallery-item" data-aos="fade-up" data-aos-delay="200">
-                        <img src="images/equipo-natacion.jpg" alt="Instalación 3" class="rounded-lg shadow-lg w-full h-64 object-cover">
+                        <img src="images/equipo-natacion.jpg" alt="Instalación 3"
+                            class="rounded-lg shadow-lg w-full h-64 object-cover">
                     </div>
                     <div class="gallery-item" data-aos="fade-up" data-aos-delay="300">
-                        <img src="images/equipo-voleibol.jpg" alt="Instalación 4" class="rounded-lg shadow-lg w-full h-64 object-cover">
+                        <img src="images/equipo-voleibol.jpg" alt="Instalación 4"
+                            class="rounded-lg shadow-lg w-full h-64 object-cover">
                     </div>
                 </div>
             </div>
@@ -114,7 +127,8 @@ include 'php/db.php';
         <!-- Services Section -->
         <section id="services" class="py-24 bg-white text-gray-800">
             <div class="container mx-auto px-6">
-                <h2 class="text-5xl md:text-6xl font-montserrat font-black text-center" data-aos="fade-up">Servicios Disponibles</h2>
+                <h2 class="text-5xl md:text-6xl font-montserrat font-black text-center" data-aos="fade-up">Servicios
+                    Disponibles</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12 text-center">
                     <div class="service-item" data-aos="fade-up">
                         <i class="fas fa-wifi text-4xl text-green-600 mb-4"></i>
@@ -167,19 +181,19 @@ include 'php/db.php';
         <div class="container mx-auto text-center">
             <p>&copy; 2025 Hotel Indet. Todos los derechos reservados.</p>
         </div>
-    <!-- Include Chatbot -->
-    <?php include 'templates/chatbot.php'; ?>
+        <!-- Include Chatbot -->
+        <?php include 'templates/chatbot.php'; ?>
 
-    <!-- Scripts -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script src="js/main.js"></script>
-    <script src="assets/js/chatbot.js?v=<?php echo time(); ?>"></script>
-    <script>
-        AOS.init({
-            duration: 1000,
-            once: true,
-        });
-    </script>
+        <!-- Scripts -->
+        <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+        <script src="js/main.js"></script>
+        <script src="assets/js/chatbot.js?v=<?php echo time(); ?>"></script>
+        <script>
+            AOS.init({
+                duration: 1000,
+                once: true,
+            });
+        </script>
     </footer>
 
     <!-- Scripts -->
@@ -192,4 +206,5 @@ include 'php/db.php';
         });
     </script>
 </body>
+
 </html>

@@ -11,18 +11,21 @@ if (!isset($_SESSION['user_id'])) {
 ?>
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INDET - Realizar Reserva</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (Local Build) -->
+    <link rel="stylesheet" href="assets/css/tailwind-output.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600;700&display=swap"
+        rel="stylesheet">
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -30,6 +33,7 @@ if (!isset($_SESSION['user_id'])) {
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body class="bg-gray-900 text-white">
 
     <?php
@@ -44,7 +48,8 @@ if (!isset($_SESSION['user_id'])) {
     ?>
 
     <!-- Background Elements -->
-    <div class="fixed top-0 left-0 w-full h-full bg-cover bg-center z-0" style="background-image: url('images/hero-bg.jpg');"></div>
+    <div class="fixed top-0 left-0 w-full h-full bg-cover bg-center z-0"
+        style="background-image: url('images/hero-bg.jpg');"></div>
     <div class="fixed top-0 left-0 w-full h-full bg-black/60 z-10"></div>
 
     <!-- Header -->
@@ -76,7 +81,8 @@ if (!isset($_SESSION['user_id'])) {
                             <span>Mi Perfil</span>
                             <i class="fas fa-user"></i>
                         </a>
-                        <span class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                        <span
+                            class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
                         <a href="php/logout.php" class="login-button">
                             <span>Logout</span>
                             <i class="fas fa-sign-out-alt"></i>
@@ -95,7 +101,8 @@ if (!isset($_SESSION['user_id'])) {
     <!-- Main Content -->
     <main class="relative z-30 bg-transparent flex items-center justify-center min-h-screen">
         <!-- Booking Section -->
-        <section id="booking" class="bg-white text-gray-800 py-12 relative z-30 mx-4 md:mx-auto max-w-5xl rounded-2xl shadow-2xl w-full">
+        <section id="booking"
+            class="bg-white text-gray-800 py-12 relative z-30 mx-4 md:mx-auto max-w-5xl rounded-2xl shadow-2xl w-full">
             <div class="container mx-auto">
                 <h2 class="text-4xl font-bold text-center mb-8">Realizar una Reserva</h2>
                 <form action="php/book.php" method="POST" class="px-6" id="reservationForm">
@@ -103,31 +110,41 @@ if (!isset($_SESSION['user_id'])) {
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                         <div class="form-group text-left">
                             <label for="cedula" class="font-bold text-sm mb-2 block text-gray-500">CÉDULA*</label>
-                            <input type="text" name="cedula" placeholder="Ingresa tu cédula" required class="booking-input">
+                            <input type="text" name="cedula" placeholder="Ingresa tu cédula" required
+                                class="booking-input">
                         </div>
                         <div class="form-group text-left">
                             <label for="guest_name" class="font-bold text-sm mb-2 block text-gray-500">NOMBRE*</label>
-                            <input type="text" name="guest_name" placeholder="Ingresa tu nombre" required class="booking-input">
+                            <input type="text" name="guest_name" placeholder="Ingresa tu nombre" required
+                                class="booking-input">
                         </div>
                         <div class="form-group text-left">
-                            <label for="guest_lastname" class="font-bold text-sm mb-2 block text-gray-500">APELLIDO*</label>
-                            <input type="text" name="guest_lastname" placeholder="Ingresa tu apellido" required class="booking-input">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div class="form-group text-left">
-                            <label for="guest_email" class="font-bold text-sm mb-2 block text-gray-500">CORREO ELECTRÓNICO*</label>
-                            <input type="email" name="guest_email" placeholder="Ingresa tu correo" required class="booking-input">
-                        </div>
-                        <div class="form-group text-left">
-                            <label for="checkin" class="font-bold text-sm mb-2 block text-gray-500">FECHA DE LLEGADA*</label>
-                            <input type="text" name="checkin" placeholder="SELECCIONA" onfocus="(this.type='date')" onblur="(this.type='text')" required class="booking-input">
+                            <label for="guest_lastname"
+                                class="font-bold text-sm mb-2 block text-gray-500">APELLIDO*</label>
+                            <input type="text" name="guest_lastname" placeholder="Ingresa tu apellido" required
+                                class="booking-input">
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         <div class="form-group text-left">
-                            <label for="checkout" class="font-bold text-sm mb-2 block text-gray-500">FECHA DE SALIDA*</label>
-                            <input type="text" name="checkout" placeholder="SELECCIONA" onfocus="(this.type='date')" onblur="(this.type='text')" required class="booking-input">
+                            <label for="guest_email" class="font-bold text-sm mb-2 block text-gray-500">CORREO
+                                ELECTRÓNICO*</label>
+                            <input type="email" name="guest_email" placeholder="Ingresa tu correo" required
+                                class="booking-input">
+                        </div>
+                        <div class="form-group text-left">
+                            <label for="checkin" class="font-bold text-sm mb-2 block text-gray-500">FECHA DE
+                                LLEGADA*</label>
+                            <input type="text" name="checkin" placeholder="SELECCIONA" onfocus="(this.type='date')"
+                                onblur="(this.type='text')" required class="booking-input">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="form-group text-left">
+                            <label for="checkout" class="font-bold text-sm mb-2 block text-gray-500">FECHA DE
+                                SALIDA*</label>
+                            <input type="text" name="checkout" placeholder="SELECCIONA" onfocus="(this.type='date')"
+                                onblur="(this.type='text')" required class="booking-input">
                         </div>
                         <div class="form-group text-left">
                             <label class="font-bold text-sm mb-2 block text-gray-500">PERSONAS*</label>
@@ -135,27 +152,33 @@ if (!isset($_SESSION['user_id'])) {
                                 <div class="text-center">
                                     <label class="block text-sm">Adultos</label>
                                     <div class="flex items-center justify-center">
-                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded" onclick="changeCount('adultos', -1)">-</button>
+                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded"
+                                            onclick="changeCount('adultos', -1)">-</button>
                                         <span id="adultos-count" class="mx-2">0</span>
-                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded" onclick="changeCount('adultos', 1)">+</button>
+                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded"
+                                            onclick="changeCount('adultos', 1)">+</button>
                                     </div>
                                     <input type="hidden" name="adultos" id="adultos" value="0">
                                 </div>
                                 <div class="text-center">
                                     <label class="block text-sm">Niños</label>
                                     <div class="flex items-center justify-center">
-                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded" onclick="changeCount('ninos', -1)">-</button>
+                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded"
+                                            onclick="changeCount('ninos', -1)">-</button>
                                         <span id="ninos-count" class="mx-2">0</span>
-                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded" onclick="changeCount('ninos', 1)">+</button>
+                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded"
+                                            onclick="changeCount('ninos', 1)">+</button>
                                     </div>
                                     <input type="hidden" name="ninos" id="ninos" value="0">
                                 </div>
                                 <div class="text-center">
                                     <label class="block text-sm">Discapacitados</label>
                                     <div class="flex items-center justify-center">
-                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded" onclick="changeCount('discapacitados', -1)">-</button>
+                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded"
+                                            onclick="changeCount('discapacitados', -1)">-</button>
                                         <span id="discapacitados-count" class="mx-2">0</span>
-                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded" onclick="changeCount('discapacitados', 1)">+</button>
+                                        <button type="button" class="bg-gray-300 px-2 py-1 rounded"
+                                            onclick="changeCount('discapacitados', 1)">+</button>
                                     </div>
                                     <input type="hidden" name="discapacitados" id="discapacitados" value="0">
                                 </div>
@@ -171,7 +194,7 @@ if (!isset($_SESSION['user_id'])) {
                                 include 'php/db.php';
                                 $floors_sql = "SELECT id, name FROM floors ORDER BY floor_number ASC";
                                 $floors_result = $conn->query($floors_sql);
-                                while($floor = $floors_result->fetch_assoc()) {
+                                while ($floor = $floors_result->fetch_assoc()) {
                                     echo "<option value='" . $floor['id'] . "'>" . htmlspecialchars($floor['name']) . "</option>";
                                 }
                                 $conn->close();
@@ -187,8 +210,11 @@ if (!isset($_SESSION['user_id'])) {
                             <ul id="selected-list" class="list-disc pl-5"></ul>
                         </div>
                     </div>
-                    <button type="button" id="guest-modal-btn" class="action-button w-full hidden bg-blue-500 hover:bg-blue-600">Ingresar Datos de Huéspedes <i class="fas fa-users"></i></button>
-                    <button type="button" id="reserve-btn" class="action-button w-full hidden">Reservar <i class="fas fa-arrow-right"></i></button>
+                    <button type="button" id="guest-modal-btn"
+                        class="action-button w-full hidden bg-blue-500 hover:bg-blue-600">Ingresar Datos de Huéspedes <i
+                            class="fas fa-users"></i></button>
+                    <button type="button" id="reserve-btn" class="action-button w-full hidden">Reservar <i
+                            class="fas fa-arrow-right"></i></button>
                 </form>
                 <div id="availability-results" class="mt-8"></div>
             </div>
@@ -203,8 +229,11 @@ if (!isset($_SESSION['user_id'])) {
                 <!-- Guest forms will be dynamically added here -->
             </div>
             <div class="flex justify-end mt-6">
-                <button type="button" onclick="closeGuestModal()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-2">Cerrar</button>
-                <button type="button" onclick="saveGuestsAndReserve()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Guardar y Reservar</button>
+                <button type="button" onclick="closeGuestModal()"
+                    class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg mr-2">Cerrar</button>
+                <button type="button" onclick="saveGuestsAndReserve()"
+                    class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Guardar y
+                    Reservar</button>
             </div>
         </div>
     </div>
@@ -338,7 +367,7 @@ if (!isset($_SESSION['user_id'])) {
                 document.getElementById(type + '-count').addEventListener('DOMSubtreeModified', checkRoomSelection);
             });
 
-            document.getElementById('reserve-btn').addEventListener('click', function() {
+            document.getElementById('reserve-btn').addEventListener('click', function () {
                 if (selectedRooms.length === 0) {
                     alert('Por favor selecciona al menos una habitación.');
                     return;
@@ -346,7 +375,7 @@ if (!isset($_SESSION['user_id'])) {
                 openGuestModal();
             });
 
-            document.getElementById('guest-modal-btn').addEventListener('click', function() {
+            document.getElementById('guest-modal-btn').addEventListener('click', function () {
                 openGuestModal();
             });
         });
@@ -531,18 +560,18 @@ if (!isset($_SESSION['user_id'])) {
                 },
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.href = 'user_profile.php';
-                } else {
-                    alert('Error: ' + data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error al procesar la reserva. Inténtalo de nuevo.');
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = 'user_profile.php';
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al procesar la reserva. Inténtalo de nuevo.');
+                });
         }
     </script>
 
@@ -558,10 +587,14 @@ if (!isset($_SESSION['user_id'])) {
             <div>
                 <h3 class="text-3xl font-bold mb-4 text-center md:text-left">Envíanos un Mensaje</h3>
                 <form action="php/contact_handler.php" method="POST" class="space-y-4">
-                    <input type="text" name="name" placeholder="Tu Nombre" required class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500">
-                    <input type="email" name="email" placeholder="Tu Correo Electrónico" required class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500">
-                    <textarea name="message" placeholder="Tu Mensaje" rows="4" required class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500"></textarea>
-                    <button type="submit" class="w-full action-button bg-green-600 hover:bg-green-700">Enviar Mensaje <i class="fas fa-paper-plane ml-2"></i></button>
+                    <input type="text" name="name" placeholder="Tu Nombre" required
+                        class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500">
+                    <input type="email" name="email" placeholder="Tu Correo Electrónico" required
+                        class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500">
+                    <textarea name="message" placeholder="Tu Mensaje" rows="4" required
+                        class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500"></textarea>
+                    <button type="submit" class="w-full action-button bg-green-600 hover:bg-green-700">Enviar Mensaje <i
+                            class="fas fa-paper-plane ml-2"></i></button>
                 </form>
             </div>
         </div>
@@ -574,4 +607,5 @@ if (!isset($_SESSION['user_id'])) {
     <script src="assets/js/chatbot.js?v=<?php echo time(); ?>"></script>
 
 </body>
+
 </html>

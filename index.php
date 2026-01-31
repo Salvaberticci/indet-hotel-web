@@ -19,8 +19,8 @@ $comments_result = $conn->query($comments_sql);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INDET - Experiencia Deportiva Inmersiva</title>
 
-    <!-- Tailwind CSS -->
-    <script src="assets/js/tailwind.js"></script>
+    <!-- Tailwind CSS (Local Build) -->
+    <link rel="stylesheet" href="assets/css/tailwind-output.css">
 
     <!-- Google Fonts -->
     <link rel="stylesheet" href="assets/css/google-fonts.css">

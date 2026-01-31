@@ -5,18 +5,21 @@ include 'php/db.php';
 ?>
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INDET - Preguntas Frecuentes</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (Local Build) -->
+    <link rel="stylesheet" href="assets/css/tailwind-output.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600;700&display=swap"
+        rel="stylesheet">
 
     <!-- AOS (Animate on Scroll) -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -27,10 +30,12 @@ include 'php/db.php';
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body class="bg-gray-900 text-white">
 
     <!-- Background Elements -->
-    <div class="fixed top-0 left-0 w-full h-full bg-cover bg-center z-0" style="background-image: url('images/hero-bg.jpg');"></div>
+    <div class="fixed top-0 left-0 w-full h-full bg-cover bg-center z-0"
+        style="background-image: url('images/hero-bg.jpg');"></div>
     <div class="fixed top-0 left-0 w-full h-full bg-black/60 z-10"></div>
 
     <!-- Header -->
@@ -58,7 +63,8 @@ include 'php/db.php';
                                 <i class="fas fa-cog"></i>
                             </a>
                         <?php endif; ?>
-                        <span class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                        <span
+                            class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
                         <a href="php/logout.php" class="login-button">
                             <span>Logout</span>
                             <i class="fas fa-sign-out-alt"></i>
@@ -86,23 +92,30 @@ include 'php/db.php';
                 <div class="max-w-4xl mx-auto">
                     <div class="faq-item bg-gray-100 p-6 rounded-lg mb-6" data-aos="fade-up">
                         <h3 class="text-xl font-bold">¿Cuáles son los horarios de check-in y check-out?</h3>
-                        <p class="mt-2 text-gray-600">Nuestro check-in es a partir de las 3:00 PM y el check-out es hasta las 12:00 PM.</p>
+                        <p class="mt-2 text-gray-600">Nuestro check-in es a partir de las 3:00 PM y el check-out es
+                            hasta las 12:00 PM.</p>
                     </div>
                     <div class="faq-item bg-gray-100 p-6 rounded-lg mb-6" data-aos="fade-up" data-aos-delay="100">
                         <h3 class="text-xl font-bold">¿Las instalaciones están abiertas para todo público?</h3>
-                        <p class="mt-2 text-gray-600">El acceso a las villas es principalmente para atletas y delegaciones. Sin embargo, algunas áreas comunes pueden tener acceso público en horarios específicos. Recomendamos contactarnos para más detalles.</p>
+                        <p class="mt-2 text-gray-600">El acceso a las villas es principalmente para atletas y
+                            delegaciones. Sin embargo, algunas áreas comunes pueden tener acceso público en horarios
+                            específicos. Recomendamos contactarnos para más detalles.</p>
                     </div>
                     <div class="faq-item bg-gray-100 p-6 rounded-lg mb-6" data-aos="fade-up" data-aos-delay="200">
                         <h3 class="text-xl font-bold">¿Cómo puedo realizar una reserva para un grupo grande?</h3>
-                        <p class="mt-2 text-gray-600">Para reservas de grupos o delegaciones deportivas, por favor contáctenos directamente a través de nuestro formulario de contacto o número de teléfono para una atención personalizada.</p>
+                        <p class="mt-2 text-gray-600">Para reservas de grupos o delegaciones deportivas, por favor
+                            contáctenos directamente a través de nuestro formulario de contacto o número de teléfono
+                            para una atención personalizada.</p>
                     </div>
                     <div class="faq-item bg-gray-100 p-6 rounded-lg mb-6" data-aos="fade-up" data-aos-delay="300">
                         <h3 class="text-xl font-bold">¿Se admiten mascotas?</h3>
-                        <p class="mt-2 text-gray-600">Actualmente no se admiten mascotas en nuestras instalaciones para garantizar la comodidad y seguridad de todos nuestros huéspedes.</p>
+                        <p class="mt-2 text-gray-600">Actualmente no se admiten mascotas en nuestras instalaciones para
+                            garantizar la comodidad y seguridad de todos nuestros huéspedes.</p>
                     </div>
                     <div class="faq-item bg-gray-100 p-6 rounded-lg" data-aos="fade-up" data-aos-delay="400">
                         <h3 class="text-xl font-bold">¿Hay estacionamiento disponible?</h3>
-                        <p class="mt-2 text-gray-600">Sí, contamos con un amplio estacionamiento gratuito para nuestros huéspedes durante su estadía.</p>
+                        <p class="mt-2 text-gray-600">Sí, contamos con un amplio estacionamiento gratuito para nuestros
+                            huéspedes durante su estadía.</p>
                     </div>
                 </div>
             </div>
@@ -121,10 +134,14 @@ include 'php/db.php';
             <div>
                 <h3 class="text-3xl font-bold mb-4 text-center md:text-left">Envíanos un Mensaje</h3>
                 <form action="php/contact_handler.php" method="POST" class="space-y-4">
-                    <input type="text" name="name" placeholder="Tu Nombre" required class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500">
-                    <input type="email" name="email" placeholder="Tu Correo Electrónico" required class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500">
-                    <textarea name="message" placeholder="Tu Mensaje" rows="4" required class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500"></textarea>
-                    <button type="submit" class="w-full action-button bg-green-600 hover:bg-green-700">Enviar Mensaje <i class="fas fa-paper-plane ml-2"></i></button>
+                    <input type="text" name="name" placeholder="Tu Nombre" required
+                        class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500">
+                    <input type="email" name="email" placeholder="Tu Correo Electrónico" required
+                        class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500">
+                    <textarea name="message" placeholder="Tu Mensaje" rows="4" required
+                        class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500"></textarea>
+                    <button type="submit" class="w-full action-button bg-green-600 hover:bg-green-700">Enviar Mensaje <i
+                            class="fas fa-paper-plane ml-2"></i></button>
                 </form>
             </div>
         </div>
@@ -134,4 +151,5 @@ include 'php/db.php';
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="js/main.js"></script>
 </body>
+
 </html>

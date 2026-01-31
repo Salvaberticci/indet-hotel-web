@@ -10,18 +10,21 @@ $events_result = $conn->query($events_sql);
 ?>
 <!DOCTYPE html>
 <html lang="es" class="scroll-smooth">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INDET - Eventos</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (Local Build) -->
+    <link rel="stylesheet" href="assets/css/tailwind-output.css">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Poppins:wght@400;600;700&display=swap"
+        rel="stylesheet">
 
     <!-- AOS (Animate on Scroll) -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -32,10 +35,12 @@ $events_result = $conn->query($events_sql);
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body class="bg-gray-900 text-white">
 
     <!-- Background Elements -->
-    <div class="fixed top-0 left-0 w-full h-full bg-cover bg-center z-0" style="background-image: url('images/hero-bg.jpg');"></div>
+    <div class="fixed top-0 left-0 w-full h-full bg-cover bg-center z-0"
+        style="background-image: url('images/hero-bg.jpg');"></div>
     <div class="fixed top-0 left-0 w-full h-full bg-black/60 z-10"></div>
 
     <!-- Header -->
@@ -63,7 +68,8 @@ $events_result = $conn->query($events_sql);
                                 <i class="fas fa-cog"></i>
                             </a>
                         <?php endif; ?>
-                        <span class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
+                        <span
+                            class="text-white font-semibold"><?php echo htmlspecialchars($_SESSION['user_name']); ?></span>
                         <a href="php/logout.php" class="login-button">
                             <span>Logout</span>
                             <i class="fas fa-sign-out-alt"></i>
@@ -90,13 +96,15 @@ $events_result = $conn->query($events_sql);
             <div class="container mx-auto px-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
                     <?php if ($events_result && $events_result->num_rows > 0): ?>
-                        <?php while($event = $events_result->fetch_assoc()): ?>
+                        <?php while ($event = $events_result->fetch_assoc()): ?>
                             <div class="event-card bg-gray-50 rounded-lg overflow-hidden shadow-lg" data-aos="fade-up">
-                                <img src="images/<?php echo htmlspecialchars($event['image']); ?>" alt="<?php echo htmlspecialchars($event['name']); ?>" class="w-full h-64 object-cover">
+                                <img src="images/<?php echo htmlspecialchars($event['image']); ?>"
+                                    alt="<?php echo htmlspecialchars($event['name']); ?>" class="w-full h-64 object-cover">
                                 <div class="p-6">
                                     <h3 class="text-2xl font-bold mb-2"><?php echo htmlspecialchars($event['name']); ?></h3>
                                     <p class="text-gray-600 mb-4"><?php echo htmlspecialchars($event['description']); ?></p>
-                                    <p class="font-semibold">Fecha: <?php echo htmlspecialchars(date('d/m/Y', strtotime($event['date']))); ?></p>
+                                    <p class="font-semibold">Fecha:
+                                        <?php echo htmlspecialchars(date('d/m/Y', strtotime($event['date']))); ?></p>
                                 </div>
                             </div>
                         <?php endwhile; ?>
@@ -120,10 +128,14 @@ $events_result = $conn->query($events_sql);
             <div>
                 <h3 class="text-3xl font-bold mb-4 text-center md:text-left">Envíanos un Mensaje</h3>
                 <form action="php/contact_handler.php" method="POST" class="space-y-4">
-                    <input type="text" name="name" placeholder="Tu Nombre" required class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500">
-                    <input type="email" name="email" placeholder="Tu Correo Electrónico" required class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500">
-                    <textarea name="message" placeholder="Tu Mensaje" rows="4" required class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500"></textarea>
-                    <button type="submit" class="w-full action-button bg-green-600 hover:bg-green-700">Enviar Mensaje <i class="fas fa-paper-plane ml-2"></i></button>
+                    <input type="text" name="name" placeholder="Tu Nombre" required
+                        class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500">
+                    <input type="email" name="email" placeholder="Tu Correo Electrónico" required
+                        class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500">
+                    <textarea name="message" placeholder="Tu Mensaje" rows="4" required
+                        class="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:border-green-500"></textarea>
+                    <button type="submit" class="w-full action-button bg-green-600 hover:bg-green-700">Enviar Mensaje <i
+                            class="fas fa-paper-plane ml-2"></i></button>
                 </form>
             </div>
         </div>
@@ -133,4 +145,5 @@ $events_result = $conn->query($events_sql);
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="js/main.js"></script>
 </body>
+
 </html>

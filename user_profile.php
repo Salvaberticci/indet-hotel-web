@@ -39,8 +39,8 @@ $reservations_result = $reservations_stmt->get_result();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Perfil - INDET</title>
 
-    <!-- Tailwind CSS -->
-    <script src="assets/js/tailwind.js"></script>
+    <!-- Tailwind CSS (Local Build) -->
+    <link rel="stylesheet" href="assets/css/tailwind-output.css">
 
     <!-- Google Fonts -->
     <link rel="stylesheet" href="assets/css/google-fonts.css">
