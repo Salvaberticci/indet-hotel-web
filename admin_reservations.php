@@ -271,7 +271,7 @@ $result = $conn->query($sql);
                             <?php while ($row = $result->fetch_assoc()): ?>
                                 <tr class="hover:bg-gray-700 border-b border-gray-700 reservation-row"
                                     data-cedula="<?php echo htmlspecialchars($row['user_cedula']); ?>">
-                                    <td class="py-3 px-4 text-center"><?php echo $row['id']; ?></td>
+                                    <td class="py-3 px-4 text-center"><?php echo $row['ids']; ?></td>
                                     <td class="py-3 px-4 text-center">
                                         <?php echo $row['user_name']; ?><br>
                                         <small class="text-gray-400">Cédula:
