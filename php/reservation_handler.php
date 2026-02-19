@@ -27,11 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $guest_email = $_POST['guest_email'];
         $checkin_date = $_POST['checkin_date'];
         $checkout_date = $_POST['checkout_date'];
-        $adultos = (int)$_POST['adultos'];
-        $ninos = (int)$_POST['ninos'];
-        $discapacitados = (int)$_POST['discapacitados'];
+        $adultos = (int) $_POST['adultos'];
+        $ninos = (int) $_POST['ninos'];
+        $discapacitados = (int) $_POST['discapacitados'];
         $selected_rooms = json_decode($_POST['selected_rooms'], true);
-        $user_id = isset($_POST['user_id']) && !empty($_POST['user_id']) ? (int)$_POST['user_id'] : null;
+        $user_id = isset($_POST['user_id']) && !empty($_POST['user_id']) ? (int) $_POST['user_id'] : null;
 
         error_log("Selected rooms decoded: " . print_r($selected_rooms, true));
 
@@ -129,36 +129,66 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if (isset($_POST['update_reservation'])) {
-        $id = $_POST['id'];
         $user_id = $_POST['user_id'];
-        $room_id = $_POST['room_id'];
         $checkin_date = $_POST['checkin_date'];
         $checkout_date = $_POST['checkout_date'];
         $status = $_POST['status'];
 
-        $sql = "UPDATE reservations SET user_id=?, room_id=?, checkin_date=?, checkout_date=?, status=? WHERE id=?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("iisssi", $user_id, $room_id, $checkin_date, $checkout_date, $status, $id);
-        if ($stmt->execute()) {
-            $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Reserva actualizada exitosamente.'];
+        $success = true;
+
+        // Handle batch update if reservation_ids and room_ids arrays are provided
+        if (isset($_POST['reservation_ids']) && isset($_POST['room_ids'])) {
+            $reservation_ids = $_POST['reservation_ids'];
+            $room_ids = $_POST['room_ids'];
+
+            foreach ($reservation_ids as $index => $res_id) {
+                $room_id = $room_ids[$index];
+                $sql = "UPDATE reservations SET user_id=?, room_id=?, checkin_date=?, checkout_date=?, status=? WHERE id=?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("iisssi", $user_id, $room_id, $checkin_date, $checkout_date, $status, $res_id);
+                if (!$stmt->execute()) {
+                    $success = false;
+                }
+                $stmt->close();
+            }
+        } else {
+            // Fallback for single reservation update
+            $id = $_POST['id'];
+            $room_id = $_POST['room_id'];
+            $sql = "UPDATE reservations SET user_id=?, room_id=?, checkin_date=?, checkout_date=?, status=? WHERE id=?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("iisssi", $user_id, $room_id, $checkin_date, $checkout_date, $status, $id);
+            if (!$stmt->execute()) {
+                $success = false;
+            }
+            $stmt->close();
+        }
+
+        if ($success) {
+            $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Reserva(s) actualizada(s) exitosamente.'];
         } else {
             $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al actualizar la reserva.'];
         }
-        $stmt->close();
         header("Location: ../admin_reservations.php");
         exit();
     }
 }
 
 if (isset($_GET['delete_reservation'])) {
-    $id = $_GET['delete_reservation'];
-    $sql = "DELETE FROM reservations WHERE id=?";
+    $ids_str = $_GET['delete_reservation'];
+    $ids = explode(',', $ids_str);
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+
+    $sql = "DELETE FROM reservations WHERE id IN ($placeholders)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $id);
+
+    $types = str_repeat('i', count($ids));
+    $stmt->bind_param($types, ...$ids);
+
     if ($stmt->execute()) {
-        $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Reserva eliminada exitosamente.'];
+        $_SESSION['flash_message'] = ['status' => 'success', 'text' => 'Reserva(s) eliminada(s) exitosamente.'];
     } else {
-        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al eliminar la reserva.'];
+        $_SESSION['flash_message'] = ['status' => 'error', 'text' => 'Error al eliminar la(s) reserva(s).'];
     }
     $stmt->close();
     header("Location: ../admin_reservations.php");

@@ -24,6 +24,35 @@ class ChatbotManager {
         this.chatbotSend = document.getElementById('chatbot-send');
         this.chatbotMessages = document.getElementById('chatbot-messages');
         this.typingIndicator = document.getElementById('typing-indicator');
+        this.suggestionsContainer = document.getElementById('suggested-questions');
+
+        // Predefined Responses Map
+        this.predefinedResponses = {
+            "habitaciones": {
+                label: "🛏️ Habitaciones",
+                answer: "🏨 **Nuestras Habitaciones**\nOfrecemos habitaciones individuales, dobles y suites familiares. Todas están diseñadas para el máximo confort de los atletas, con Wi-Fi de alta velocidad, aire acondicionado y TV. \n\n¡La Planta Baja está especialmente adaptada para personas con discapacidad!"
+            },
+            "reservar": {
+                label: "📅 ¿Cómo reservar?",
+                answer: "✍️ **Pasos para reservar:**\n1. Inicia sesión en tu cuenta.\n2. Ve a la sección de 'Reservación'.\n3. Elige tus fechas y número de personas.\n4. Selecciona tus habitaciones y ¡listo!\n\nSi no tienes cuenta, puedes registrarte en el botón de Login."
+            },
+            "servicios": {
+                label: "🏢 Servicios",
+                answer: "✨ **Nuestros Servicios:**\n• 📶 Wi-Fi de alta velocidad\n• 🏊 Piscina y Spa para recuperación\n• 🏋️ Gimnasio moderno\n• 🍴 Restaurante con menú para atletas\n• 🛎️ Servicio 24/7"
+            },
+            "horarios": {
+                label: "⏰ Horarios",
+                answer: "🕒 **Horarios importantes:**\n• **Check-in**: 15:00\n• **Check-out**: 12:00\n• **Restaurante**: Desayuno (06:00-10:00), Almuerzo (12:00-15:00), Cena (18:00-22:00)\n• **Recepción**: 24/7"
+            },
+            "ubicacion": {
+                label: "📍 Ubicación",
+                answer: "📍 **¿Dónde estamos?**\nEstamos ubicados en el centro de Valera, Edo. Trujillo, Venezuela. En las instalaciones del Instituto Trujillano del Deporte (INDET)."
+            },
+            "contacto": {
+                label: "📞 Contacto",
+                answer: "📱 **Contáctanos:**\n• 📞 Teléfono: 0412-897643\n• 📸 Instagram: @indetrujillo\n• 📍 Dirección: Valera, Edo. Trujillo."
+            }
+        };
 
         // Ensure container is visible
         const container = document.getElementById('chatbot-container');
@@ -32,6 +61,7 @@ class ChatbotManager {
         }
 
         this.bindEvents();
+        this.renderSuggestions();
     }
 
     bindEvents() {
@@ -141,6 +171,43 @@ class ChatbotManager {
         this.chatbotSend.disabled = !isValid;
     }
 
+    renderSuggestions() {
+        if (!this.suggestionsContainer) return;
+        this.suggestionsContainer.innerHTML = '';
+
+        Object.keys(this.predefinedResponses).forEach(key => {
+            const btn = document.createElement('button');
+            btn.className = 'bg-white hover:bg-gray-100 text-gray-700 text-xs font-semibold py-2 px-3 rounded-full border border-gray-300 shadow-sm transition-all duration-200 transform hover:scale-105 active:scale-95';
+            btn.textContent = this.predefinedResponses[key].label;
+            btn.onclick = () => this.handlePresetResponse(key);
+            this.suggestionsContainer.appendChild(btn);
+        });
+    }
+
+    async handlePresetResponse(key) {
+        const preset = this.predefinedResponses[key];
+        if (!preset) return;
+
+        // Hide suggestions after choice to keep chat clean or leave them? 
+        // User might want to ask something else. Let's leave them but maybe scroll.
+
+        // Add user "message" (the button text)
+        this.addMessage(preset.label, 'user');
+
+        // Show typing
+        this.showTyping();
+
+        // Immediate response after a small delay for "bot feel"
+        setTimeout(() => {
+            this.hideTyping();
+            this.addMessage(preset.answer, 'bot');
+
+            // Re-render suggestions at the bottom to follow the flow?
+            // Actually, the container is static in the messages div, so it's fine.
+            this.scrollToBottom();
+        }, 600);
+    }
+
     async sendMessage() {
         const message = this.chatbotInput.value.trim();
 
@@ -151,6 +218,19 @@ class ChatbotManager {
         // Add user message
         this.addMessage(message, 'user');
         this.chatbotInput.value = '';
+
+        // Check if the message matches a predefined keyword roughly
+        const lowerMsg = message.toLowerCase();
+        for (const key in this.predefinedResponses) {
+            if (lowerMsg.includes(key)) {
+                this.showTyping();
+                setTimeout(() => {
+                    this.hideTyping();
+                    this.addMessage(this.predefinedResponses[key].answer, 'bot');
+                }, 600);
+                return;
+            }
+        }
 
         // Show typing indicator
         this.showTyping();
@@ -232,10 +312,15 @@ class ChatbotManager {
 
     addMessage(text, sender, isError = false) {
         const messageWrapper = document.createElement('div');
-        messageWrapper.className = 'message-wrapper mb-4';
+        messageWrapper.className = 'message-wrapper mb-4 animate-fadeIn';
 
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender}-message ${isError ? 'error-message' : ''}`;
+
+        // Support for basic markdown-like formatting (**bold**, \n)
+        let formattedText = this.escapeHtml(text)
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>');
 
         if (sender === 'bot') {
             messageDiv.innerHTML = `
@@ -243,17 +328,17 @@ class ChatbotManager {
                     <i class="fas fa-robot ${isError ? 'text-red-500' : 'text-green-500'}"></i>
                     <span class="text-sm font-semibold ${isError ? 'text-red-600' : 'text-green-600'}">INDET Bot</span>
                 </div>
-                <p class="text-sm whitespace-pre-wrap">${this.escapeHtml(text)}</p>
-                <span class="text-xs text-gray-500 mt-2 block">${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
+                <div class="text-sm leading-relaxed">${formattedText}</div>
+                <span class="text-[10px] text-gray-400 mt-2 block">${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
             `;
         } else {
             messageDiv.innerHTML = `
                 <div class="flex items-center justify-end space-x-2 mb-2">
-                    <span class="text-sm font-semibold text-blue-600">Tú</span>
-                    <i class="fas fa-user text-blue-500"></i>
+                    <span class="text-sm font-semibold text-white opacity-80">Tú</span>
+                    <i class="fas fa-user text-white text-xs opacity-80"></i>
                 </div>
-                <p class="text-sm whitespace-pre-wrap text-right">${this.escapeHtml(text)}</p>
-                <span class="text-xs text-gray-500 mt-2 block text-right">${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
+                <div class="text-sm text-right">${formattedText}</div>
+                <span class="text-[10px] text-white opacity-60 mt-2 block text-right">${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</span>
             `;
         }
 

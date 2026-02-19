@@ -12,26 +12,50 @@ if (!isset($_GET['id'])) {
 
 $id = intval($_GET['id']);
 
-// Fetch reservation details
-$sql = "SELECT r.id, ro.type as room_type, r.adultos as adults, r.ninos, r.discapacitados, r.checkin_date, r.checkout_date, r.status, u.name, u.email, u.cedula, r.guest_name, r.guest_lastname, r.cedula as guest_cedula FROM reservations r JOIN users u ON r.user_id = u.id JOIN rooms ro ON r.room_id = ro.id WHERE r.id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
+// 1. Fetch group info from the provided reservation ID
+$group_sql = "SELECT user_id, checkin_date, checkout_date FROM reservations WHERE id = ?";
+$group_stmt = $conn->prepare($group_sql);
+$group_stmt->bind_param("i", $id);
+$group_stmt->execute();
+$group_info = $group_stmt->get_result()->fetch_assoc();
 
-if ($result->num_rows == 0) {
+if (!$group_info) {
     die('Reserva no encontrada.');
 }
 
-$reservation = $result->fetch_assoc();
+// 2. Fetch all reservations in the same group
+$sql = "SELECT r.id, ro.type as room_type, f.name as floor_name, r.adultos as adults, r.ninos, r.discapacitados, r.checkin_date, r.checkout_date, r.status, u.name, u.email, u.cedula, r.guest_name, r.guest_lastname, r.cedula as guest_cedula 
+        FROM reservations r 
+        JOIN users u ON r.user_id = u.id 
+        JOIN rooms ro ON r.room_id = ro.id 
+        LEFT JOIN floors f ON ro.floor_id = f.id
+        WHERE r.user_id = ? AND r.checkin_date = ? AND r.checkout_date = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("iss", $group_info['user_id'], $group_info['checkin_date'], $group_info['checkout_date']);
+$stmt->execute();
+$group_result = $stmt->get_result();
 
-// Fetch guest details
-$guests_sql = "SELECT guest_name, guest_lastname, guest_phone FROM reservation_guests WHERE reservation_id = ?";
+$reservations = [];
+$all_ids = [];
+while ($row = $group_result->fetch_assoc()) {
+    $reservations[] = $row;
+    $all_ids[] = $row['id'];
+}
+
+if (empty($reservations)) {
+    die('Reserva no encontrada.');
+}
+
+$reservation = $reservations[0];
+
+// 3. Fetch ALL guests for the whole group
+$guests = [];
+$placeholders = implode(',', array_fill(0, count($all_ids), '?'));
+$guests_sql = "SELECT guest_name, guest_lastname, guest_phone FROM reservation_guests WHERE reservation_id IN ($placeholders)";
 $guests_stmt = $conn->prepare($guests_sql);
-$guests_stmt->bind_param("i", $id);
+$guests_stmt->bind_param(str_repeat('i', count($all_ids)), ...$all_ids);
 $guests_stmt->execute();
 $guests_result = $guests_stmt->get_result();
-$guests = [];
 while ($guest = $guests_result->fetch_assoc()) {
     $guests[] = $guest;
 }
@@ -105,16 +129,24 @@ $pdf->Cell(50, 8, utf8_decode('Fecha de Check-in:'), 0, 0);
 $pdf->Cell(0, 8, utf8_decode($reservation['checkin_date']), 0, 1);
 $pdf->Cell(50, 8, utf8_decode('Fecha de Check-out:'), 0, 0);
 $pdf->Cell(0, 8, utf8_decode($reservation['checkout_date']), 0, 1);
-$pdf->Cell(50, 8, utf8_decode('Tipo de Habitación:'), 0, 0);
-$pdf->Cell(0, 8, utf8_decode($reservation['room_type']), 0, 1);
-$pdf->Cell(50, 8, utf8_decode('Adultos:'), 0, 0);
-$pdf->Cell(0, 8, utf8_decode($reservation['adults']), 0, 1);
-$pdf->Cell(50, 8, utf8_decode('Niños:'), 0, 0);
-$pdf->Cell(0, 8, utf8_decode($reservation['ninos']), 0, 1);
-$pdf->Cell(50, 8, utf8_decode('Discapacitados:'), 0, 0);
-$pdf->Cell(0, 8, utf8_decode($reservation['discapacitados']), 0, 1);
 $pdf->Cell(50, 8, utf8_decode('Número de Noches:'), 0, 0);
 $pdf->Cell(0, 8, utf8_decode($nights), 0, 1);
+$pdf->Ln(5);
+
+// Rooms Header
+$pdf->SetFont('Arial', 'B', 12);
+$pdf->Cell(0, 10, utf8_decode('Habitaciones en esta Reserva:'), 0, 1, 'L');
+$pdf->SetFont('Arial', '', 12);
+
+foreach ($reservations as $res) {
+    $pdf->SetFont('Arial', 'B', 11);
+    $pdf->Cell(0, 8, utf8_decode('Habitación: ' . $res['room_type'] . ' - ' . ($res['floor_name'] ?? 'N/A')), 0, 1);
+    $pdf->SetFont('Arial', '', 11);
+    $pdf->Cell(33, 8, utf8_decode('Adultos: ' . $res['adults']), 0, 0);
+    $pdf->Cell(33, 8, utf8_decode('Niños: ' . $res['ninos']), 0, 0);
+    $pdf->Cell(33, 8, utf8_decode('Discap.: ' . $res['discapacitados']), 0, 1);
+    $pdf->Ln(2);
+}
 
 $pdf->Ln(5);
 

@@ -403,94 +403,84 @@ if (!isset($_SESSION['user_id'])) {
             document.body.appendChild(confirmationDiv);
         }
 
-        function openGuestModal() {
-            const adultos = parseInt(document.getElementById('adultos').value);
-            const ninos = parseInt(document.getElementById('ninos').value);
-            const discapacitados = parseInt(document.getElementById('discapacitados').value);
-            const totalGuests = adultos + ninos + discapacitados;
+        let guestIndex = 0;
 
+        function openGuestModal() {
             const guestForms = document.getElementById('guest-forms');
             guestForms.innerHTML = '';
+            guestIndex = 0;
 
-            // Group guests by room
-            let guestIndex = 0;
-            selectedRooms.forEach((room, roomIndex) => {
+            selectedRooms.forEach((room) => {
                 const roomDiv = document.createElement('div');
-                roomDiv.className = 'bg-gray-200 p-4 rounded-lg mb-4';
-                roomDiv.innerHTML = `<h3 class="text-xl font-bold mb-4 text-center">Habitación ${room.id} - ${room.type}</h3>`;
+                roomDiv.className = 'bg-gray-100 p-4 rounded-lg mb-4 border border-gray-200';
+                roomDiv.id = `room-section-${room.id}`;
 
-                // Calculate how many guests can fit in this room based on type
-                let maxGuests = 1; // Default
-                if (room.type.includes('3 literas')) maxGuests = 3;
-                else if (room.type.includes('7 literas')) maxGuests = 7;
-                else if (room.type.includes('8 literas')) maxGuests = 8;
+                // Header with room info and Add Guest button
+                roomDiv.innerHTML = `
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold">Habitación ${room.id} - ${room.type}</h3>
+                        <button type="button" onclick="addGuestSlot('${room.id}', '${room.type}')" 
+                                class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold py-1 px-3 rounded shadow">
+                            <i class="fas fa-plus mr-1"></i> Agregar Huésped
+                        </button>
+                    </div>
+                    <div id="guest-slots-${room.id}" class="space-y-3"></div>
+                `;
+                guestForms.appendChild(roomDiv);
 
-                for (let i = 0; i < maxGuests && guestIndex < totalGuests; i++) {
-                    guestIndex++;
-                    const guestDiv = document.createElement('div');
-                    guestDiv.className = 'bg-white p-3 rounded mb-3';
-                    guestDiv.innerHTML = `
-                        <h4 class="text-md font-bold mb-2">Huésped ${guestIndex}</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Nombre</label>
-                                <input type="text" name="guests[${guestIndex}][name]" class="w-full p-2 border rounded" required>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Apellido</label>
-                                <input type="text" name="guests[${guestIndex}][lastname]" class="w-full p-2 border rounded">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Teléfono</label>
-                                <input type="tel" name="guests[${guestIndex}][phone]" class="w-full p-2 border rounded">
-                            </div>
-                        </div>
-                        <input type="hidden" name="guests[${guestIndex}][room_id]" value="${room.id}">
-                    `;
-                    roomDiv.appendChild(guestDiv);
-                }
-
-                if (roomDiv.children.length > 1) { // Has more than just the title
-                    guestForms.appendChild(roomDiv);
-                }
+                // Add the first guest slot by default
+                addGuestSlot(room.id, room.type);
             });
 
-            // If there are remaining guests, add them to the last room or create additional sections
-            while (guestIndex < totalGuests) {
-                guestIndex++;
-                const remainingGuestDiv = document.createElement('div');
-                remainingGuestDiv.className = 'bg-white p-3 rounded mb-3';
-                remainingGuestDiv.innerHTML = `
-                    <h4 class="text-md font-bold mb-2">Huésped ${guestIndex} (Sin habitación asignada)</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Nombre</label>
-                            <input type="text" name="guests[${guestIndex}][name]" class="w-full p-2 border rounded" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Apellido</label>
-                            <input type="text" name="guests[${guestIndex}][lastname]" class="w-full p-2 border rounded">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Teléfono</label>
-                            <input type="tel" name="guests[${guestIndex}][phone]" class="w-full p-2 border rounded">
-                        </div>
-                    </div>
-                    <input type="hidden" name="guests[${guestIndex}][room_id]" value="">
-                `;
+            document.getElementById('guestModal').classList.remove('hidden');
+        }
 
-                if (guestForms.lastChild && guestForms.lastChild.classList.contains('bg-gray-200')) {
-                    guestForms.lastChild.appendChild(remainingGuestDiv);
-                } else {
-                    const extraRoomDiv = document.createElement('div');
-                    extraRoomDiv.className = 'bg-gray-200 p-4 rounded-lg mb-4';
-                    extraRoomDiv.innerHTML = '<h3 class="text-xl font-bold mb-4 text-center">Huéspedes Adicionales</h3>';
-                    extraRoomDiv.appendChild(remainingGuestDiv);
-                    guestForms.appendChild(extraRoomDiv);
-                }
+        function addGuestSlot(roomId, roomType) {
+            const container = document.getElementById(`guest-slots-${roomId}`);
+            if (!container) return;
+
+            // Calculate max capacity
+            let maxGuests = 1;
+            if (roomType.toLowerCase().includes('3 literas')) maxGuests = 6;
+            else if (roomType.toLowerCase().includes('7 literas')) maxGuests = 14;
+            else if (roomType.toLowerCase().includes('8 literas')) maxGuests = 16;
+
+            const currentCount = container.children.length;
+            if (currentCount >= maxGuests) {
+                alert(`Esta habitación tiene una capacidad máxima de ${maxGuests} personas.`);
+                return;
             }
 
-            document.getElementById('guestModal').classList.remove('hidden');
+            guestIndex++;
+            const guestDiv = document.createElement('div');
+            guestDiv.className = 'bg-white p-3 rounded shadow-sm border border-gray-100 relative';
+            guestDiv.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <h4 class="text-md font-bold text-gray-700">Huésped ${currentCount + 1}</h4>
+                    ${currentCount > 0 ? `<button type="button" onclick="this.parentElement.parentElement.remove()" class="text-red-500 hover:text-red-700 text-sm"><i class="fas fa-trash"></i></button>` : ''}
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">NOMBRE*</label>
+                        <input type="text" data-room="${roomId}" name="guest_name" 
+                               pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+" title="Solo letras y espacios"
+                               class="w-full p-2 border rounded text-sm focus:ring-1 focus:ring-blue-400 outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">APELLIDO*</label>
+                        <input type="text" name="guest_lastname" 
+                               pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+" title="Solo letras y espacios"
+                               class="w-full p-2 border rounded text-sm focus:ring-1 focus:ring-blue-400 outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">TELÉFONO*</label>
+                        <input type="text" name="guest_phone" 
+                               pattern="[0-9]+" title="Solo números" inputmode="numeric"
+                               class="w-full p-2 border rounded text-sm focus:ring-1 focus:ring-blue-400 outline-none" required>
+                    </div>
+                </div>
+            `;
+            container.appendChild(guestDiv);
         }
 
         function closeGuestModal() {
@@ -500,18 +490,41 @@ if (!isset($_SESSION['user_id'])) {
         let currentGuests = [];
 
         function saveGuestsAndReserve() {
-            const guestForm = document.createElement('form');
-            const guestInputs = document.querySelectorAll('#guest-forms input');
+            const guestSlots = document.querySelectorAll('#guest-forms > div > div[id^="guest-slots-"] > div');
             currentGuests = [];
 
-            for (let i = 0; i < guestInputs.length; i += 4) { // Now 4 inputs per guest (name, lastname, phone, room_id)
-                const name = guestInputs[i].value;
-                const lastname = guestInputs[i + 1].value;
-                const phone = guestInputs[i + 2].value;
-                const roomId = guestInputs[i + 3].value;
-                if (name.trim() !== '') {
-                    currentGuests.push({ name, lastname, phone, room_id: roomId });
+            const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$/;
+            const phoneRegex = /^[0-9]+$/;
+
+            for (let i = 0; i < guestSlots.length; i++) {
+                const slot = guestSlots[i];
+                const nameInput = slot.querySelector('input[name="guest_name"]');
+                const roomId = nameInput.getAttribute('data-room');
+                const name = nameInput.value.trim();
+                const lastname = slot.querySelector('input[name="guest_lastname"]').value.trim();
+                const phone = slot.querySelector('input[name="guest_phone"]').value.trim();
+
+                if (name === '' || lastname === '' || phone === '') {
+                    alert('Por favor completa todos los campos para cada huésped.');
+                    return;
                 }
+
+                if (!nameRegex.test(name) || !nameRegex.test(lastname)) {
+                    alert('Nombres y apellidos solo deben contener letras.');
+                    return;
+                }
+
+                if (!phoneRegex.test(phone)) {
+                    alert('El teléfono solo debe contener números.');
+                    return;
+                }
+
+                currentGuests.push({
+                    name: name,
+                    lastname: lastname,
+                    phone: phone,
+                    room_id: roomId
+                });
             }
 
             if (currentGuests.length === 0) {

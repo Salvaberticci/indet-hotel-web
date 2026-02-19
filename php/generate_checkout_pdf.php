@@ -3,28 +3,47 @@ require_once __DIR__ . '/../vendor/autoload.php'; // Incluir el autoload de Comp
 
 use FPDF; // Usar la clase FPDF directamente
 
-function generateCheckoutPDF($reservation_id) {
+function generateCheckoutPDF($reservation_id)
+{
     ob_start(); // Start output buffering
     global $conn;
 
-    // Get reservation details
+    // 1. Fetch group info from the provided reservation ID
+    $group_sql = "SELECT user_id, checkin_date, checkout_date FROM reservations WHERE id = ?";
+    $group_stmt = $conn->prepare($group_sql);
+    $group_stmt->bind_param("i", $reservation_id);
+    $group_stmt->execute();
+    $group_info = $group_stmt->get_result()->fetch_assoc();
+
+    if (!$group_info) {
+        ob_end_clean();
+        return false;
+    }
+
+    // 2. Fetch all reservations in the same group
     $sql = "SELECT r.*, rm.type as room_type, f.name as floor_name,
                    u.name as user_name, u.cedula
             FROM reservations r
             JOIN rooms rm ON r.room_id = rm.id
             JOIN floors f ON rm.floor_id = f.id
             JOIN users u ON r.user_id = u.id
-            WHERE r.id = ?";
+            WHERE r.user_id = ? AND r.checkin_date = ? AND r.checkout_date = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $reservation_id);
+    $stmt->bind_param("iss", $group_info['user_id'], $group_info['checkin_date'], $group_info['checkout_date']);
     $stmt->execute();
     $result = $stmt->get_result();
-    $reservation = $result->fetch_assoc();
 
-    if (!$reservation) {
-        ob_end_clean(); // Clean (delete) the output buffer and disable output buffering
+    $reservations = [];
+    while ($row = $result->fetch_assoc()) {
+        $reservations[] = $row;
+    }
+
+    if (empty($reservations)) {
+        ob_end_clean();
         return false;
     }
+
+    $reservation = $reservations[0];
 
     // Create PDF
     $pdf = new FPDF('P', 'mm', 'A4');
@@ -62,11 +81,21 @@ function generateCheckoutPDF($reservation_id) {
     $pdf->Cell(50, 6, 'Email:', 0, 0);
     $pdf->Cell(0, 6, $reservation['guest_email'], 0, 1);
 
-    $pdf->Cell(50, 6, 'Habitacion:', 0, 0);
-    $pdf->Cell(0, 6, utf8_decode($reservation['room_type'] . ' (' . $reservation['room_id'] . ')'), 0, 1);
+    $pdf->SetFont('Helvetica', 'B', 11);
+    $pdf->Cell(0, 8, utf8_decode('Habitaciones en esta Reserva:'), 0, 1);
+    $pdf->SetFont('Helvetica', '', 10);
 
-    $pdf->Cell(50, 6, 'Piso:', 0, 0);
-    $pdf->Cell(0, 6, utf8_decode($reservation['floor_name']), 0, 1);
+    $total_adults = 0;
+    $total_ninos = 0;
+    $total_discapacitados = 0;
+
+    foreach ($reservations as $res) {
+        $pdf->Cell(0, 6, utf8_decode('• ' . $res['room_type'] . ' (' . $res['room_id'] . ') - Piso: ' . $res['floor_name']), 0, 1);
+        $total_adults += $res['adultos'];
+        $total_ninos += $res['ninos'];
+        $total_discapacitados += $res['discapacitados'];
+    }
+    $pdf->Ln(4);
 
     $pdf->Cell(50, 6, 'Fecha de Llegada:', 0, 0);
     $pdf->Cell(0, 6, date('d/m/Y', strtotime($reservation['checkin_date'])), 0, 1);
@@ -74,14 +103,14 @@ function generateCheckoutPDF($reservation_id) {
     $pdf->Cell(50, 6, 'Fecha de Salida:', 0, 0);
     $pdf->Cell(0, 6, date('d/m/Y', strtotime($reservation['checkout_date'])), 0, 1);
 
-    $pdf->Cell(50, 6, 'Adultos:', 0, 0);
-    $pdf->Cell(0, 6, $reservation['adultos'], 0, 1);
+    $pdf->Cell(50, 6, 'Total Adultos:', 0, 0);
+    $pdf->Cell(0, 6, $total_adults, 0, 1);
 
-    $pdf->Cell(50, 6, 'Ninos:', 0, 0);
-    $pdf->Cell(0, 6, $reservation['ninos'], 0, 1);
+    $pdf->Cell(50, 6, 'Total Ninos:', 0, 0);
+    $pdf->Cell(0, 6, $total_ninos, 0, 1);
 
-    $pdf->Cell(50, 6, 'Discapacitados:', 0, 0);
-    $pdf->Cell(0, 6, $reservation['discapacitados'], 0, 1);
+    $pdf->Cell(50, 6, 'Total Discapacitados:', 0, 0);
+    $pdf->Cell(0, 6, $total_discapacitados, 0, 1);
 
     $pdf->Ln(10);
 

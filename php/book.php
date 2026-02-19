@@ -70,9 +70,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $floor_id = $_POST['floor_id'];
     $selected_rooms = json_decode($_POST['selected_rooms'], true);
-    $adultos = (int)$_POST['adultos'];
-    $ninos = (int)$_POST['ninos'];
-    $discapacitados = (int)$_POST['discapacitados'];
+    $adultos = (int) $_POST['adultos'];
+    $ninos = (int) $_POST['ninos'];
+    $discapacitados = (int) $_POST['discapacitados'];
 
     $user_id = null;
     $cedula = null;
@@ -133,6 +133,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Verificar que las habitaciones seleccionadas estén disponibles
     $conn->begin_transaction();
     try {
+        $reservation_id_map = []; // Mapping room_id => reservation_id
+
         foreach ($selected_rooms as $room) {
             $room_id = $room['id'];
 
@@ -161,66 +163,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (!$stmt->execute()) {
                 throw new Exception("Error al crear la reserva para la habitación {$room_id}.");
             }
+
+            $res_id = $conn->insert_id;
+            $reservation_id_map[$room_id] = $res_id;
+            $stmt->close();
         }
 
-        $conn->commit();
-
-        // Save guest details if provided - AFTER scheduling maintenance
+        // Save guest details if provided
         if (isset($_POST['guests'])) {
             $guests_json = $_POST['guests'];
             $guests = json_decode($guests_json, true);
 
             if (is_array($guests) && !empty($guests)) {
-                // For multiple rooms, we need to get all reservation IDs that were created
-                // Since LAST_INSERT_ID() only gives us the last one, we need to query for recent reservations
-                $total_rooms = count($selected_rooms);
-                $user_id_for_query = $user_id;
-                $checkin_for_query = $checkin;
-                $checkout_for_query = $checkout;
-
-                // Get all reservation IDs for this user and time period
-                $get_reservation_ids_sql = "SELECT id FROM reservations
-                                           WHERE user_id = ? AND checkin_date = ? AND checkout_date = ?
-                                           ORDER BY id DESC LIMIT ?";
-                $stmt_ids = $conn->prepare($get_reservation_ids_sql);
-                $stmt_ids->bind_param("issi", $user_id_for_query, $checkin_for_query, $checkout_for_query, $total_rooms);
-                $stmt_ids->execute();
-                $result_ids = $stmt_ids->get_result();
-
-                $reservation_ids = [];
-                while ($row = $result_ids->fetch_assoc()) {
-                    $reservation_ids[] = $row['id'];
-                }
-                $stmt_ids->close();
-
-                // Reverse the array so it matches the order of selected_rooms
-                $reservation_ids = array_reverse($reservation_ids);
-
-                // Save guests for each reservation - group by room_id
-                $guests_by_room = [];
                 foreach ($guests as $guest) {
                     $room_id = $guest['room_id'] ?? '';
-                    if (!isset($guests_by_room[$room_id])) {
-                        $guests_by_room[$room_id] = [];
-                    }
-                    $guests_by_room[$room_id][] = $guest;
-                }
-
-                // Assign guests to reservations based on room_id
-                foreach ($reservation_ids as $res_index => $res_id) {
-                    $room_id = $selected_rooms[$res_index]['id'];
-                    if (isset($guests_by_room[$room_id])) {
-                        foreach ($guests_by_room[$room_id] as $guest) {
-                            if (!empty($guest['name'])) {
-                                $guest_sql = "INSERT INTO reservation_guests (reservation_id, guest_name, guest_lastname, guest_phone) VALUES (?, ?, ?, ?)";
-                                $stmt_guest = $conn->prepare($guest_sql);
-                                $stmt_guest->bind_param("isss", $res_id, $guest['name'], $guest['lastname'], $guest['phone']);
-                                if (!$stmt_guest->execute()) {
-                                    throw new Exception("Error al guardar huésped: " . $stmt_guest->error);
-                                }
-                                $stmt_guest->close();
-                            }
+                    if (!empty($guest['name']) && isset($reservation_id_map[$room_id])) {
+                        $res_id = $reservation_id_map[$room_id];
+                        $guest_sql = "INSERT INTO reservation_guests (reservation_id, guest_name, guest_lastname, guest_phone) VALUES (?, ?, ?, ?)";
+                        $stmt_guest = $conn->prepare($guest_sql);
+                        $stmt_guest->bind_param("isss", $res_id, $guest['name'], $guest['lastname'], $guest['phone']);
+                        if (!$stmt_guest->execute()) {
+                            throw new Exception("Error al guardar huésped: " . $stmt_guest->error);
                         }
+                        $stmt_guest->close();
                     }
                 }
             }
@@ -228,14 +193,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Schedule maintenance tasks for each reservation
         include 'maintenance_scheduler.php';
-        foreach ($selected_rooms as $room) {
-            // Get the reservation ID for this room (assuming we can get it from the last insert)
-            $last_id_sql = "SELECT LAST_INSERT_ID() as id";
-            $last_id_result = $conn->query($last_id_sql);
-            $reservation_id = $last_id_result->fetch_assoc()['id'];
-
-            scheduleCleaningBeforeReservation($reservation_id);
+        foreach ($reservation_id_map as $res_id) {
+            scheduleCleaningBeforeReservation($res_id);
         }
+
+        $conn->commit();
 
         // Store success message in session
         $_SESSION['flash_message'] = [

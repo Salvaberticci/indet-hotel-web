@@ -33,14 +33,18 @@ if ($selected_cedula) {
 
 $where_clause = !empty($where_conditions) ? 'WHERE ' . implode(' AND ', $where_conditions) : '';
 
-// Fetch all reservations for check-ins (pending or confirmed)
-$checkin_sql = "SELECT r.id, r.guest_name, r.guest_lastname, r.cedula, r.checkin_date, r.checkout_date, r.checkin_time, r.status,
-                        rm.type as room_type, f.name as floor_name, u.name as user_name
+// Fetch all reservations for check-ins (pending or confirmed) - Grouped by user and dates
+$checkin_sql = "SELECT GROUP_CONCAT(r.id) as ids, r.guest_name, r.guest_lastname, r.cedula, r.checkin_date, r.checkout_date, MIN(r.checkin_time) as checkin_time, r.status,
+                        GROUP_CONCAT(CONCAT(rm.type, ' (', r.room_id, ') - ', f.name) SEPARATOR '<br>') as room_info, 
+                        GROUP_CONCAT(rm.type) as room_types,
+                        u.name as user_name,
+                        SUM(r.adultos) as total_adultos, SUM(r.ninos) as total_ninos, SUM(r.discapacitados) as total_discapacitados
                   FROM reservations r
                   JOIN rooms rm ON r.room_id = rm.id
                   JOIN floors f ON rm.floor_id = f.id
                   JOIN users u ON r.user_id = u.id
                   $where_clause AND r.status IN ('confirmed', 'pending')
+                  GROUP BY r.user_id, r.checkin_date, r.checkout_date, r.status, r.guest_name, r.guest_lastname, r.cedula
                   ORDER BY CASE WHEN r.status = 'pending' THEN 1 ELSE 2 END, r.checkin_date ASC";
 $checkin_stmt = $conn->prepare($checkin_sql);
 if (!empty($params)) {
@@ -49,14 +53,17 @@ if (!empty($params)) {
 $checkin_stmt->execute();
 $checkin_result = $checkin_stmt->get_result();
 
-// Fetch all reservations for check-outs (confirmed or completed)
-$checkout_sql = "SELECT r.id, r.room_id, r.guest_name, r.guest_lastname, r.cedula, r.checkin_date, r.checkout_date, r.checkout_time, r.status,
-                          rm.type as room_type, f.name as floor_name, u.name as user_name
+// Fetch all reservations for check-outs (confirmed or completed) - Grouped by user and dates
+$checkout_sql = "SELECT GROUP_CONCAT(r.id) as ids, GROUP_CONCAT(r.room_id) as room_ids, r.guest_name, r.guest_lastname, r.cedula, r.checkin_date, r.checkout_date, MAX(r.checkout_time) as checkout_time, r.status,
+                          GROUP_CONCAT(CONCAT(rm.type, ' (', r.room_id, ') - ', f.name) SEPARATOR '<br>') as room_info, 
+                          GROUP_CONCAT(rm.type) as room_types,
+                          u.name as user_name
                    FROM reservations r
                    JOIN rooms rm ON r.room_id = rm.id
                    JOIN floors f ON rm.floor_id = f.id
                    JOIN users u ON r.user_id = u.id
                    $where_clause AND r.status IN ('confirmed', 'completed')
+                   GROUP BY r.user_id, r.checkin_date, r.checkout_date, r.status, r.guest_name, r.guest_lastname, r.cedula
                    ORDER BY CASE WHEN r.status = 'confirmed' THEN 1 ELSE 2 END, r.checkout_date ASC";
 $checkout_stmt = $conn->prepare($checkout_sql);
 if (!empty($params)) {
@@ -236,8 +243,7 @@ $maintenance_users_result = $conn->query($maintenance_users_sql);
                                             <small class="text-gray-500">Reservado por: <?php echo htmlspecialchars($reservation['user_name']); ?></small>
                                         </td>
                                         <td class="py-3 px-4 text-center">
-                                            <?php echo htmlspecialchars($reservation['room_type']); ?><br>
-                                            <small class="text-gray-400"><?php echo htmlspecialchars($reservation['floor_name']); ?></small>
+                                            <div class="text-sm font-semibold"><?php echo $reservation['room_info']; ?></div>
                                         </td>
                                         <td class="py-3 px-4 text-center"><?php echo date('d/m/Y', strtotime($reservation['checkout_date'])); ?></td>
                                         <td class="py-3 px-4 text-center">
@@ -250,13 +256,17 @@ $maintenance_users_result = $conn->query($maintenance_users_sql);
                                         </td>
                                         <td class="py-3 px-4 text-center">
                                             <?php if ($reservation['status'] === 'pending'): ?>
-                                                <button onclick="confirmCheckin(<?php echo $reservation['id']; ?>)" class="text-green-500 hover:text-green-700 mr-2">
+                                                <?php 
+                                                $first_id = explode(',', $reservation['ids'])[0]; 
+                                                ?>
+                                                <button onclick="confirmCheckin(<?php echo $first_id; ?>)" class="text-green-500 hover:text-green-700 mr-2">
                                                     <i class="fas fa-sign-in-alt"></i> Procesar Check-in
                                                 </button>
                                             <?php elseif ($reservation['status'] === 'confirmed'): ?>
                                                 <span class="text-gray-500">Check-in procesado</span>
                                             <?php endif; ?>
-                                            <button onclick="generateIndividualReport(<?php echo $reservation['id']; ?>, 'checkin')" class="text-blue-500 hover:text-blue-700">
+                                            <?php $first_id = explode(',', $reservation['ids'])[0]; ?>
+                                            <button onclick="generateIndividualReport(<?php echo $first_id; ?>, 'checkin')" class="text-blue-500 hover:text-blue-700">
                                                 <i class="fas fa-file-pdf"></i> Reporte
                                             </button>
                                         </td>
@@ -296,8 +306,7 @@ $maintenance_users_result = $conn->query($maintenance_users_sql);
                                             <small class="text-gray-500">Reservado por: <?php echo htmlspecialchars($reservation['user_name']); ?></small>
                                         </td>
                                         <td class="py-3 px-4 text-center">
-                                            <?php echo htmlspecialchars($reservation['room_type']); ?><br>
-                                            <small class="text-gray-400"><?php echo htmlspecialchars($reservation['floor_name']); ?></small>
+                                            <div class="text-sm font-semibold"><?php echo $reservation['room_info']; ?></div>
                                         </td>
                                         <td class="py-3 px-4 text-center"><?php echo date('d/m/Y', strtotime($reservation['checkin_date'])); ?></td>
                                         <td class="py-3 px-4 text-center">
@@ -305,13 +314,19 @@ $maintenance_users_result = $conn->query($maintenance_users_sql);
                                         </td>
                                         <td class="py-3 px-4 text-center">
                                             <?php if ($reservation['status'] === 'confirmed'): ?>
-                                                <button onclick="processCheckout(<?php echo $reservation['id']; ?>, <?php echo $reservation['room_id']; ?>, '<?php echo htmlspecialchars($reservation['room_type']); ?>')" class="text-red-500 hover:text-red-700 mr-2">
+                                                <?php 
+                                                $first_id = explode(',', $reservation['ids'])[0];
+                                                $first_room_id = explode(',', $reservation['room_ids'])[0];
+                                                $first_room_type = explode(',', $reservation['room_types'])[0];
+                                                ?>
+                                                <button onclick="processCheckout(<?php echo $first_id; ?>, <?php echo $first_room_id; ?>, '<?php echo htmlspecialchars($first_room_type); ?>')" class="text-red-500 hover:text-red-700 mr-2">
                                                     <i class="fas fa-sign-out-alt"></i> Procesar Check-out
                                                 </button>
                                             <?php elseif ($reservation['status'] === 'completed'): ?>
                                                 <span class="text-gray-500">Check-out procesado</span>
                                             <?php endif; ?>
-                                            <button onclick="generateIndividualReport(<?php echo $reservation['id']; ?>, 'checkout')" class="text-blue-500 hover:text-blue-700">
+                                            <?php $first_id = explode(',', $reservation['ids'])[0]; ?>
+                                            <button onclick="generateIndividualReport(<?php echo $first_id; ?>, 'checkout')" class="text-blue-500 hover:text-blue-700">
                                                 <i class="fas fa-file-pdf"></i> Reporte
                                             </button>
                                         </td>

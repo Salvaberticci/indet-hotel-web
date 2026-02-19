@@ -18,11 +18,17 @@ if ($_SESSION['user_role'] != 'admin') {
 */
 
 if (isset($_GET['reservation_id'])) {
-    $reservation_id = (int)$_GET['reservation_id'];
+    $reservation_id = (int) $_GET['reservation_id'];
 
-    $sql = "SELECT id, guest_name, guest_lastname, guest_phone FROM reservation_guests WHERE reservation_id = ?";
+    $sql = "SELECT rg.id, rg.guest_name, rg.guest_lastname, rg.guest_phone, r.room_id 
+            FROM reservation_guests rg
+            JOIN reservations r ON rg.reservation_id = r.id
+            WHERE r.user_id = (SELECT user_id FROM reservations WHERE id = ?)
+            AND r.checkin_date = (SELECT checkin_date FROM reservations WHERE id = ?)
+            AND r.checkout_date = (SELECT checkout_date FROM reservations WHERE id = ?)
+            ORDER BY r.room_id ASC, rg.id ASC";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $reservation_id);
+    $stmt->bind_param("iii", $reservation_id, $reservation_id, $reservation_id);
     $stmt->execute();
     $result = $stmt->get_result();
 

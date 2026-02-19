@@ -10,12 +10,15 @@ require('vendor/autoload.php');
 $monday = date('Y-m-d', strtotime('monday this week'));
 $sunday = date('Y-m-d', strtotime('sunday this week'));
 
-// Fetch reservations for current week
-$sql = "SELECT r.id, ro.type as room_type, r.adultos as adults, r.ninos, r.discapacitados, r.checkin_date, r.checkout_date, r.status, u.name, u.email, u.cedula, r.guest_name, r.guest_lastname, r.cedula as guest_cedula
+// Fetch reservations for current week - Grouped by user and dates
+$sql = "SELECT GROUP_CONCAT(r.id) as ids, GROUP_CONCAT(CONCAT(ro.type, ' (', r.room_id, ') - ', f.name) SEPARATOR '\n') as room_info, 
+               r.checkin_date, r.checkout_date, r.status, u.name, r.guest_name, r.guest_lastname
         FROM reservations r
         JOIN users u ON r.user_id = u.id
         JOIN rooms ro ON r.room_id = ro.id
+        LEFT JOIN floors f ON ro.floor_id = f.id
         WHERE (DATE(r.checkin_date) BETWEEN ? AND ?) OR (DATE(r.checkout_date) BETWEEN ? AND ?)
+        GROUP BY r.user_id, r.guest_name, r.guest_lastname, r.checkin_date, r.checkout_date, r.status, u.name
         ORDER BY r.checkin_date ASC";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("ssss", $monday, $sunday, $monday, $sunday);
@@ -76,9 +79,9 @@ if (empty($reservations)) {
     // Table headers
     $pdf->SetFont('Arial', 'B', 10);
     $pdf->SetFillColor(240, 240, 240);
-    $pdf->Cell(20, 8, utf8_decode('ID'), 1, 0, 'C', true);
+    $pdf->Cell(20, 8, utf8_decode('IDs'), 1, 0, 'C', true);
     $pdf->Cell(40, 8, utf8_decode('Cliente'), 1, 0, 'C', true);
-    $pdf->Cell(30, 8, utf8_decode('Habitación'), 1, 0, 'C', true);
+    $pdf->Cell(40, 8, utf8_decode('Habitaciones'), 1, 0, 'C', true);
     $pdf->Cell(30, 8, utf8_decode('Check-in'), 1, 0, 'C', true);
     $pdf->Cell(30, 8, utf8_decode('Check-out'), 1, 0, 'C', true);
     $pdf->Cell(25, 8, utf8_decode('Estado'), 1, 1, 'C', true);
@@ -94,12 +97,25 @@ if (empty($reservations)) {
         ];
         $status_text = $status_classes[$reservation['status']] ?? ucfirst($reservation['status']);
 
-        $pdf->Cell(20, 6, $reservation['id'], 1, 0, 'C');
-        $pdf->Cell(40, 6, utf8_decode(substr($reservation['name'], 0, 20)), 1, 0, 'L');
-        $pdf->Cell(30, 6, utf8_decode($reservation['room_type']), 1, 0, 'C');
-        $pdf->Cell(30, 6, $reservation['checkin_date'], 1, 0, 'C');
-        $pdf->Cell(30, 6, $reservation['checkout_date'], 1, 0, 'C');
-        $pdf->Cell(25, 6, utf8_decode($status_text), 1, 1, 'C');
+        $guest_display_name = !empty($reservation['guest_name']) ? $reservation['guest_name'] . ' ' . $reservation['guest_lastname'] : $reservation['name'];
+
+        // Calculate height for room_info which can have multiple lines
+        $nb_lines = count(explode("\n", $reservation['room_info']));
+        $h = 6 * $nb_lines;
+
+        $x = $pdf->GetX();
+        $y = $pdf->GetY();
+
+        $pdf->Cell(20, $h, $reservation['ids'], 1, 0, 'C');
+        $pdf->Cell(40, $h, utf8_decode(substr($guest_display_name, 0, 20)), 1, 0, 'L');
+
+        // MultiCell for room info
+        $pdf->MultiCell(40, 6, utf8_decode($reservation['room_info']), 1, 'C');
+
+        $pdf->SetXY($x + 100, $y); // Move to next column
+        $pdf->Cell(30, $h, $reservation['checkin_date'], 1, 0, 'C');
+        $pdf->Cell(30, $h, $reservation['checkout_date'], 1, 0, 'C');
+        $pdf->Cell(25, $h, utf8_decode($status_text), 1, 1, 'C');
     }
 
     // Summary
