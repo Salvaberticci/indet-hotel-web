@@ -883,18 +883,21 @@ $result = $conn->query($sql);
                         <label class="block text-xs font-semibold text-gray-400 mb-1">NOMBRE*</label>
                         <input type="text" data-room="${roomId}" name="guest_name" 
                                pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+" title="Solo letras y espacios"
+                               oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '')"
                                class="w-full p-2 border border-gray-500 rounded text-sm bg-gray-700 text-white focus:ring-1 focus:ring-blue-400 outline-none" required>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-400 mb-1">APELLIDO*</label>
                         <input type="text" name="guest_lastname" 
                                pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+" title="Solo letras y espacios"
+                               oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '')"
                                class="w-full p-2 border border-gray-500 rounded text-sm bg-gray-700 text-white focus:ring-1 focus:ring-blue-400 outline-none" required>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-400 mb-1">TELÉFONO*</label>
                         <input type="text" name="guest_phone" 
                                pattern="[0-9]+" title="Solo números" inputmode="numeric"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                class="w-full p-2 border border-gray-500 rounded text-sm bg-gray-700 text-white focus:ring-1 focus:ring-blue-400 outline-none" required>
                     </div>
                 </div>
