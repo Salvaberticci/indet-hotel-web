@@ -82,7 +82,7 @@ $users_result = $conn->query($users_sql);
                 <h3 class="text-xl font-semibold mb-4">Agregar Nuevo Usuario</h3>
                 <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
                     <div>
-                        <input type="text" name="name" placeholder="Nombre" required class="p-2 border rounded bg-gray-600 text-white w-full">
+                        <input type="text" name="name" placeholder="Nombre" required class="p-2 border rounded bg-gray-600 text-white w-full" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '')">
                         <span id="addNameError" class="text-red-500 text-sm hidden">Solo letras y espacios.</span>
                     </div>
                     <select name="cedula_type" required class="p-2 border rounded bg-gray-600 text-white">
@@ -90,7 +90,7 @@ $users_result = $conn->query($users_sql);
                         <option value="E">E - Extranjero</option>
                     </select>
                     <div>
-                        <input type="text" name="cedula" placeholder="Cédula" required class="p-2 border rounded bg-gray-600 text-white w-full">
+                        <input type="text" name="cedula" placeholder="Cédula" required class="p-2 border rounded bg-gray-600 text-white w-full" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                         <span id="addCedulaError" class="text-red-500 text-sm hidden">Solo números.</span>
                     </div>
                     <input type="email" name="email" placeholder="Email" required class="p-2 border rounded bg-gray-600 text-white">
@@ -168,7 +168,7 @@ $users_result = $conn->query($users_sql);
                 <input type="hidden" id="editUserId" name="id">
                 <div class="mb-4">
                     <label for="editUserName" class="block font-semibold mb-2">Nombre</label>
-                    <input type="text" id="editUserName" name="name" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                    <input type="text" id="editUserName" name="name" required class="w-full p-3 border rounded-lg bg-gray-700 text-white" oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '')">
                     <span id="editNameError" class="text-red-500 text-sm hidden">Solo letras y espacios.</span>
                 </div>
                 <div class="mb-4">
@@ -180,7 +180,7 @@ $users_result = $conn->query($users_sql);
                 </div>
                 <div class="mb-4">
                     <label for="editUserCedula" class="block font-semibold mb-2">Cédula</label>
-                    <input type="text" id="editUserCedula" name="cedula" required class="w-full p-3 border rounded-lg bg-gray-700 text-white">
+                    <input type="text" id="editUserCedula" name="cedula" required class="w-full p-3 border rounded-lg bg-gray-700 text-white" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     <span id="editCedulaError" class="text-red-500 text-sm hidden">Solo números.</span>
                 </div>
                 <div class="mb-4">

@@ -111,17 +111,20 @@ if (!isset($_SESSION['user_id'])) {
                         <div class="form-group text-left">
                             <label for="cedula" class="font-bold text-sm mb-2 block text-gray-500">CÉDULA*</label>
                             <input type="text" name="cedula" placeholder="Ingresa tu cédula" required
+                                inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                 class="booking-input">
                         </div>
                         <div class="form-group text-left">
                             <label for="guest_name" class="font-bold text-sm mb-2 block text-gray-500">NOMBRE*</label>
                             <input type="text" name="guest_name" placeholder="Ingresa tu nombre" required
+                                oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '')"
                                 class="booking-input">
                         </div>
                         <div class="form-group text-left">
                             <label for="guest_lastname"
                                 class="font-bold text-sm mb-2 block text-gray-500">APELLIDO*</label>
                             <input type="text" name="guest_lastname" placeholder="Ingresa tu apellido" required
+                                oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '')"
                                 class="booking-input">
                         </div>
                     </div>
@@ -464,18 +467,21 @@ if (!isset($_SESSION['user_id'])) {
                         <label class="block text-xs font-semibold text-gray-500 mb-1">NOMBRE*</label>
                         <input type="text" data-room="${roomId}" name="guest_name" 
                                pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+" title="Solo letras y espacios"
+                               oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '')"
                                class="w-full p-2 border rounded text-sm focus:ring-1 focus:ring-blue-400 outline-none" required>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 mb-1">APELLIDO*</label>
                         <input type="text" name="guest_lastname" 
                                pattern="[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+" title="Solo letras y espacios"
+                               oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ ]/g, '')"
                                class="w-full p-2 border rounded text-sm focus:ring-1 focus:ring-blue-400 outline-none" required>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-500 mb-1">TELÉFONO*</label>
                         <input type="text" name="guest_phone" 
                                pattern="[0-9]+" title="Solo números" inputmode="numeric"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                class="w-full p-2 border rounded text-sm focus:ring-1 focus:ring-blue-400 outline-none" required>
                     </div>
                 </div>
